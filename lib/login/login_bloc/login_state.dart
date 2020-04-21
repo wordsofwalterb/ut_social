@@ -2,101 +2,98 @@ part of 'login_bloc.dart';
 
 @immutable
 class LoginState {
-  final bool isEmailValid;
-  final bool isPasswordValid;
+  final String error;
   final bool isSubmitting;
   final bool isSuccess;
   final bool isFailure;
-  
-
-  bool get isFormValid => isEmailValid && isPasswordValid;
+  final bool isPasswordObscured;
 
   LoginState({
-    @required this.isEmailValid,
-    @required this.isPasswordValid,
+    @required this.error,
     @required this.isSubmitting,
     @required this.isSuccess,
     @required this.isFailure,
+    @required this.isPasswordObscured,
   });
 
   factory LoginState.empty() {
     return LoginState(
-      isEmailValid: true,
-      isPasswordValid: true,
+      error: null,
       isSubmitting: false,
       isSuccess: false,
       isFailure: false,
+      isPasswordObscured: true,
     );
   }
 
-  factory LoginState.loading() {
+  factory LoginState.loading(bool isPasswordObscured) {
     return LoginState(
-      isEmailValid: true,
-      isPasswordValid: true,
+      error: null,
       isSubmitting: true,
       isSuccess: false,
       isFailure: false,
+      isPasswordObscured: isPasswordObscured,
     );
   }
 
-  factory LoginState.failure() {
+  factory LoginState.failure(bool isPasswordObscured, String error) {
     return LoginState(
-      isEmailValid: true,
-      isPasswordValid: true,
+      error: error,
       isSubmitting: false,
       isSuccess: false,
       isFailure: true,
+      isPasswordObscured: isPasswordObscured,
     );
   }
 
-  factory LoginState.success() {
+  factory LoginState.success(bool isPasswordObscured) {
     return LoginState(
-      isEmailValid: true,
-      isPasswordValid: true,
+      error: null,
       isSubmitting: false,
       isSuccess: true,
       isFailure: false,
+      isPasswordObscured: isPasswordObscured,
     );
   }
 
   LoginState update({
-    bool isEmailValid,
-    bool isPasswordValid,
+    bool isPasswordObscured,
+    String error,
   }) {
     return copyWith(
-      isEmailValid: isEmailValid,
-      isPasswordValid: isPasswordValid,
+      error: error,
       isSubmitting: false,
       isSuccess: false,
       isFailure: false,
+      isPasswordObscured: isPasswordObscured,
     );
   }
 
   LoginState copyWith({
-    bool isEmailValid,
-    bool isPasswordValid,
     bool isSubmitEnabled,
     bool isSubmitting,
     bool isSuccess,
     bool isFailure,
+    bool isPasswordObscured,
+    String error,
   }) {
     return LoginState(
-      isEmailValid: isEmailValid ?? this.isEmailValid,
-      isPasswordValid: isPasswordValid ?? this.isPasswordValid,
+      error: error ?? this.error,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isSuccess: isSuccess ?? this.isSuccess,
       isFailure: isFailure ?? this.isFailure,
+      isPasswordObscured: isPasswordObscured ?? this.isPasswordObscured,
     );
   }
 
   @override
   String toString() {
     return '''LoginState {
-      isEmailValid: $isEmailValid,
-      isPasswordValid: $isPasswordValid,
+      error: $error,
       isSubmitting: $isSubmitting,
       isSuccess: $isSuccess,
       isFailure: $isFailure,
+      isPasswordObscured: $isPasswordObscured,
     }''';
   }
 }

@@ -23,45 +23,20 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginState get initialState => LoginState.empty();
 
   @override
-  Stream<LoginState> transformEvents(
-    Stream<LoginEvent> events,
-    Stream<LoginState> Function(LoginEvent event) next,
-  ) {
-    final nonDebounceStream = events.where((event) {
-      return (event is! EmailChanged && event is! PasswordChanged);
-    });
-    final debounceStream = events.where((event) {
-      return (event is EmailChanged || event is PasswordChanged);
-    }).debounceTime(Duration(milliseconds: 300));
-    return super.transformEvents(
-      nonDebounceStream.mergeWith([debounceStream]),
-      next,
-    );
-  }
-
-  @override
   Stream<LoginState> mapEventToState(LoginEvent event) async* {
-    if (event is EmailChanged) {
-      yield* _mapEmailChangedToState(event.email);
-    } else if (event is PasswordChanged) {
-      yield* _mapPasswordChangedToState(event.password);
-    } else if (event is LoginWithCredentialsPressed) {
+    if (event is LoginWithCredentialsPressed) {
       yield* _mapLoginWithCredentialsPressedToState(
         email: event.email,
         password: event.password,
       );
+    } else if (event is ToggledObscurePassword) {
+      yield* _mapToggledObscurePasswordToState();
     }
   }
 
-  Stream<LoginState> _mapEmailChangedToState(String email) async* {
+  Stream<LoginState> _mapToggledObscurePasswordToState() async* {
     yield state.update(
-      isEmailValid: Validators.isValidEmail(email),
-    );
-  }
-
-  Stream<LoginState> _mapPasswordChangedToState(String password) async* {
-    yield state.update(
-      isPasswordValid: Validators.isValidPassword(password),
+      isPasswordObscured: !state.isPasswordObscured,
     );
   }
 
@@ -69,12 +44,35 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     String email,
     String password,
   }) async* {
-    yield LoginState.loading();
+    yield LoginState.loading(state.isPasswordObscured);
     try {
       await _userRepository.signInWithCredentials(email, password);
-      yield LoginState.success();
-    } catch (_) {
-      yield LoginState.failure();
+      yield LoginState.success(state.isPasswordObscured);
+    } catch (error) {
+      String errorMessage;
+      switch (error.code) {
+        case "ERROR_INVALID_EMAIL":
+          errorMessage = "Email address not found";
+          break;
+        case "ERROR_WRONG_PASSWORD":
+          errorMessage = "Password is incorrect";
+          break;
+        case "ERROR_USER_NOT_FOUND":
+          errorMessage = "User with this email doesn't exist.";
+          break;
+        case "ERROR_USER_DISABLED":
+          errorMessage = "User with this email has been disabled.";
+          break;
+        case "ERROR_TOO_MANY_REQUESTS":
+          errorMessage = "Too many requests. Try again later.";
+          break;
+        case "ERROR_OPERATION_NOT_ALLOWED":
+          errorMessage = "Email and Password signup is not enabled.";
+          break;
+        default:
+          errorMessage = "An undefined Error happened.";
+      }
+      yield LoginState.failure(state.isPasswordObscured, errorMessage);
     }
   }
 }

@@ -44,23 +44,24 @@ class _LoginFormState extends State<LoginForm> {
 
   UserRepository get _userRepository => widget._userRepository;
 
+  String _failureType(LoginState state) {
+    if (state.error != null){
+      return state.error;
+    } else {
+      return 'Login Failure, please try again later';
+    }
+  }
+
+  bool _hasLoginFailure(LoginState state) => state.error != null;
+
   bool get isPopulated =>
       _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
 
-  bool isLoginButtonEnabled(LoginState state) {
-    return state.isFormValid && isPopulated && !state.isSubmitting;
-  }
-
-  bool isPasswordTextObscured() {
-    return null;
-  }
 
   @override
   void initState() {
     super.initState();
     _loginBloc = BlocProvider.of<LoginBloc>(context);
-    _emailController.addListener(_onEmailChanged);
-    _passwordController.addListener(_onPasswordChanged);
   }
 
   @override
@@ -74,7 +75,7 @@ class _LoginFormState extends State<LoginForm> {
               SnackBar(
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [Text('Login Failure'), Icon(Icons.error)],
+                  children: [Text(_failureType(state)), Icon(Icons.error)],
                 ),
                 backgroundColor: Theme.of(context).primaryColor,
               ),
@@ -127,10 +128,7 @@ class _LoginFormState extends State<LoginForm> {
                     autovalidate: false,
                     autocorrect: false,
                     textInputAction: TextInputAction.next,
-                    onEditingComplete: () => {},
-                    validator: (_) {
-                      return !state.isEmailValid ? 'Invalid Email' : null;
-                    },
+
                   ),
                   SizedBox(height: 20),
                   TextFormField(
@@ -139,17 +137,19 @@ class _LoginFormState extends State<LoginForm> {
                       alignLabelWithHint: true,
                       hasFloatingPlaceholder: false,
                       hintText: 'Password',
-                      suffixIcon: Icon(Icons.remove_red_eye),
+                      suffixIcon: GestureDetector(
+                        onTap: _onPasswordObscuredChanged,
+                        child: (state.isPasswordObscured)
+                            ? Icon(Icons.visibility_off, color: Theme.of(context).primaryColor)
+                            : Icon(Icons.visibility, color: Theme.of(context).primaryColor),
+                      ),
                     ),
-                    obscureText: true,
+                    obscureText: state.isPasswordObscured,
                     autovalidate: false,
                     autocorrect: false,
                     textInputAction: TextInputAction.done,
-                    validator: (_) {
-                      return !state.isPasswordValid
-                          ? 'Invalid Password Format'
-                          : null;
-                    },
+
+
                   ),
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 15),
@@ -172,9 +172,10 @@ class _LoginFormState extends State<LoginForm> {
                         Container(
                           height: 50,
                           child: FlatButton(
-                              child: Text('Login'),
-                              color: Theme.of(context).backgroundColor,
-                              onPressed: _onFormSubmitted),
+                            child: Text('Login'),
+                            color: Theme.of(context).backgroundColor,
+                            onPressed: _onFormSubmitted,
+                          ),
                         ),
                         SizedBox(height: 16),
                         Container(
@@ -217,15 +218,9 @@ class _LoginFormState extends State<LoginForm> {
     super.dispose();
   }
 
-  void _onEmailChanged() {
+  void _onPasswordObscuredChanged() {
     _loginBloc.add(
-      EmailChanged(email: _emailController.text),
-    );
-  }
-
-  void _onPasswordChanged() {
-    _loginBloc.add(
-      PasswordChanged(password: _passwordController.text),
+      ToggledObscurePassword(),
     );
   }
 
@@ -236,6 +231,7 @@ class _LoginFormState extends State<LoginForm> {
         password: _passwordController.text,
       ),
     );
+    
   }
 }
 

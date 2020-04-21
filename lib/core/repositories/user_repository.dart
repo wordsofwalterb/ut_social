@@ -6,14 +6,14 @@ class UserRepository {
   UserRepository({FirebaseAuth firebaseAuth})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
-  Future<void> signInWithCredentials(String email, String password) {
+  Future<AuthResult> signInWithCredentials(String email, String password) {
     return _firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
   }
 
-  Future<void> signUp({String email, String password}) async {
+  Future<AuthResult> signUp({String email, String password}) async {
     return await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
