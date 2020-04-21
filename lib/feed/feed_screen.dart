@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:ut_social/add_content/add_post.dart';
 
 import '../core/util/fake_data.dart';
 import '../core/widgets/main_app_bar.dart';
 import '../core/widgets/post_card.dart';
-
 
 class FeedScreen extends StatefulWidget {
   @override
@@ -28,7 +28,11 @@ class _FeedScreenState extends State<FeedScreen> {
     return SliverList(
       delegate: SliverChildListDelegate([
         GestureDetector(
-          onTap: () => {},
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) {
+              return CreatePostScreen();
+            }),
+          ),
           child: Container(
             decoration: BoxDecoration(
               color: Theme.of(context).backgroundColor,

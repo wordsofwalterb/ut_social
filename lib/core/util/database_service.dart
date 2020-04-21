@@ -44,15 +44,19 @@ class Document<T> {
   }
 
   Future<T> getData() {
-    return ref.get().then((v) => Global.models[T](v.data) as T);
+    return ref.get().then(
+        (v) => Global.models[T](v.data..addAll({'id': v.documentID})) as T);
   }
 
   Stream<T> streamData() {
-    return ref.snapshots().map((v) => Global.models[T](v.data) as T);
+    return ref.snapshots().map(
+        (v) => Global.models[T](v.data..addAll({'id': v.documentID})) as T);
   }
 
   Future<void> upsert(Map data) {
-    return ref.setData(Map<String, dynamic>.from(data), merge: true);
+    return ref.setData(
+        Map<String, dynamic>.from(data..removeWhere((k, v) => k == 'id')),
+        merge: true);
   }
 }
 
@@ -88,7 +92,7 @@ class UserData<T> {
   // Stream<T> get documentStream {
   //   // return Observable(_auth.onAuthStateChanged).switchMap((user) {
   //   //   if (user != null) {
-  //   //       Document<T> doc = Document<T>(path: '$collection/${user.uid}'); 
+  //   //       Document<T> doc = Document<T>(path: '$collection/${user.uid}');
   //   //       return doc.streamData();
   //   //   } else {
   //   //       return Observable<T>.just(null);

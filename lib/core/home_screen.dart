@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
+import 'package:ut_social/add_content/add_post.dart';
 
 import '../add_content/new_content_screen.dart';
 import '../chats/chat_screen.dart';
@@ -17,12 +18,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentTab = 0;
   PageController _pageController;
 
-
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
-
   }
 
   @override
@@ -44,6 +43,15 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) {
+            return CreatePostScreen();
+          }),
+        ),
+        backgroundColor: Theme.of(context).backgroundColor,
+        child: Icon(Icons.add, color: Colors.white),
+      ),
       bottomNavigationBar: CupertinoTabBar(
         activeColor: Theme.of(context).primaryColor,
         backgroundColor: Theme.of(context).backgroundColor,
@@ -52,10 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
           setState(() {
             _currentTab = index;
           });
-          _pageController.animateToPage(
+          _pageController.jumpToPage(
             index,
-            duration: Duration(milliseconds: 200),
-            curve: Curves.easeIn,
           );
         },
         items: [
@@ -65,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
               size: 28.0,
             ),
           ),
-            BottomNavigationBarItem(
+          BottomNavigationBarItem(
             icon: Icon(
               SFSymbols.search,
               size: 28.0,
@@ -83,8 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
               size: 28.0,
             ),
           ),
-          
-         BottomNavigationBarItem(
+          BottomNavigationBarItem(
             icon: Icon(
               SFSymbols.bell,
               size: 28.0,

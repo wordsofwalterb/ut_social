@@ -12,4 +12,5 @@ class Global {
 
   static final UserData<Student> currentUserRef =
       UserData<Student>(collection: 'students');
+
 }
