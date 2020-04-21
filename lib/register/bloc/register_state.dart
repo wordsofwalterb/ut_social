@@ -7,10 +7,14 @@ class RegisterState {
   final bool isSubmitting;
   final bool isSuccess;
   final bool isFailure;
+  final String error;
+  final bool isPasswordObscured;
 
   bool get isFormValid => isEmailValid && isPasswordValid;
 
   RegisterState({
+    @required this.error,
+    @required this.isPasswordObscured,
     @required this.isEmailValid,
     @required this.isPasswordValid,
     @required this.isSubmitting,
@@ -18,8 +22,10 @@ class RegisterState {
     @required this.isFailure,
   });
 
-  factory RegisterState.empty() {
+  factory RegisterState.initial() {
     return RegisterState(
+      error: null,
+      isPasswordObscured: true,
       isEmailValid: true,
       isPasswordValid: true,
       isSubmitting: false,
@@ -28,8 +34,10 @@ class RegisterState {
     );
   }
 
-  factory RegisterState.loading() {
+  factory RegisterState.loading(bool isPasswordObscured) {
     return RegisterState(
+      error: null,
+      isPasswordObscured: isPasswordObscured,
       isEmailValid: true,
       isPasswordValid: true,
       isSubmitting: true,
@@ -38,8 +46,10 @@ class RegisterState {
     );
   }
 
-  factory RegisterState.failure() {
+  factory RegisterState.failure(bool isPasswordObscured, String error) {
     return RegisterState(
+      error: error,
+      isPasswordObscured: isPasswordObscured,
       isEmailValid: true,
       isPasswordValid: true,
       isSubmitting: false,
@@ -48,8 +58,10 @@ class RegisterState {
     );
   }
 
-  factory RegisterState.success() {
+  factory RegisterState.success(bool isPasswordObscured) {
     return RegisterState(
+      error: null,
+      isPasswordObscured: isPasswordObscured,
       isEmailValid: true,
       isPasswordValid: true,
       isSubmitting: false,
@@ -61,8 +73,12 @@ class RegisterState {
   RegisterState update({
     bool isEmailValid,
     bool isPasswordValid,
+    bool isPasswordObscured,
+    String error,
   }) {
     return copyWith(
+      error: error,
+      isPasswordObscured: isPasswordObscured,
       isEmailValid: isEmailValid,
       isPasswordValid: isPasswordValid,
       isSubmitting: false,
@@ -72,6 +88,8 @@ class RegisterState {
   }
 
   RegisterState copyWith({
+    bool isPasswordObscured,
+    String error,
     bool isEmailValid,
     bool isPasswordValid,
     bool isSubmitEnabled,
@@ -80,6 +98,8 @@ class RegisterState {
     bool isFailure,
   }) {
     return RegisterState(
+      isPasswordObscured: isPasswordObscured ?? this.isPasswordObscured,
+      error: error ?? this.error,
       isEmailValid: isEmailValid ?? this.isEmailValid,
       isPasswordValid: isPasswordValid ?? this.isPasswordValid,
       isSubmitting: isSubmitting ?? this.isSubmitting,
@@ -96,6 +116,8 @@ class RegisterState {
       isSubmitting: $isSubmitting,
       isSuccess: $isSuccess,
       isFailure: $isFailure,
+      isPasswordObscured: $isPasswordObscured,
+      error: $error,
     }''';
   }
 }

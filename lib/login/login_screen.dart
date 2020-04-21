@@ -54,7 +54,7 @@ class _LoginFormState extends State<LoginForm> {
     }
   }
 
-  bool _hasLoginFailure(LoginState state) => state.error != null;
+  //bool _hasLoginFailure(LoginState state) => state.error != null;
 
   bool get isPopulated =>
       _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
@@ -105,117 +105,121 @@ class _LoginFormState extends State<LoginForm> {
           BlocProvider.of<AuthenticationBloc>(context).add(AuthLoggedIn());
         }
       },
-      child: BlocBuilder<LoginBloc, LoginState>(
-        builder: (context, state) {
-          return Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Form(
-              child: ListView(
-                children: <Widget>[
-                  SizedBox(height: MediaQuery.of(context).size.height * .1),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Image.asset('assets/images/appbar.png', height: 90),
-                  ),
-                  SizedBox(height: 30),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      alignLabelWithHint: true,
-                      hasFloatingPlaceholder: false,
-                      hintText: 'UT Email',
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
+        child: BlocBuilder<LoginBloc, LoginState>(
+          builder: (context, state) {
+            return Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Form(
+                child: ListView(
+                  children: <Widget>[
+                    SizedBox(height: MediaQuery.of(context).size.height * .1),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child:
+                          Image.asset('assets/images/appbar.png', height: 90),
                     ),
-                    keyboardType: TextInputType.emailAddress,
-                    autovalidate: false,
-                    autocorrect: false,
-                    focusNode: _emailFocus,
-                    textInputAction: TextInputAction.next,
-                    onFieldSubmitted: (term) {
-                      _fieldFocusChange(context, _emailFocus, _passwordFocus);
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      alignLabelWithHint: true,
-                      hasFloatingPlaceholder: false,
-                      hintText: 'Password',
-                      suffixIcon: GestureDetector(
-                        onTap: _onPasswordObscuredChanged,
-                        child: (state.isPasswordObscured)
-                            ? Icon(Icons.visibility_off,
-                                color: Theme.of(context).primaryColor)
-                            : Icon(Icons.visibility,
-                                color: Theme.of(context).primaryColor),
+                    SizedBox(height: 30),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        alignLabelWithHint: true,
+                        hasFloatingPlaceholder: false,
+                        hintText: 'UT Email',
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                      autovalidate: false,
+                      autocorrect: false,
+                      focusNode: _emailFocus,
+                      textInputAction: TextInputAction.next,
+                      onFieldSubmitted: (term) {
+                        _fieldFocusChange(context, _emailFocus, _passwordFocus);
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        alignLabelWithHint: true,
+                        hasFloatingPlaceholder: false,
+                        hintText: 'Password',
+                        suffixIcon: GestureDetector(
+                          onTap: _onPasswordObscuredChanged,
+                          child: (state.isPasswordObscured)
+                              ? Icon(Icons.visibility_off,
+                                  color: Theme.of(context).primaryColor)
+                              : Icon(Icons.visibility,
+                                  color: Theme.of(context).primaryColor),
+                        ),
+                      ),
+                      obscureText: state.isPasswordObscured,
+                      autovalidate: false,
+                      autocorrect: false,
+                      focusNode: _passwordFocus,
+                      textInputAction: TextInputAction.done,
+                      onFieldSubmitted: (term) {
+                        _passwordFocus.unfocus();
+                        if (isPopulated) _onFormSubmitted();
+                      },
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      width: double.infinity,
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          'Lost Password',
+                          style: Theme.of(context).textTheme.body1.copyWith(
+                                color: Color(0xffcbcbcb),
+                              ),
+                        ),
                       ),
                     ),
-                    obscureText: state.isPasswordObscured,
-                    autovalidate: false,
-                    autocorrect: false,
-                    focusNode: _passwordFocus,
-                    textInputAction: TextInputAction.done,
-                    onFieldSubmitted: (term) {
-                      _passwordFocus.unfocus();
-                      _onFormSubmitted();
-                    },
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 15),
-                    width: double.infinity,
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'Lost Password',
-                        style: Theme.of(context).textTheme.body1.copyWith(
-                              color: Color(0xffcbcbcb),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Container(
+                            height: 50,
+                            child: FlatButton(
+                              child: Text('Login'),
+                              color: Theme.of(context).backgroundColor,
+                              onPressed: _onFormSubmitted,
                             ),
+                          ),
+                          SizedBox(height: 16),
+                          Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 1.0,
+                                color: Color(0xffc4c4c4),
+                              ),
+                            ),
+                            child: FlatButton(
+                              child: Text(
+                                'Create an Account',
+                                style: TextStyle(color: Color(0xffc4c4c4)),
+                              ),
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) {
+                                  return RegisterScreen(
+                                      userRepository: _userRepository);
+                                }),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Container(
-                          height: 50,
-                          child: FlatButton(
-                            child: Text('Login'),
-                            color: Theme.of(context).backgroundColor,
-                            onPressed: _onFormSubmitted,
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        Container(
-                          height: 50,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 1.0,
-                              color: Color(0xffc4c4c4),
-                            ),
-                          ),
-                          child: FlatButton(
-                            child: Text(
-                              'Create an Account',
-                              style: TextStyle(color: Color(0xffc4c4c4)),
-                            ),
-                            onPressed: () => Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) {
-                                return RegisterScreen(
-                                    userRepository: _userRepository);
-                              }),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -250,97 +254,3 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 }
-
-// class LoginScreen extends StatefulWidget {
-//   static final String id = 'login_screen';
-
-//   @override
-//   _LoginScreenState createState() => _LoginScreenState();
-// }
-
-// class _LoginScreenState extends State<LoginScreen> {
-//   final _formKey = GlobalKey<FormState>();
-//   String _email, _password;
-
-//   _submit() {
-//     if (_formKey.currentState.validate()) {
-//       _formKey.currentState.save();
-//       // Logging in the user w/ Firebase
-//       // AuthService.login(_email, _password);
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SingleChildScrollView(
-//         child: Container(
-//           height: MediaQuery.of(context).size.height,
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             crossAxisAlignment: CrossAxisAlignment.center,
-//             children: <Widget>[
-//               Container(
-//                 width: MediaQuery.of(context).size.width / 3,
-//                 child: Image.asset('assets/images/appbar.png'),
-//               ),
-//               Form(
-//                 key: _formKey,
-//                 child: Column(
-//                   mainAxisSize: MainAxisSize.min,
-//                   children: <Widget>[
-//                     Container(
-//                      // height: 50,
-//                       margin: EdgeInsets.all(12),
-//                      // width: 300,
-//                       child: TextFormField(
-//                         decoration: InputDecoration(
-//                           labelText: 'UT Email',
-//                         ),
-//                         validator: (input) => !input.contains('@')
-//                             ? 'Please enter a valid email'
-//                             : null,
-//                         onSaved: (_) => {},//(input) => _email = input,
-//                       ),
-//                     ),
-//                     Container(
-//                      // height: 50,
-//                       margin: EdgeInsets.all(12),
-//                      // width: 300,
-//                       child: TextFormField(
-//                         decoration: InputDecoration(labelText: 'Password'),
-//                         validator: (input) => input.length < 6
-//                             ? 'Must be at least 6 characters'
-//                             : null,
-//                         onSaved: (_) => {},//(input) => _password = input,
-//                         obscureText: true,
-//                       ),
-//                     ),
-//                     SizedBox(height: 20.0),
-//                     FyreButton(),
-//                     SizedBox(height: 20.0),
-//                     Container(
-//                       width: 250.0,
-//                       child: FlatButton(
-//                         onPressed: () => {},
-//                         color: Colors.blue,
-//                         padding: EdgeInsets.all(10.0),
-//                         child: Text(
-//                           'Go to Signup',
-//                           style: TextStyle(
-//                             color: Colors.white,
-//                             fontSize: 18.0,
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

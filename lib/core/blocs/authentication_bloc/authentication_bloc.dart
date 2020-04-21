@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:ut_social/core/entities/student.dart';
 
 import '../../repositories/user_repository.dart';
 
@@ -35,8 +36,8 @@ class AuthenticationBloc extends Bloc<AuthEvent, AuthenticationState> {
   Stream<AuthenticationState> _mapAppStartedToState() async* {
     final isSignedIn = await _userRepository.isSignedIn();
     if (isSignedIn) {
-      final name = await _userRepository.getUser();
-      yield AuthAuthenticated(name);
+      final student = await _userRepository.getUser();
+      yield AuthAuthenticated(student);
     } else {
       yield AuthUnauthenticated();
     }
