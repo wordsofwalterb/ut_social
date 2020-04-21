@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
@@ -64,13 +65,14 @@ class Post extends Equatable {
   }
 
   factory Post.fromMap(Map<String, dynamic> map) {
+
     return Post(
         imageUrl: map['imageUrl'],
-        postId: map['postId'],
+        postId: map['id'],
         avatarUrl: map['avatarUrl'],
         authorId: map['authorId'],
         authorName: map['authorName'],
-        postTime: map['postTime'],
+        postTime: (map['postTime'] as Timestamp).toDate(),
         body: map['body'],
         commentCount: map['commentCount'],
         likeCount: map['likeCount']);

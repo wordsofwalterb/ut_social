@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ut_social/add_content/add_post.dart';
+import 'package:ut_social/core/entities/post.dart';
+import 'package:ut_social/feed/post_repository.dart';
 
 import '../core/util/fake_data.dart';
 import '../core/widgets/main_app_bar.dart';
@@ -11,15 +13,47 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
+  List<Post> _posts;
+  FirebasePostRepository _postRepository = FirebasePostRepository();
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    isLoading = true;
+    _postRepository.fetchAllPosts().then((v) {
+      setState(() {
+        isLoading = false;
+        _posts = v;
+      });
+    });
+    super.initState();
+  }
+
+  Future<void> _fetchPosts() async {
+    _postRepository.fetchAllPosts().then((v) {
+      setState(() {
+        _posts = v;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: mainAppBar(context),
-      body: CustomScrollView(
-        slivers: <Widget>[
-          _onYourMind(),
-          _postList(),
-        ],
+      body: RefreshIndicator(
+        color: Theme.of(context).primaryColor,
+        onRefresh: _fetchPosts,
+            child: CustomScrollView(
+          slivers: <Widget>[
+            _onYourMind(),
+            (isLoading)
+                ? SliverList(
+                    delegate: SliverChildListDelegate([Container()]),
+                  )
+                : _postList(),
+          ],
+        ),
       ),
     );
   }
@@ -60,7 +94,7 @@ class _FeedScreenState extends State<FeedScreen> {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
-          if (index >= fakePosts.length) {
+          if (index >= _posts.length) {
             return Container(
               width: MediaQuery.of(context).size.width,
               height: 50,
@@ -70,10 +104,10 @@ class _FeedScreenState extends State<FeedScreen> {
               ),
             );
           } else {
-            return PostCard(post: fakePosts[index]);
+            return PostCard(post: _posts[index]);
           }
         },
-        childCount: fakePosts.length + 1,
+        childCount: _posts.length + 1,
       ),
     );
   }
