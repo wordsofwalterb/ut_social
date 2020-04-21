@@ -17,10 +17,12 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentTab = 0;
   PageController _pageController;
 
+
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+
   }
 
   @override

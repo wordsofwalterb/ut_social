@@ -39,13 +39,15 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _passwordFocus = FocusNode();
 
   LoginBloc _loginBloc;
 
   UserRepository get _userRepository => widget._userRepository;
 
   String _failureType(LoginState state) {
-    if (state.error != null){
+    if (state.error != null) {
       return state.error;
     } else {
       return 'Login Failure, please try again later';
@@ -56,7 +58,6 @@ class _LoginFormState extends State<LoginForm> {
 
   bool get isPopulated =>
       _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
-
 
   @override
   void initState() {
@@ -127,8 +128,11 @@ class _LoginFormState extends State<LoginForm> {
                     keyboardType: TextInputType.emailAddress,
                     autovalidate: false,
                     autocorrect: false,
+                    focusNode: _emailFocus,
                     textInputAction: TextInputAction.next,
-
+                    onFieldSubmitted: (term) {
+                      _fieldFocusChange(context, _emailFocus, _passwordFocus);
+                    },
                   ),
                   SizedBox(height: 20),
                   TextFormField(
@@ -140,16 +144,21 @@ class _LoginFormState extends State<LoginForm> {
                       suffixIcon: GestureDetector(
                         onTap: _onPasswordObscuredChanged,
                         child: (state.isPasswordObscured)
-                            ? Icon(Icons.visibility_off, color: Theme.of(context).primaryColor)
-                            : Icon(Icons.visibility, color: Theme.of(context).primaryColor),
+                            ? Icon(Icons.visibility_off,
+                                color: Theme.of(context).primaryColor)
+                            : Icon(Icons.visibility,
+                                color: Theme.of(context).primaryColor),
                       ),
                     ),
                     obscureText: state.isPasswordObscured,
                     autovalidate: false,
                     autocorrect: false,
+                    focusNode: _passwordFocus,
                     textInputAction: TextInputAction.done,
-
-
+                    onFieldSubmitted: (term) {
+                      _passwordFocus.unfocus();
+                      _onFormSubmitted();
+                    },
                   ),
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 15),
@@ -211,10 +220,18 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
+  _fieldFocusChange(
+      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
     super.dispose();
   }
 
@@ -231,7 +248,6 @@ class _LoginFormState extends State<LoginForm> {
         password: _passwordController.text,
       ),
     );
-    
   }
 }
 
