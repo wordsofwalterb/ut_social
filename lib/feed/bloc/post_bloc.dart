@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:ut_social/core/entities/post.dart';
@@ -59,6 +60,6 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       state is PostsLoaded && state.hasReachedMax;
 
   Future<List<Post>> _fetchPosts(int startIndex, int limit) async {
-    _postRepository.fetchAllPosts();
+   // _postRepository.fetchAllPosts();
   }
 }

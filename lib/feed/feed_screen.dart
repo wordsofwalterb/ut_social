@@ -3,7 +3,6 @@ import 'package:ut_social/add_content/add_post.dart';
 import 'package:ut_social/core/entities/post.dart';
 import 'package:ut_social/feed/post_repository.dart';
 
-import '../core/util/fake_data.dart';
 import '../core/widgets/main_app_bar.dart';
 import '../core/widgets/post_card.dart';
 
@@ -13,28 +12,51 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
-  List<Post> _posts;
+  ScrollController _scrollController = new ScrollController();
+  List<Post> _posts = [];
   FirebasePostRepository _postRepository = FirebasePostRepository();
   bool isLoading = true;
+  bool isFetchingMore = false;
 
   @override
   void initState() {
     isLoading = true;
-    _postRepository.fetchAllPosts().then((v) {
-      setState(() {
-        isLoading = false;
-        _posts = v;
-      });
+
+    _setupFeed();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        _fetchPosts();
+      }
     });
     super.initState();
   }
 
-  Future<void> _fetchPosts() async {
-    _postRepository.fetchAllPosts().then((v) {
-      setState(() {
-        _posts = v;
-      });
+  Future<void> _setupFeed() async {
+    var results = await _postRepository.setupFeed();
+    setState(() {
+      _posts = results;
+      isLoading = false;
     });
+  }
+
+  Future<void> _fetchPosts() async {
+    setState(() {
+      isFetchingMore = true;
+    });
+    var results = await _postRepository.fetchNextPage(
+        startAfter: _posts.last.postTime, limit: 10);
+    setState(() {
+      _posts.addAll(results);
+      isFetchingMore = false;
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -43,8 +65,9 @@ class _FeedScreenState extends State<FeedScreen> {
       appBar: mainAppBar(context),
       body: RefreshIndicator(
         color: Theme.of(context).primaryColor,
-        onRefresh: _fetchPosts,
-            child: CustomScrollView(
+        onRefresh: _setupFeed,
+        child: CustomScrollView(
+          controller: _scrollController,
           slivers: <Widget>[
             _onYourMind(),
             (isLoading)

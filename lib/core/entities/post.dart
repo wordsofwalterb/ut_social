@@ -6,6 +6,7 @@ class Post extends Equatable {
   final String _postId, _authorId, _authorName, _body, _avatarUrl, _imageUrl;
   final DateTime _postTime;
   final int _commentCount, _likeCount;
+  final bool _likedByUser;
 
   String get postId => _postId;
   String get imageUrl => _imageUrl;
@@ -16,12 +17,14 @@ class Post extends Equatable {
   DateTime get postTime => _postTime;
   int get commentCount => _commentCount;
   int get likeCount => _likeCount;
+  bool get likedByUser => _likedByUser;
 
   Post(
       {@required String postId,
       @required String authorId,
       @required String authorName,
       @required DateTime postTime,
+      bool likedByUser,
       String imageUrl,
       String avatarUrl,
       String body,
@@ -37,6 +40,7 @@ class Post extends Equatable {
         _authorId = authorId,
         _authorName = authorName,
         _postTime = postTime,
+        _likedByUser = likedByUser ?? false,
         _body = body ?? '',
         _commentCount = commentCount ?? 0,
         _likeCount = likeCount ?? 0;
@@ -49,6 +53,7 @@ class Post extends Equatable {
       DateTime postTime,
       String body,
       String avatarUrl,
+      bool likedByUser,
       int commentCount,
       int likeCount}) {
     return Post(
@@ -60,12 +65,12 @@ class Post extends Equatable {
       postTime: postTime ?? this._postTime,
       body: body ?? this._body,
       commentCount: commentCount ?? this._commentCount,
+      likedByUser: likedByUser ?? this._likedByUser,
       likeCount: likeCount ?? this._likeCount,
     );
   }
 
   factory Post.fromMap(Map<String, dynamic> map) {
-
     return Post(
         imageUrl: map['imageUrl'],
         postId: map['id'],
@@ -74,6 +79,7 @@ class Post extends Equatable {
         authorName: map['authorName'],
         postTime: (map['postTime'] as Timestamp).toDate(),
         body: map['body'],
+        likedByUser: map['likedByUser'],
         commentCount: map['commentCount'],
         likeCount: map['likeCount']);
   }
@@ -88,6 +94,7 @@ class Post extends Equatable {
         _postTime,
         _body,
         _commentCount,
-        _likeCount
+        _likeCount,
+        _likedByUser,
       ];
 }

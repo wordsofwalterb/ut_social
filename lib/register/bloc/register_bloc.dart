@@ -52,7 +52,15 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     } else if (event is RegisterSubmitted) {
       yield* _mapFormSubmittedToState(
           event.email, event.password, event.firstName, event.lastName);
+    } else if (event is RegisterPasswordObscured) {
+      yield* _mapPasswordObscuredToState();
     }
+  }
+
+  Stream<RegisterState> _mapPasswordObscuredToState() async* {
+    yield state.update(
+      isPasswordObscured: !state.isPasswordObscured,
+    );
   }
 
   Stream<RegisterState> _mapEmailChangedToState(String email) async* {
@@ -68,7 +76,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   }
 
   // TODO: Currently errors are handled in UI using OR statements, this should be shifted to polymophism
-  
+
   Stream<RegisterState> _mapFormSubmittedToState(
     String email,
     String password,

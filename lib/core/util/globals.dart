@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ut_social/core/entities/post.dart';
 import 'package:ut_social/core/entities/student.dart';
 import 'package:ut_social/core/util/database_service.dart';
@@ -13,4 +14,8 @@ class Global {
   static final UserData<Student> currentUserRef =
       UserData<Student>(collection: 'students');
 
+  static final likeRef = Firestore.instance.collection('likes');
+  static final commentsRef = Firestore.instance.collection('comments');
+  static final postsRef = Firestore.instance.collection('posts');
+  static final studentsRef = Firestore.instance.collection('students');
 }

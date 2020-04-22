@@ -1,12 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
+import 'package:like_button/like_button.dart';
+import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
 
 import '../entities/post.dart';
 import '../util/helper.dart';
 import 'profile_avatar.dart';
-
 
 class PostCard extends StatelessWidget {
   final Post _post;
@@ -15,6 +17,17 @@ class PostCard extends StatelessWidget {
       : assert(post != null),
         _post = post,
         super(key: key);
+
+  Future<bool> _onLikeButtonTapped(bool isLiked, BuildContext context) async {
+    if (isLiked) {
+      BlocProvider.of<AuthenticationBloc>(context)
+        ..add(AuthDislikePost(_post.postId));
+    } else {
+      BlocProvider.of<AuthenticationBloc>(context)
+        ..add(AuthLikedPost(_post.postId));
+    }
+    return !isLiked;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +91,10 @@ class PostCard extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(12, 6, 12, 12),
             child:
                 Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-              const Icon(SFSymbols.bubble_left, size: 20,),
+              const Icon(
+                SFSymbols.bubble_left,
+                size: 20,
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6.0),
                 child: Text(_post.commentCount.toString(),
@@ -87,16 +103,42 @@ class PostCard extends StatelessWidget {
               Spacer(
                 flex: 1,
               ),
-              const Icon(SFSymbols.heart, size: 20,),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                child: Text(_post.likeCount.toString(),
-                    style: Theme.of(context).textTheme.overline),
-              ),
+              BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                  builder: (context, state) {
+                if (state is AuthAuthenticated) {
+                  return LikeButton(
+                    size: 20,
+                    likeCount: _post?.likeCount,
+                    animationDuration: const Duration(milliseconds: 500),
+                    isLiked: state.currentUser.likedPosts.contains(_post.postId),
+                    onTap: (result) => _onLikeButtonTapped(result, context),
+                    likeCountAnimationDuration: const Duration(milliseconds: 200),
+                    countBuilder: (int count, bool isLiked, String text) {
+                      Widget result;
+                      if (count == 0) {
+                        result = Text(
+                          "",
+                          style: TextStyle(color: Colors.grey),
+                        );
+                      } else
+                        result = Text(
+                          text,
+                          style: TextStyle(color: Colors.grey),
+                        );
+                      return result;
+                    },
+                  );
+                }else {
+                return Container();
+                }
+              } ),
               Spacer(
                 flex: 9,
               ),
-              const Icon(SFSymbols.square_arrow_up, size: 20,),
+              const Icon(
+                SFSymbols.square_arrow_up,
+                size: 20,
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(6, 5, 6, 0),
                 child:

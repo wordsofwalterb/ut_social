@@ -30,6 +30,42 @@ class AuthenticationBloc extends Bloc<AuthEvent, AuthenticationState> {
       yield* _mapLoggedInToState();
     } else if (event is AuthLoggedOut) {
       yield* _mapLoggedOutToState();
+    } else if (event is AuthLikedPost) {
+      yield* _mapLikePostToState(event.postId);
+    } else if (event is AuthDislikePost) {
+      yield* _mapDislikePostToState(event.postId);
+    }
+  }
+
+  Stream<AuthenticationState> _mapLikePostToState(String postId) async* {
+    final currentState = state;
+    if (currentState is AuthAuthenticated) {
+      try {
+        _userRepository.likePost(postId, currentState.currentUser.id);
+      } catch (error) {
+        print(error);
+      }
+      yield AuthAuthenticated(
+        currentState.currentUser.copyWith(
+          likedPosts: currentState.currentUser.likedPosts..addAll([postId]),
+        ),
+      );
+    }
+  }
+
+  Stream<AuthenticationState> _mapDislikePostToState(String postId) async* {
+    final currentState = state;
+    if (currentState is AuthAuthenticated) {
+      try {
+        _userRepository.dislikePost(postId, currentState.currentUser.id);
+      } catch (error) {
+        print(error);
+      }
+      yield AuthAuthenticated(
+        currentState.currentUser.copyWith(
+          likedPosts: currentState.currentUser.likedPosts..remove(postId),
+        ),
+      );
     }
   }
 
