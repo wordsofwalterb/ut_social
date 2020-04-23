@@ -10,6 +10,7 @@ class Student extends Equatable {
   final String avatarUrl;
   final String id;
   final List<String> likedPosts;
+  final List<String> likedComments;
 
   Student({
     this.firstName = '',
@@ -19,6 +20,7 @@ class Student extends Equatable {
     this.avatarUrl = '',
     this.id = '',
     this.likedPosts = const [],
+    this.likedComments = const [],
   });
 
   Student copyWith({
@@ -29,6 +31,7 @@ class Student extends Equatable {
     String avatarUrl,
     String id,
     List<String> likedPosts,
+    List<String> likedComments,
   }) {
     return Student(
       firstName: firstName ?? this.firstName,
@@ -38,6 +41,7 @@ class Student extends Equatable {
       avatarUrl: avatarUrl ?? this.avatarUrl,
       id: id ?? this.id,
       likedPosts: likedPosts ?? this.likedPosts,
+      likedComments: likedComments ?? this.likedComments,
     );
   }
 
@@ -50,27 +54,13 @@ class Student extends Equatable {
       'avatarUrl': avatarUrl,
       'id': id,
       'likedPosts': List<dynamic>.from(likedPosts.map((x) => x)),
+      'likedComments': List<dynamic>.from(likedComments.map((x) => x)),
     };
-  }
-
-  factory Student.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
-    return Student(
-      firstName: map['firstName'],
-      lastName: map['lastName'],
-      email: map['email'],
-      fullName: map['fullName'],
-      avatarUrl: map['avatarUrl'] ?? '',
-      id: map['id'],
-      likedPosts: List<String>.from(map['likedPosts'] ?? []),
-    );
   }
 
   String toJson() => json.encode(toMap());
 
-  static Student fromJson(String source) =>
-      Student.fromMap(json.decode(source));
+  static Student fromJson(String source) => fromMap(json.decode(source));
 
   @override
   bool get stringify => true;
@@ -85,6 +75,22 @@ class Student extends Equatable {
       avatarUrl,
       id,
       likedPosts,
+      likedComments,
     ];
+  }
+
+  static Student fromMap(Map<String, dynamic> map) {
+    if (map == null) return null;
+  
+    return Student(
+      firstName: map['firstName'],
+      lastName: map['lastName'],
+      email: map['email'],
+      fullName: map['fullName'],
+      avatarUrl: map['avatarUrl'],
+      id: map['id'],
+      likedPosts: List<String>.from(map['likedPosts']),
+      likedComments: List<String>.from(map['likedComments']),
+    );
   }
 }

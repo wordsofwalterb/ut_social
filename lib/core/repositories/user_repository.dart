@@ -49,7 +49,7 @@ class UserRepository {
         if (lastName != null) 'lastName': lastName,
         if (email != null) 'email': email,
         if (firstName != null && lastName != null)
-        'fullName': firstName + ' ' + lastName,
+          'fullName': firstName + ' ' + lastName,
         'likedPosts': [],
       });
     } catch (error) {
@@ -74,6 +74,26 @@ class UserRepository {
 
     await Global.postsRef.document(postId).updateData({
       'likeCount': FieldValue.increment(-1),
+    });
+  }
+
+  Future<void> dislikeComment(String commentId, String userId) async {
+    await Global.studentsRef.document(userId).setData({
+      'likedPosts': FieldValue.arrayRemove([commentId]),
+    }, merge: true);
+
+    await Global.postsRef.document(commentId).updateData({
+      'likeCount': FieldValue.increment(-1),
+    });
+  }
+
+  Future<void> likeComment(String commentId, String userId) async {
+    await Global.studentsRef.document(userId).setData({
+      'likedPosts': FieldValue.arrayUnion([commentId]),
+    }, merge: true);
+
+    await Global.postsRef.document(commentId).updateData({
+      'likeCount': FieldValue.increment(1),
     });
   }
 

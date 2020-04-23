@@ -5,38 +5,28 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:like_button/like_button.dart';
 import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
-import 'package:ut_social/core/repositories/user_repository.dart';
-import 'package:ut_social/feed/comment_repository.dart';
-import 'package:ut_social/feed/comment_screen.dart';
-import 'package:ut_social/feed/post_repository.dart';
 
-import '../entities/post.dart';
+import '../entities/comment.dart';
 import '../util/helper.dart';
 import 'profile_avatar.dart';
 
+class CommentCard extends StatelessWidget {
+  final Comment _comment;
 
-class PostCard extends StatelessWidget {
-  final Post _post;
-  final bool disableComment;
-  final bool isLiked;
-
-  const PostCard({Key key, @required Post post, this.disableComment = false})
-      : assert(post != null),
-        _post = post,
+  const CommentCard({Key key, @required Comment comment})
+      : assert(comment != null),
+        _comment = comment,
         super(key: key);
-
-
 
   Future<bool> _onLikeButtonTapped(bool isLiked, BuildContext context) async {
     if (isLiked) {
       BlocProvider.of<AuthenticationBloc>(context)
-        ..add(AuthDislikePost(widget._post.postId));
-      return false;
+        ..add(AuthDislikedComment(_comment.commentId));
     } else {
       BlocProvider.of<AuthenticationBloc>(context)
-        ..add(AuthLikedPost(widget._post.postId));
-      return true;
+        ..add(AuthLikedComment(_comment.commentId));
     }
+    return !isLiked;
   }
 
   @override
@@ -55,15 +45,15 @@ class PostCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
               child: ProfileAvatar(
-                avatarUrl: widget._post.avatarUrl,
-                userId: widget._post.authorId,
+                avatarUrl: _comment.authorAvatar,
+                userId: _comment.authorId,
               ),
             ),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
                 child: Text(
-                  widget._post.authorName,
+                  _comment.authorName,
                   style: Theme.of(context).textTheme.subtitle,
                   textAlign: TextAlign.left,
                 ),
@@ -71,7 +61,7 @@ class PostCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.fromLTRB(0, 3, 0, 0),
                 child: Text(
-                  Helper.convertTime(widget._post.postTime),
+                  Helper.convertTime(_comment.timestamp),
                   style: Theme.of(context).textTheme.caption,
                 ),
               ),
@@ -90,74 +80,46 @@ class PostCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
             child: Text(
-              widget._post.body,
+              _comment.body,
               style: Theme.of(context).textTheme.body1,
             ),
           ),
 
-          ImageWidget(widget._post.imageUrl),
+          ImageWidget(_comment.imageUrl),
 
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 6, 12, 12),
             child:
                 Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-              (!widget.disableComment)
-                  ? GestureDetector(
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) {
-                          return CommentScreen(widget._post);
-                        }),
-                      ),
-                      child: const Icon(
-                        SFSymbols.bubble_left,
-                        size: 20,
-                      ),
-                    )
-                  : Container(),
-              (!widget.disableComment)
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                      child: Text(widget._post.commentCount.toString(),
-                          style: Theme.of(context).textTheme.overline),
-                    )
-                  : Container(),
-              (!widget.disableComment)
-                  ? Spacer(
-                      flex: 1,
-                    )
-                  : Container(),
-              // BlocBuilder<AuthenticationBloc, AuthenticationState>(
-              //     builder: (context, state) {
-              //   if (state is AuthAuthenticated) {
-              LikeButton(),
-              LikeButton(
-                size: 20,
-                //likeCount: likeCount,
-                animationDuration: const Duration(milliseconds: 500),
-                isLiked: ,
-                onTap: (result) {
-                  return _onLikeButtonTapped(result, context);
-                },
-                likeCountAnimationDuration: const Duration(milliseconds: 200),
-                countBuilder: (int count, bool isLiked, String text) {
-                  Widget result;
-                  if (count == 0) {
-                    result = Text(
-                      "",
-                      style: TextStyle(color: Colors.grey),
-                    );
-                  } else
-                    result = Text(
-                      text,
-                      style: TextStyle(color: Colors.grey),
-                    );
-                  return result;
-                },
-              ),
-              // } else {
-              //   return Container();
-              // }
-              // }),
+              BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                  builder: (context, state) {
+                if (state is AuthAuthenticated) {
+                  return LikeButton(
+                    size: 20,
+                    likeCount: _comment?.likeCount,
+                    animationDuration: const Duration(milliseconds: 500),
+                    isLiked: state.currentUser.likedComments.contains(_comment.commentId),
+                    onTap: (result) => _onLikeButtonTapped(result, context),
+                    likeCountAnimationDuration: const Duration(milliseconds: 200),
+                    countBuilder: (int count, bool isLiked, String text) {
+                      Widget result;
+                      if (count == 0) {
+                        result = Text(
+                          "",
+                          style: TextStyle(color: Colors.grey),
+                        );
+                      } else
+                        result = Text(
+                          text,
+                          style: TextStyle(color: Colors.grey),
+                        );
+                      return result;
+                    },
+                  );
+                }else {
+                return Container();
+                }
+              } ),
               Spacer(
                 flex: 9,
               ),

@@ -34,6 +34,47 @@ class AuthenticationBloc extends Bloc<AuthEvent, AuthenticationState> {
       yield* _mapLikePostToState(event.postId);
     } else if (event is AuthDislikePost) {
       yield* _mapDislikePostToState(event.postId);
+    } else if (event is AuthDislikedComment) {
+      yield* _mapDislikedCommentToState(event.commentId);
+    } else if (event is AuthLikedComment) {
+      yield* _mapLikedCommentToState(event.commentId);
+    }
+  }
+
+  Stream<AuthenticationState> _mapDislikedCommentToState(
+      String commentId) async* {
+    final currentState = state;
+    if (currentState is AuthAuthenticated) {
+      try {
+        await _userRepository.dislikeComment(
+            commentId, currentState.currentUser.id);
+        yield AuthAuthenticated(
+          currentState.currentUser.copyWith(
+            likedPosts: currentState.currentUser.likedComments
+              ..remove([commentId]),
+          ),
+        );
+      } catch (error) {
+        print(error);
+      }
+    }
+  }
+
+  Stream<AuthenticationState> _mapLikedCommentToState(String commentId) async* {
+    final currentState = state;
+    if (currentState is AuthAuthenticated) {
+      try {
+        await _userRepository.likeComment(
+            commentId, currentState.currentUser.id);
+        yield AuthAuthenticated(
+          currentState.currentUser.copyWith(
+            likedPosts: currentState.currentUser.likedComments
+              ..addAll([commentId]),
+          ),
+        );
+      } catch (error) {
+        print(error);
+      }
     }
   }
 
@@ -41,15 +82,15 @@ class AuthenticationBloc extends Bloc<AuthEvent, AuthenticationState> {
     final currentState = state;
     if (currentState is AuthAuthenticated) {
       try {
-        _userRepository.likePost(postId, currentState.currentUser.id);
+        await _userRepository.likePost(postId, currentState.currentUser.id);
+        yield AuthAuthenticated(
+          currentState.currentUser.copyWith(
+            likedPosts: currentState.currentUser.likedPosts..addAll([postId]),
+          ),
+        );
       } catch (error) {
         print(error);
       }
-      yield AuthAuthenticated(
-        currentState.currentUser.copyWith(
-          likedPosts: currentState.currentUser.likedPosts..addAll([postId]),
-        ),
-      );
     }
   }
 
@@ -57,15 +98,15 @@ class AuthenticationBloc extends Bloc<AuthEvent, AuthenticationState> {
     final currentState = state;
     if (currentState is AuthAuthenticated) {
       try {
-        _userRepository.dislikePost(postId, currentState.currentUser.id);
+        await _userRepository.dislikePost(postId, currentState.currentUser.id);
+        yield AuthAuthenticated(
+          currentState.currentUser.copyWith(
+            likedPosts: currentState.currentUser.likedPosts..remove(postId),
+          ),
+        );
       } catch (error) {
         print(error);
       }
-      yield AuthAuthenticated(
-        currentState.currentUser.copyWith(
-          likedPosts: currentState.currentUser.likedPosts..remove(postId),
-        ),
-      );
     }
   }
 

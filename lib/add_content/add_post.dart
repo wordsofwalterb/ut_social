@@ -205,6 +205,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   child: TextField(
                     controller: _captionController,
                     style: TextStyle(fontSize: 18.0),
+                    autofocus: true,
+                    keyboardType: TextInputType.multiline,
                     maxLines: 3,
                     decoration: InputDecoration(
                       filled: false,

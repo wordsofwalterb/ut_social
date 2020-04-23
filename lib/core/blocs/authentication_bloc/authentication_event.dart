@@ -30,3 +30,21 @@ class AuthDislikePost extends AuthEvent {
   @override
   List<Object> get props => [postId];
 }
+
+class AuthLikedComment extends AuthEvent {
+  final String commentId;
+
+  const AuthLikedComment(this.commentId);
+
+  @override
+  List<Object> get props => [commentId];
+}
+
+class AuthDislikedComment extends AuthEvent {
+  final String commentId;
+
+  const AuthDislikedComment(this.commentId);
+
+  @override
+  List<Object> get props => [commentId];
+}
