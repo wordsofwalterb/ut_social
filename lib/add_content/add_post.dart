@@ -128,6 +128,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         'body': _caption,
         'avatarUrl': author.avatarUrl,
         'likeCount': 0,
+        'likedBy': [],
         'commentCount': 0,
       });
 

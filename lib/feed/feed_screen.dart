@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ut_social/add_content/add_post.dart';
-import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
-import 'package:ut_social/core/entities/post.dart';
-import 'package:ut_social/feed/bloc/post_bloc.dart';
-import 'package:ut_social/feed/post_repository.dart';
+
+import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 
 import '../core/widgets/main_app_bar.dart';
 import '../core/widgets/post_card.dart';
@@ -42,6 +40,7 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   void dispose() {
     _feedController.dispose();
+    _postBloc.close();
     super.dispose();
   }
 
@@ -96,7 +95,23 @@ class _FeedScreenState extends State<FeedScreen> {
   }
 
   Widget _postList() {
-    return BlocBuilder<PostBloc, PostState>(builder: (context, postState) {
+    return BlocBuilder<PostBloc, PostState>(condition: (previousState, state) {
+      //Initial Setup
+      if (previousState is PostInitial) {
+        return true;
+      }
+      // When Fetching Posts
+      if (previousState is PostLoaded && state is PostLoaded) {
+        if (state.loadingMore == true) return true;
+      }
+      // When refreshing feed
+      if (previousState is PostLoaded && state is PostLoaded) {
+        if (state.isRefreshed == true) return true;
+      }
+      //Default
+      return false;
+    }, builder: (context, postState) {
+      print('feed rebuilt');
       if (postState is PostInitial) {
         return SliverList(
           delegate: SliverChildListDelegate(

@@ -5,11 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:like_button/like_button.dart';
 import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
-import 'package:ut_social/core/repositories/user_repository.dart';
-import 'package:ut_social/feed/bloc/post_bloc.dart';
-import 'package:ut_social/feed/comment_repository.dart';
+
 import 'package:ut_social/feed/comment_screen.dart';
-import 'package:ut_social/feed/post_repository.dart';
+import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 
 import '../entities/post.dart';
 import '../util/helper.dart';
@@ -21,7 +19,7 @@ class PostCard extends StatelessWidget {
   final bool isLiked;
   final int likeCount;
 
-  const PostCard(
+  PostCard(
       {Key key,
       @required Post post,
       this.disableComment = false,
@@ -31,18 +29,11 @@ class PostCard extends StatelessWidget {
         _post = post,
         super(key: key);
 
-  Future<bool> _onLikeButtonTapped(bool isLiked, BuildContext context) async {
-    if (isLiked) {
-      BlocProvider.of<PostBloc>(context)..add(PostUnlike(_post.postId));
-      return false;
-    } else {
-      BlocProvider.of<PostBloc>(context)..add(PostLike(_post.postId));
-      return true;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final postBloc = BlocProvider.of<PostBloc>(context);
+    var isLiked = postBloc.isLiked(_post.postId);
+  
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
       child: Container(
@@ -107,7 +98,8 @@ class PostCard extends StatelessWidget {
                   ? GestureDetector(
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) {
-                          return CommentScreen(_post);
+                          return BlocProvider.value(
+                              value: postBloc, child: CommentScreen(_post));
                         }),
                       ),
                       child: const Icon(
@@ -128,40 +120,7 @@ class PostCard extends StatelessWidget {
                       flex: 1,
                     )
                   : Container(),
-              BlocBuilder<PostBloc, PostState>(
-                  builder: (context, state) {
-                if (state is PostLoaded) {
-                  return LikeButton(
-                    size: 20,
-                    likeCount: BlocProvider.of<PostBloc>(context).likeCount(_post.postId, state),
-                    animationDuration: const Duration(milliseconds: 500),
-                    isLiked: BlocProvider.of<PostBloc>(context).isLiked(_post.postId),
-                    onTap: (result) {
-                      return _onLikeButtonTapped(result, context);
-                    },
-                    likeCountAnimationDuration:
-                        const Duration(milliseconds: 200),
-                    countBuilder: (int count, bool isLiked, String text) {
-                      Widget result;
-                      if (count == 0) {
-                        result = Text(
-                          "",
-                          style: TextStyle(color: Colors.grey),
-                        );
-                      } else
-                        result = Text(
-                          text,
-                          style: TextStyle(color: Colors.grey),
-                        );
-                      return result;
-                    },
-                  );
-                } else {
-                  return const Padding(
-                    padding: const EdgeInsets.all(0),
-                  );
-                }
-              }),
+              LikeCounter(_post.postId),
               Spacer(
                 flex: 9,
               ),
@@ -203,5 +162,84 @@ class ImageWidget extends StatelessWidget {
             ),
           )
         : Container();
+  }
+}
+
+class LikeCounter extends StatefulWidget {
+  final String id;
+
+  LikeCounter(this.id);
+
+  @override
+  _LikeCounterState createState() => _LikeCounterState();
+}
+
+class _LikeCounterState extends State<LikeCounter> {
+  bool isLiked = false;
+  AuthenticationState authBlocState;
+  String currentUserId;
+
+  @override
+  void initState() {
+    super.initState();
+    isLiked = BlocProvider.of<PostBloc>(context).isLiked(widget.id);
+    authBlocState = BlocProvider.of<AuthenticationBloc>(context).state;
+  }
+
+  Future<bool> _onLikeButtonTapped(BuildContext context) async {
+    if (isLiked) {
+      BlocProvider.of<PostBloc>(context)..add(PostUnlike(widget.id));
+      return false;
+    } else {
+      BlocProvider.of<PostBloc>(context)..add(PostLike(widget.id));
+      return true;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var authBlocState = BlocProvider.of<AuthenticationBloc>(context).state;
+    if (authBlocState is AuthAuthenticated)
+      currentUserId = authBlocState.currentUser.id;
+    return BlocBuilder<PostBloc, PostState>(condition: (previousState, state) {
+      if (state is PostLoaded && state.lastPostLiked == widget.id) return true;
+      if (state is PostLoaded && state.isRefreshed) return true;
+      return false;
+    }, builder: (context, state) {
+      if (state is PostLoaded) {
+        var results = state.posts.firstWhere((e) => e.postId == widget.id);
+        isLiked = results.likedBy.contains(currentUserId);
+        return LikeButton(
+          size: 20,
+          likeCount: state.posts
+              .firstWhere((element) => element.postId == widget.id)
+              .likeCount,
+          animationDuration: const Duration(milliseconds: 500),
+          isLiked: isLiked,
+          onTap: (result) {
+            return _onLikeButtonTapped(context);
+          },
+          likeCountAnimationDuration: const Duration(milliseconds: 200),
+          countBuilder: (int count, bool isLiked, String text) {
+            Widget result;
+            if (count == 0) {
+              result = Text(
+                "",
+                style: TextStyle(color: Colors.grey),
+              );
+            } else
+              result = Text(
+                text,
+                style: TextStyle(color: Colors.grey),
+              );
+            return result;
+          },
+        );
+      } else {
+        return const Padding(
+          padding: const EdgeInsets.all(0),
+        );
+      }
+    });
   }
 }

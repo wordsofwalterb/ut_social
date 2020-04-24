@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ut_social/core/entities/comment.dart';
+import 'package:ut_social/core/util/globals.dart';
 
 abstract class CommentRepository {
   Future<List<Comment>> fetchNextPage({DateTime startAfter, int limit});
@@ -41,6 +42,7 @@ class FirebaseCommentRepository extends CommentRepository {
     var newDocumentList = await _firestore
         .collection("comments")
         .orderBy("timestamp", descending: true)
+        .where('timestamp', isLessThan: startAfter)
         .startAfter([startAfter])
         .limit(limit)
         .getDocuments();
@@ -54,5 +56,17 @@ class FirebaseCommentRepository extends CommentRepository {
         .toList();
 
     return newComments;
+  }
+
+  Future<void> unlikePost(String commentId) async {
+    await Global.commentsRef.document(commentId).updateData({
+      'likeCount': FieldValue.increment(-1),
+    });
+  }
+
+  Future<void> likePost(String commentId) async {
+    await Global.commentsRef.document(commentId).updateData({
+      'likeCount': FieldValue.increment(1),
+    });
   }
 }

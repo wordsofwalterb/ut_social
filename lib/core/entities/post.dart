@@ -7,6 +7,7 @@ class Post extends Equatable {
   final DateTime _postTime;
   final int _commentCount, _likeCount;
   final bool _likedByUser;
+  final List<String> likedBy;
 
   String get postId => _postId;
   String get imageUrl => _imageUrl;
@@ -27,6 +28,7 @@ class Post extends Equatable {
       bool likedByUser,
       String imageUrl,
       String avatarUrl,
+      this.likedBy,
       String body,
       int commentCount,
       int likeCount})
@@ -52,12 +54,14 @@ class Post extends Equatable {
       String imageUrl,
       DateTime postTime,
       String body,
+      List<String> likedBy,
       String avatarUrl,
       bool likedByUser,
       int commentCount,
       int likeCount}) {
     return Post(
       postId: postId ?? this._postId,
+      likedBy: likedBy ?? this.likedBy,
       imageUrl: imageUrl ?? this._imageUrl,
       avatarUrl: avatarUrl ?? this._avatarUrl,
       authorId: authorId ?? this._authorId,
@@ -74,6 +78,7 @@ class Post extends Equatable {
     return Post(
         imageUrl: map['imageUrl'],
         postId: map['id'],
+        likedBy: List<String>.from(map['likedBy']),
         avatarUrl: map['avatarUrl'],
         authorId: map['authorId'],
         authorName: map['authorName'],
@@ -88,6 +93,7 @@ class Post extends Equatable {
   List<Object> get props => [
         _imageUrl,
         _postId,
+        likedBy,
         _avatarUrl,
         _authorId,
         _authorName,

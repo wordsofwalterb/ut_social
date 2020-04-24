@@ -81,6 +81,7 @@ class AuthenticationBloc extends Bloc<AuthEvent, AuthenticationState> {
   Stream<AuthenticationState> _mapLikePostToState(String postId) async* {
     final currentState = state;
     if (currentState is AuthAuthenticated) {
+      assert(!currentState.currentUser.likedPosts.contains(postId));
       try {
         await _userRepository.likePost(postId, currentState.currentUser.id);
         yield AuthAuthenticated(
@@ -97,6 +98,7 @@ class AuthenticationBloc extends Bloc<AuthEvent, AuthenticationState> {
   Stream<AuthenticationState> _mapDislikePostToState(String postId) async* {
     final currentState = state;
     if (currentState is AuthAuthenticated) {
+      assert(currentState.currentUser.likedPosts.contains(postId));
       try {
         await _userRepository.dislikePost(postId, currentState.currentUser.id);
         yield AuthAuthenticated(

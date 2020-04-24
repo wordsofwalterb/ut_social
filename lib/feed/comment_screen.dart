@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ut_social/core/entities/comment.dart';
 import 'package:ut_social/core/entities/post.dart';
 import 'package:ut_social/core/widgets/comment_card.dart';
 import 'package:ut_social/core/widgets/post_card.dart';
 import 'package:ut_social/feed/comment_repository.dart';
+import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 
 class CommentScreen extends StatefulWidget {
   final Post _post;
@@ -56,8 +58,8 @@ class _CommentScreenState extends State<CommentScreen> {
         child: CustomScrollView(
           slivers: <Widget>[
             _postSliver(),
-            _divider(),
-            _commentsSliver(),
+            // _divider(),
+            // _commentsSliver(),
           ],
         ),
       ),

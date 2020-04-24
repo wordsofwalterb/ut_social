@@ -11,9 +11,11 @@ PreferredSizeWidget mainAppBar(BuildContext context) {
       padding: const EdgeInsets.all(10.0),
       child: ProfileAvatar(avatarUrl: '', userId: '1'),
     ),
-    title: Container(
-      width: 75,
-      child: Image.asset('assets/images/appbar.png', fit: BoxFit.scaleDown)),
+    title: Center(
+      child: Container(
+        width: 75,
+        child: Image.asset('assets/images/appbar.png', fit: BoxFit.scaleDown)),
+    ),
     backgroundColor: Theme.of(context).backgroundColor,
     actions: <Widget>[
       IconButton(

@@ -7,8 +7,8 @@ import 'package:ut_social/core/util/globals.dart';
 abstract class PostRepository {
   Future<List<Post>> fetchNextPage({DateTime startAfter, int limit});
   Future<List<Post>> setupFeed();
-  Future<void> unlikePost(String postId);
-  Future<void> likePost(String postId);
+  Future<void> unlikePost(String postId, String userId);
+  Future<void> likePost(String postId, String userId);
   Future<List<Post>> retrieveLatestPosts(DateTime startBefore);
 }
 
@@ -60,7 +60,6 @@ class FirebasePostRepository extends PostRepository {
       {@required DateTime startAfter, int limit = 20}) async {
     assert(startAfter != null);
 
-    print(startAfter);
 
     var newDocumentList = await _firestore
         .collection("posts")
@@ -81,15 +80,17 @@ class FirebasePostRepository extends PostRepository {
     return newPosts;
   }
 
-  Future<void> unlikePost(String postId) async {
-    await Global.postsRef.document(postId).updateData({
+  Future<void> unlikePost(String postId, String userId) async {
+    Global.postsRef.document(postId).updateData({
       'likeCount': FieldValue.increment(-1),
+      'likedBy': FieldValue.arrayRemove([userId]),
     });
   }
 
-  Future<void> likePost(String postId) async {
+  Future<void> likePost(String postId, String userId) async {
     await Global.postsRef.document(postId).updateData({
       'likeCount': FieldValue.increment(1),
+      'likedBy': FieldValue.arrayUnion([userId]),
     });
   }
 }
