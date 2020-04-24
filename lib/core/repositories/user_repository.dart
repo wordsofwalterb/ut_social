@@ -62,9 +62,9 @@ class UserRepository {
       'likedPosts': FieldValue.arrayUnion([postId]),
     }, merge: true);
 
-    await Global.postsRef
-        .document(postId)
-        .updateData({'likeCount': FieldValue.increment(1)});
+    // await Global.postsRef
+    //     .document(postId)
+    //     .updateData({'likeCount': FieldValue.increment(1)});
   }
 
   Future<void> dislikePost(String postId, String userId) async {
@@ -72,9 +72,9 @@ class UserRepository {
       'likedPosts': FieldValue.arrayRemove([postId]),
     }, merge: true);
 
-    await Global.postsRef.document(postId).updateData({
-      'likeCount': FieldValue.increment(-1),
-    });
+    // await Global.postsRef.document(postId).updateData({
+    //   'likeCount': FieldValue.increment(-1),
+    // });
   }
 
   Future<void> dislikeComment(String commentId, String userId) async {

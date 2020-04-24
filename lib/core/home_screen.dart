@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:ut_social/add_content/add_post.dart';
+import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:ut_social/feed/bloc/post_bloc.dart';
+import 'package:ut_social/feed/post_repository.dart';
 
 import '../add_content/new_content_screen.dart';
 import '../chats/chat_screen.dart';
@@ -31,7 +35,11 @@ class _HomeScreenState extends State<HomeScreen> {
       body: PageView(
         controller: _pageController,
         children: <Widget>[
-          FeedScreen(),
+          BlocProvider(
+              create: (context) =>
+                  PostBloc(postRepository: FirebasePostRepository(), authBloc: BlocProvider.of<AuthenticationBloc>(context))
+                    ..add(PostSetup()),
+              child: FeedScreen()),
           SearchScreen(),
           NewContentScreen(),
           ChatScreen(),

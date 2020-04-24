@@ -13,20 +13,20 @@ class PostInitial extends PostState {
   List<Object> get props => [];
 }
 
-class PostsLoaded extends PostState {
+class PostLoaded extends PostState {
   final List<Post> posts;
   final bool hasReachedMax;
 
-  const PostsLoaded({
+  const PostLoaded({
     this.posts,
     this.hasReachedMax,
   });
 
-  PostsLoaded copyWith({
+  PostLoaded copyWith({
     List<Post> posts,
     bool hasReachedMax,
   }) {
-    return PostsLoaded(
+    return PostLoaded(
       posts: posts ?? this.posts,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
     );
@@ -40,4 +40,4 @@ class PostsLoaded extends PostState {
       'PostLoaded { posts: ${posts.length}, hasReachedMax: $hasReachedMax }';
 }
 
-class PostsError extends PostState {}
+class PostError extends PostState {}
