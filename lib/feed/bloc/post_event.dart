@@ -9,6 +9,8 @@ abstract class PostEvent extends Equatable {
 
 class PostsFetch extends PostEvent {}
 
+class PostRefresh extends PostEvent {}
+
 class PostLike extends PostEvent {
   final String postId;
 

@@ -128,15 +128,14 @@ class PostCard extends StatelessWidget {
                       flex: 1,
                     )
                   : Container(),
-              BlocBuilder<AuthenticationBloc, AuthenticationState>(
+              BlocBuilder<PostBloc, PostState>(
                   builder: (context, state) {
-                if (state is AuthAuthenticated) {
+                if (state is PostLoaded) {
                   return LikeButton(
                     size: 20,
-                    likeCount: _post.likeCount,
+                    likeCount: BlocProvider.of<PostBloc>(context).likeCount(_post.postId, state),
                     animationDuration: const Duration(milliseconds: 500),
-                    isLiked:
-                        state.currentUser.likedPosts.contains(_post.postId),
+                    isLiked: BlocProvider.of<PostBloc>(context).isLiked(_post.postId),
                     onTap: (result) {
                       return _onLikeButtonTapped(result, context);
                     },

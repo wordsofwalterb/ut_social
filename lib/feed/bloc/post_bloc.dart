@@ -29,7 +29,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   @override
   Future<void> close() {
-    authBloc.close();
+    authBlocSubscription.cancel();
     return super.close();
   }
 
@@ -56,6 +56,9 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         if (event is PostsFetch && !_hasReachedMax(currentState)) {
           yield* _mapPostFetchToState(currentState);
         }
+        if (event is PostRefresh) {
+          yield* _mapPostRefreshToState(currentState);
+        }
         if (event is PostLike) {
           yield* _mapPostLikeToState(currentState, event.postId);
         }
@@ -68,12 +71,14 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }
   }
 
+  Stream<PostState> _mapPostRefreshToState(PostLoaded currentState) async* {}
+
   Stream<PostState> _mapPostLikeToState(
       PostLoaded currentState, String postId) async* {
     // Find changed post and add like
-    var changedPost =
+    var initialPost =
         currentState.posts.firstWhere((val) => val.postId == postId);
-    changedPost.copyWith(likeCount: changedPost.likeCount + 1);
+    var changedPost = initialPost.copyWith(likeCount: initialPost.likeCount + 1);
 
     // Propagate to database
     authBloc.add(AuthLikedPost(changedPost.postId));
@@ -84,14 +89,15 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         posts: currentState.posts
           ..removeWhere((val) => val.postId == postId)
           ..add(changedPost));
+
   }
 
   Stream<PostState> _mapPostUnlikeToState(
       PostLoaded currentState, String postId) async* {
     // Find changed post and unlike
-    var changedPost =
+    var initialPost =
         currentState.posts.firstWhere((val) => val.postId == postId);
-    changedPost.copyWith(likeCount: changedPost.likeCount - 1);
+    var changedPost = initialPost.copyWith(likeCount: initialPost.likeCount - 1);
 
     // Propagate to database
     authBloc.add(AuthDislikePost(changedPost.postId));
@@ -105,8 +111,12 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   Stream<PostState> _mapPostFetchToState(PostLoaded currentState) async* {
-    final posts = await postRepository.fetchNextPage(
+
+
+    var posts = await postRepository.fetchNextPage(
         startAfter: currentState.posts.last.postTime);
+
+    posts.sort((a,b) => b.postTime.compareTo(a.postTime));
     yield posts.isEmpty
         ? currentState.copyWith(hasReachedMax: true)
         : PostLoaded(
@@ -120,6 +130,15 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     yield PostLoaded(posts: posts, hasReachedMax: false);
     return;
   }
+
+  int likeCount(String postId, PostLoaded state) {
+    return state.posts.firstWhere((e) => e.postId == postId).likeCount;
+  }
+
+  bool isLiked(String postId) {
+    return currentUser.likedPosts.contains(postId);
+  }
+
 
   bool _hasReachedMax(PostState state) =>
       state is PostLoaded && state.hasReachedMax;

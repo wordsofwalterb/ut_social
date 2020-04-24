@@ -9,6 +9,7 @@ abstract class PostRepository {
   Future<List<Post>> setupFeed();
   Future<void> unlikePost(String postId);
   Future<void> likePost(String postId);
+  Future<List<Post>> retrieveLatestPosts(DateTime startBefore);
 }
 
 class FirebasePostRepository extends PostRepository {
@@ -37,14 +38,34 @@ class FirebasePostRepository extends PostRepository {
     return newPosts;
   }
 
+  Future<List<Post>> retrieveLatestPosts(DateTime startBefore) async {
+    var newDocumentList = await _firestore
+        .collection("posts")
+        .orderBy("postTime", descending: false)
+        .startAfter([startBefore]).getDocuments();
+
+    var newPosts = newDocumentList.documents
+        .map(
+          (v) => Post.fromMap(
+            v.data..addAll({'id': v.documentID}),
+          ),
+        )
+        .toList();
+
+    return newPosts;
+  }
+
   @override
   Future<List<Post>> fetchNextPage(
       {@required DateTime startAfter, int limit = 20}) async {
     assert(startAfter != null);
 
+    print(startAfter);
+
     var newDocumentList = await _firestore
         .collection("posts")
         .orderBy("postTime", descending: true)
+        .where('postTime', isLessThan: startAfter)
         .startAfter([startAfter])
         .limit(limit)
         .getDocuments();
