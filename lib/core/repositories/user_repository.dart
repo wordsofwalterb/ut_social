@@ -50,54 +50,52 @@ class UserRepository {
         if (email != null) 'email': email,
         if (firstName != null && lastName != null)
           'fullName': firstName + ' ' + lastName,
-        'likedPosts': [],
         'avatarUrl':  '',
-        'likedComments': [],
       });
     } catch (error) {
       print('Unable to setup user: $error');
     }
   }
 
-  Future<void> likePost(String postId, String userId) async {
-    await Global.studentsRef.document(userId).setData({
-      'likedPosts': FieldValue.arrayUnion([postId]),
-    }, merge: true);
+  // Future<void> likePost(String postId, String userId) async {
+  //   await Global.studentsRef.document(userId).setData({
+  //     'likedPosts': FieldValue.arrayUnion([postId]),
+  //   }, merge: true);
 
-    // await Global.postsRef
-    //     .document(postId)
-    //     .updateData({'likeCount': FieldValue.increment(1)});
-  }
+  //   // await Global.postsRef
+  //   //     .document(postId)
+  //   //     .updateData({'likeCount': FieldValue.increment(1)});
+  // }
 
-  Future<void> dislikePost(String postId, String userId) async {
-    await Global.studentsRef.document(userId).setData({
-      'likedPosts': FieldValue.arrayRemove([postId]),
-    }, merge: true);
+  // Future<void> dislikePost(String postId, String userId) async {
+  //   await Global.studentsRef.document(userId).setData({
+  //     'likedPosts': FieldValue.arrayRemove([postId]),
+  //   }, merge: true);
 
-    // await Global.postsRef.document(postId).updateData({
-    //   'likeCount': FieldValue.increment(-1),
-    // });
-  }
+  //   // await Global.postsRef.document(postId).updateData({
+  //   //   'likeCount': FieldValue.increment(-1),
+  //   // });
+  // }
 
-  Future<void> dislikeComment(String commentId, String userId) async {
-    await Global.studentsRef.document(userId).setData({
-      'likedPosts': FieldValue.arrayRemove([commentId]),
-    }, merge: true);
+  // Future<void> dislikeComment(String commentId, String userId) async {
+  //   await Global.studentsRef.document(userId).setData({
+  //     'likedPosts': FieldValue.arrayRemove([commentId]),
+  //   }, merge: true);
 
-    await Global.postsRef.document(commentId).updateData({
-      'likeCount': FieldValue.increment(-1),
-    });
-  }
+  //   await Global.postsRef.document(commentId).updateData({
+  //     'likeCount': FieldValue.increment(-1),
+  //   });
+  // }
 
-  Future<void> likeComment(String commentId, String userId) async {
-    await Global.studentsRef.document(userId).setData({
-      'likedPosts': FieldValue.arrayUnion([commentId]),
-    }, merge: true);
+  // Future<void> likeComment(String commentId, String userId) async {
+  //   await Global.studentsRef.document(userId).setData({
+  //     'likedPosts': FieldValue.arrayUnion([commentId]),
+  //   }, merge: true);
 
-    await Global.postsRef.document(commentId).updateData({
-      'likeCount': FieldValue.increment(1),
-    });
-  }
+  //   await Global.postsRef.document(commentId).updateData({
+  //     'likeCount': FieldValue.increment(1),
+  //   });
+  // }
 
   Future<bool> isSignedIn() async {
     final currentUser = await _firebaseAuth.currentUser();

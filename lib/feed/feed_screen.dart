@@ -63,6 +63,7 @@ class _FeedScreenState extends State<FeedScreen> {
         color: Theme.of(context).primaryColor,
         onRefresh: _onRefresh,
         child: CustomScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
           controller: _feedController,
           slivers: <Widget>[
             _onYourMind(postBloc),

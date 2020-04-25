@@ -18,16 +18,16 @@ class CommentCard extends StatelessWidget {
         _comment = comment,
         super(key: key);
 
-  Future<bool> _onLikeButtonTapped(bool isLiked, BuildContext context) async {
-    if (isLiked) {
-      BlocProvider.of<AuthenticationBloc>(context)
-        ..add(AuthDislikedComment(_comment.commentId));
-    } else {
-      BlocProvider.of<AuthenticationBloc>(context)
-        ..add(AuthLikedComment(_comment.commentId));
-    }
-    return !isLiked;
-  }
+  // Future<bool> _onLikeButtonTapped(bool isLiked, BuildContext context) async {
+  //   if (isLiked) {
+  //     BlocProvider.of<AuthenticationBloc>(context)
+  //       ..add(AuthDislikedComment(_comment.commentId));
+  //   } else {
+  //     BlocProvider.of<AuthenticationBloc>(context)
+  //       ..add(AuthLikedComment(_comment.commentId));
+  //   }
+  //   return !isLiked;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +85,7 @@ class CommentCard extends StatelessWidget {
             ),
           ),
 
-          ImageWidget(_comment.imageUrl),
+          // ImageWidget(_comment.imageUrl),
 
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 6, 12, 12),

@@ -202,18 +202,18 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     );
   }
 
-  int likeCount(String postId) {
-    final currentState = state;
-    if (currentState is PostLoaded) {
-      return currentState.posts.firstWhere((e) => e.postId == postId).likeCount;
-    } else {
-      print('error');
-    }
-  }
+  // int likeCount(String postId) {
+  //   final currentState = state;
+  //   if (currentState is PostLoaded) {
+  //     return currentState.posts.firstWhere((e) => e.postId == postId).likeCount;
+  //   } else {
+  //     print('error');
+  //   }
+  // }
 
-  bool isLiked(String postId) {
-    return currentUser.likedPosts.contains(postId);
-  }
+  // bool isLiked(String postId) {
+  //   return currentUser.likedPosts.contains(postId);
+  // }
 
   bool _hasReachedMax(PostState state) =>
       state is PostLoaded && state.hasReachedMax;

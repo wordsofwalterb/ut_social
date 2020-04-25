@@ -34,7 +34,7 @@ class PostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final postBloc = BlocProvider.of<PostBloc>(context);
-    var isLiked = postBloc.isLiked(_post.postId);
+    // var isLiked = postBloc.isLiked(_post.postId);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -191,7 +191,7 @@ class _LikeCounterState extends State<LikeCounter> {
   @override
   void initState() {
     super.initState();
-    isLiked = BlocProvider.of<PostBloc>(context).isLiked(widget.id);
+    // isLiked = BlocProvider.of<PostBloc>(context).isLiked(widget.id);
     authBlocState = BlocProvider.of<AuthenticationBloc>(context).state;
   }
 

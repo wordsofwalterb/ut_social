@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/blocs/authentication_bloc/authentication_bloc.dart';
 import 'core/blocs/simple_bloc_delegate.dart';
@@ -9,11 +12,21 @@ import 'core/splash_screen.dart';
 import 'core/util/dark_theme.dart';
 import 'login/login_screen.dart';
 
-
-
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   BlocSupervisor.delegate = SimpleBlocDelegate();
+
+  final prefs = await SharedPreferences.getInstance();
+
+  if (prefs.getBool('first_run') ?? true) {
+    print("Clearing cache");
+    FlutterSecureStorage storage = FlutterSecureStorage();
+    FirebaseAuth.instance.signOut();
+
+    await storage.deleteAll();
+
+    prefs.setBool('first_run', false);
+  }
 
   final UserRepository userRepository = UserRepository();
 
