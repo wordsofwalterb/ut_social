@@ -90,6 +90,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   _handleImage(ImageSource source) async {
     Navigator.pop(context);
+    FocusScope.of(context).unfocus();
     File imageFile = await ImagePicker.pickImage(source: source);
     if (imageFile != null) {
       imageFile = await _cropImage(imageFile);
