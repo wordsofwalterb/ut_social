@@ -51,6 +51,8 @@ class UserRepository {
         if (firstName != null && lastName != null)
           'fullName': firstName + ' ' + lastName,
         'likedPosts': [],
+        'avatarUrl':  '',
+        'likedComments': [],
       });
     } catch (error) {
       print('Unable to setup user: $error');

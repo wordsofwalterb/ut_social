@@ -60,7 +60,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         yield* _mapPostSetupToState();
       }
       if (currentState is PostLoaded) {
-        if(event is PostAdded) {
+        if (event is PostAdded) {
           yield* _mapPostAddedToState(event.body, currentState, event.imageUrl);
         }
         if (event is PostsFetch && !_hasReachedMax(currentState)) {
@@ -81,19 +81,16 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }
   }
 
-
   Stream<PostState> _mapPostAddedToState(
       String body, PostLoaded currentState, String imageUrl) async* {
     assert(body != null);
 
     final post = await postRepository.addPost(
-       currentUser, body, imageUrl); // TODO: Add Try Catch
+        currentUser, body, imageUrl); // TODO: Add Try Catch
 
     final newState = currentState.copyWith(
         firstPostTime: post.postTime,
-        posts: currentState.posts
-          .toList()
-          ..insert(0, post));
+        posts: currentState.posts.toList()..insert(0, post));
 
     assert(newState != currentState);
 
@@ -101,12 +98,13 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   Stream<PostState> _mapPostRefreshToState(PostLoaded currentState) async* {
-    final posts = await postRepository.retrieveLatestPosts(currentState.lastPostTime);
+    final posts =
+        await postRepository.retrieveLatestPosts(currentState.lastPostTime);
 
     yield PostLoaded(
         posts: posts
-        ..addAll(currentState.posts)
-        ..sort((a, b) => b.postTime.compareTo(a.postTime)),
+          ..addAll(currentState.posts)
+          ..sort((a, b) => b.postTime.compareTo(a.postTime)),
         hasReachedMax: false,
         isRefreshed: true,
         lastPostTime: posts.last.postTime,
@@ -194,12 +192,14 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   Stream<PostState> _mapPostSetupToState() async* {
     final posts = await postRepository.setupFeed();
 
+
     yield PostLoaded(
-        posts: posts..sort((a, b) => b.postTime.compareTo(a.postTime)),
-        hasReachedMax: false,
-        isRefreshed: true,
-        lastPostTime: posts.last.postTime,
-        firstPostTime: posts.first.postTime,);
+      posts: posts..sort((a, b) => b.postTime.compareTo(a.postTime)),
+      hasReachedMax: (posts.length <= 20) ? true : false,
+      isRefreshed: true,
+      lastPostTime: (posts.isNotEmpty) ? posts.last.postTime : null,
+      firstPostTime: (posts.isNotEmpty) ? posts.first.postTime : null,
+    );
   }
 
   int likeCount(String postId) {
