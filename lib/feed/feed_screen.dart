@@ -85,7 +85,7 @@ class _FeedScreenState extends State<FeedScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Text('What\'s on your mind?',
-                    style: Theme.of(context).textTheme.bodyText2),
+                    style: Theme.of(context).textTheme.body2),
               ),
             ),
           ),
