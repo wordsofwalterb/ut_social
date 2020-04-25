@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:ut_social/add_content/add_post.dart';
 import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:ut_social/feed/comment_bloc/comment_bloc.dart';
+import 'package:ut_social/feed/comment_repository.dart';
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 import 'package:ut_social/feed/post_repository.dart';
 
@@ -30,80 +32,85 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //final String currentUserId = Provider.of<UserData>(context).currentUserId;
-    return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        children: <Widget>[
-          BlocProvider(
-              create: (context) =>
-                  PostBloc(postRepository: FirebasePostRepository(), authBloc: BlocProvider.of<AuthenticationBloc>(context))
-                    ..add(PostSetup()),
-              child: FeedScreen()),
-          SearchScreen(),
-          NewContentScreen(),
-          ChatScreen(),
-          NotificationScreen(),
-        ],
-        onPageChanged: (int index) {
-          setState(() {
-            _currentTab = index;
-          });
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) {
-            return CreatePostScreen();
-          }),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<PostBloc>(
+          create: (context) => PostBloc(
+              postRepository: FirebasePostRepository(),
+              authBloc: BlocProvider.of<AuthenticationBloc>(context))
+            ..add(PostSetup()),
         ),
-        backgroundColor: Theme.of(context).backgroundColor,
-        child: Icon(Icons.add, color: Colors.white),
-      ),
-      bottomNavigationBar: CupertinoTabBar(
-        activeColor: Theme.of(context).primaryColor,
-        backgroundColor: Theme.of(context).backgroundColor,
-        currentIndex: _currentTab,
-        onTap: (int index) {
-          setState(() {
-            _currentTab = index;
-          });
-          _pageController.jumpToPage(
-            index,
-          );
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(
-              SFSymbols.rectangle_grid_1x2_fill,
-              size: 28.0,
-            ),
+      ],
+      child: Scaffold(
+        body: PageView(
+          controller: _pageController,
+          children: <Widget>[
+            FeedScreen(),
+            SearchScreen(),
+            NewContentScreen(),
+            ChatScreen(),
+            NotificationScreen(),
+          ],
+          onPageChanged: (int index) {
+            setState(() {
+              _currentTab = index;
+            });
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) {
+              return CreatePostScreen();
+            }),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              SFSymbols.search,
-              size: 28.0,
+          backgroundColor: Theme.of(context).backgroundColor,
+          child: Icon(Icons.add, color: Colors.white),
+        ),
+        bottomNavigationBar: CupertinoTabBar(
+          activeColor: Theme.of(context).primaryColor,
+          backgroundColor: Theme.of(context).backgroundColor,
+          currentIndex: _currentTab,
+          onTap: (int index) {
+            setState(() {
+              _currentTab = index;
+            });
+            _pageController.jumpToPage(
+              index,
+            );
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(
+                SFSymbols.rectangle_grid_1x2_fill,
+                size: 28.0,
+              ),
             ),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              SFSymbols.plus_square,
-              size: 34.0,
+            BottomNavigationBarItem(
+              icon: Icon(
+                SFSymbols.search,
+                size: 28.0,
+              ),
             ),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              SFSymbols.bubble_left,
-              size: 28.0,
+            BottomNavigationBarItem(
+              icon: Icon(
+                SFSymbols.plus_square,
+                size: 34.0,
+              ),
             ),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              SFSymbols.bell,
-              size: 28.0,
+            BottomNavigationBarItem(
+              icon: Icon(
+                SFSymbols.bubble_left,
+                size: 28.0,
+              ),
             ),
-          ),
-        ],
+            BottomNavigationBarItem(
+              icon: Icon(
+                SFSymbols.bell,
+                size: 28.0,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

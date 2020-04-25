@@ -155,18 +155,12 @@ class _FeedScreenState extends State<FeedScreen> {
               } else if (index >= postState.posts.length) {
                 return BottomLoader();
               } else {
-                // return BlocBuilder<AuthenticationBloc, AuthenticationState>(
-                //     builder: (context, state) {
-                //   if (state is AuthAuthenticated) {
-                //     var likeCount = postState.posts[index].likeCount;
-                //     var _isLiked = state.currentUser.likedPosts
-                //         .contains(postState.posts[index].postId);
+
                 return PostCard(
                   post: postState.posts[index],
                 );
               }
-              // });
-              // }
+
             },
             childCount: postState.posts.length + 1,
           ),

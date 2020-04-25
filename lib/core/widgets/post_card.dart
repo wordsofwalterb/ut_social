@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:like_button/like_button.dart';
 import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:ut_social/feed/comment_bloc/comment_bloc.dart';
+import 'package:ut_social/feed/comment_repository.dart';
 
 import 'package:ut_social/feed/comment_screen.dart';
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
@@ -33,7 +35,7 @@ class PostCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final postBloc = BlocProvider.of<PostBloc>(context);
     var isLiked = postBloc.isLiked(_post.postId);
-  
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
       child: Container(
@@ -98,8 +100,15 @@ class PostCard extends StatelessWidget {
                   ? GestureDetector(
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) {
-                          return BlocProvider.value(
-                              value: postBloc, child: CommentScreen(_post));
+                          return BlocProvider<CommentBloc>(
+                            create: (context) => CommentBloc(
+                              commentRepository: FirebaseCommentRepository(),
+                              authBloc:
+                                  BlocProvider.of<AuthenticationBloc>(context),
+                            ),
+                            child: BlocProvider.value(
+                                value: postBloc, child: CommentScreen(_post)),
+                          );
                         }),
                       ),
                       child: const Icon(
@@ -203,7 +212,7 @@ class _LikeCounterState extends State<LikeCounter> {
       currentUserId = authBlocState.currentUser.id;
     return BlocBuilder<PostBloc, PostState>(condition: (previousState, state) {
       if (state is PostLoaded && state.lastPostLiked == widget.id) return true;
-      if (state is PostLoaded && state.isRefreshed) return true;
+      if (state is PostLoaded && state.isRefreshed != null) return true;
       return false;
     }, builder: (context, state) {
       if (state is PostLoaded) {

@@ -74,6 +74,8 @@ class Comment extends Equatable {
   static Comment fromMap(Map<String, dynamic> map) {
     if (map == null) return null;
 
+
+
     return Comment(
       authorId: map['authorId'],
       postId: map['postId'],
@@ -82,7 +84,7 @@ class Comment extends Equatable {
       likeCount: map['likeCount'],
       authorName: map['authorName'],
       authorAvatar: map['authorAvatar'],
-      timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp']),
+      timestamp: (map['timestamp'] as Timestamp).toDate(),
       imageUrl: map['imageUrl'],
     );
   }

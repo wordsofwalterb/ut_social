@@ -96,10 +96,10 @@ class CommentCard extends StatelessWidget {
                 if (state is AuthAuthenticated) {
                   return LikeButton(
                     size: 20,
-                    likeCount: _comment?.likeCount,
+                  //  likeCount: _comment?.likeCount,
                     animationDuration: const Duration(milliseconds: 500),
-                    isLiked: state.currentUser.likedComments.contains(_comment.commentId),
-                    onTap: (result) => _onLikeButtonTapped(result, context),
+                  //  isLiked: state.currentUser.likedComments.contains(_comment.commentId),
+                   // onTap:  (result) => _onLikeButtonTapped(result, context),
                     likeCountAnimationDuration: const Duration(milliseconds: 200),
                     countBuilder: (int count, bool isLiked, String text) {
                       Widget result;
