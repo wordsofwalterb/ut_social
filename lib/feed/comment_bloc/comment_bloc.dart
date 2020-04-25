@@ -66,7 +66,7 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
 
     final comments =
         await commentRepository.setupFeed(postId); // TODO: Add Try Catch
-        
+
     if (comments != null) {
       assert(ListEquality().equals(
           comments
@@ -89,9 +89,11 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
         currentState.postId, _currentUser, body); // TODO: Add Try Catch
 
     final newState = CommentLoaded(
+        postId: currentState.postId,
         comments: currentState.comments
-          ..toList()
+          .toList()
           ..insert(0, comment));
+
     assert(newState != currentState);
 
     yield newState;

@@ -1,16 +1,16 @@
-import 'dart:async';
+
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
-import 'package:ut_social/core/entities/student.dart';
-import 'package:ut_social/core/repositories/post_upload_repository.dart';
+import 'package:ut_social/feed/post_bloc/post_bloc.dart';
+
+import '../core/repositories/post_upload_repository.dart';
 
 class CreatePostScreen extends StatefulWidget {
   @override
@@ -22,6 +22,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   TextEditingController _captionController = TextEditingController();
   String _caption = '';
   bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _captionController.dispose();
+    super.dispose();
+  }
 
   _showSelectImageDialog() {
     return Platform.isIOS ? _iosBottomSheet() : _androidDialog();
@@ -112,25 +118,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         imageUrl = await StorageService.uploadPost(_image);
       }
 
-      Student author;
-      var blocState = BlocProvider.of<AuthenticationBloc>(context).state;
-      if (blocState is AuthAuthenticated) {
-        author = blocState.currentUser;
-      }
-
-      assert(author.id != null);
-
-      Firestore.instance.collection('posts').add({
-        'authorId': author.id,
-        'authorName': author.fullName,
-        'postTime': Timestamp.fromDate(DateTime.now()),
-        'imageUrl': imageUrl,
-        'body': _caption,
-        'avatarUrl': author.avatarUrl,
-        'likeCount': 0,
-        'likedBy': [],
-        'commentCount': 0,
-      });
+      BlocProvider.of<PostBloc>(context).add(PostAdded(_caption, imageUrl));
 
       // Reset data
       _captionController.clear();
@@ -211,7 +199,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     maxLines: 3,
                     decoration: InputDecoration(
                       filled: false,
-                      hasFloatingPlaceholder: false,
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
                       hintText: "What's on your mind?",
                       alignLabelWithHint: true,
                       hintStyle: TextStyle(

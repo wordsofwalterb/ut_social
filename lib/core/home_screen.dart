@@ -57,15 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
             });
           },
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) {
-              return CreatePostScreen();
-            }),
-          ),
-          backgroundColor: Theme.of(context).backgroundColor,
-          child: Icon(Icons.add, color: Colors.white),
-        ),
         bottomNavigationBar: CupertinoTabBar(
           activeColor: Theme.of(context).primaryColor,
           backgroundColor: Theme.of(context).backgroundColor,

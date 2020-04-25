@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ut_social/core/entities/comment.dart';
-import 'package:ut_social/core/entities/post.dart';
-import 'package:ut_social/core/widgets/comment_card.dart';
-import 'package:ut_social/core/widgets/post_card.dart';
-import 'package:ut_social/feed/comment_repository.dart';
-import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 
+import '../core/entities/post.dart';
+import '../core/widgets/comment_card.dart';
+import '../core/widgets/post_card.dart';
 import 'comment_bloc/comment_bloc.dart';
 
 class CommentScreen extends StatefulWidget {
@@ -25,32 +22,24 @@ class _CommentScreenState extends State<CommentScreen> {
   final TextEditingController _commentController = TextEditingController();
   bool _isCommenting = false;
 
-  // List<Comment> _comments = [];
-  // bool isLoading = true;
-  // CommentRepository _repository;
-
   @override
   void initState() {
-    // _repository = FirebaseCommentRepository();
-    // _setupFeed();
     BlocProvider.of<CommentBloc>(context)
         .add(CommentSetup(widget._post.postId));
     super.initState();
   }
 
-  Future<void> _setupFeed() async {
-    // var newComments = await _repository.setupFeed(widget._post.postId);
-    // setState(() {
-    //   _comments = newComments;
-    //   isLoading = false;
-    // });
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
   }
+
+  Future<void> _setupFeed() async {}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: _buildCommentTF(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: AppBar(
         backgroundColor: Theme.of(context).backgroundColor,
         title:
@@ -64,21 +53,24 @@ class _CommentScreenState extends State<CommentScreen> {
           )
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _setupFeed,
-        color: Theme.of(context).primaryColor,
-        child: CustomScrollView(
-          slivers: <Widget>[
-            _postSliver(),
-            _divider(),
-            _commentsSliver(),
-            // SliverFillRemaining(fillOverscroll: true,)
-            // SliverFillViewport(
-            //   delegate: SliverFillViewport,
-            // ),
-            // _buildCommentTF(),
-          ],
-        ),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Column(children: [
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: _setupFeed,
+              color: Theme.of(context).primaryColor,
+              child: CustomScrollView(
+                slivers: <Widget>[
+                  _postSliver(),
+                  _divider(),
+                  _commentsSliver(),
+                ],
+              ),
+            ),
+          ),
+          _buildCommentComposer(),
+        ]),
       ),
     );
   }
@@ -142,13 +134,20 @@ class _CommentScreenState extends State<CommentScreen> {
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
               if (index >= state.comments.length) {
-                return Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 50,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text('No more posts :/'),
-                  ),
+                return Column(
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 50,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text('No more posts :/'),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 40,
+                    ),
+                  ],
                 );
               } else if (index >= state.comments.length) {
                 return Container(); //BottomLoader();
@@ -163,25 +162,6 @@ class _CommentScreenState extends State<CommentScreen> {
         );
       }
       return SliverPadding(padding: const EdgeInsets.all(0));
-
-      // return SliverList(
-      //   delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-      //     if (index >= _comments.length) {
-      //       return Container(
-      //         width: MediaQuery.of(context).size.width,
-      //         height: 50,
-      //         child: Align(
-      //           alignment: Alignment.center,
-      //           child: Text('No more comments :/'),
-      //         ),
-      //       );
-      //     } else {
-      //       return CommentCard(
-      //         comment: _comments[index],
-      //       );
-      //     }
-      //   }, childCount: _comments.length + 1),
-      // );
     });
   }
 
@@ -190,7 +170,7 @@ class _CommentScreenState extends State<CommentScreen> {
         .add(CommentAdded(_commentController.text));
   }
 
-  Widget _buildCommentTF() {
+  Widget _buildCommentComposer() {
     return IconTheme(
       data: IconThemeData(
         color: _isCommenting
@@ -198,7 +178,8 @@ class _CommentScreenState extends State<CommentScreen> {
             : Theme.of(context).disabledColor,
       ),
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 8.0),
+        color: Theme.of(context).backgroundColor,
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
@@ -235,7 +216,5 @@ class _CommentScreenState extends State<CommentScreen> {
         ),
       ),
     );
-    //   ]),
-    // );
   }
 }

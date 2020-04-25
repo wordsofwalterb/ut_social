@@ -41,11 +41,11 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     events,
     next,
   ) {
-    final nonDebounceStream = events.where((event) {
-      return (event is! PostsFetch);
+    var nonDebounceStream = events.where((event) {
+      return (event is! PostsFetch && event is! PostLike);
     });
-    final debounceStream = events.where((event) {
-      return (event is PostsFetch);
+    var debounceStream = events.where((event) {
+      return (event is PostsFetch || event is PostLike);
     }).debounceTime(Duration(milliseconds: 300));
 
     return super
@@ -60,6 +60,9 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         yield* _mapPostSetupToState();
       }
       if (currentState is PostLoaded) {
+        if(event is PostAdded) {
+          yield* _mapPostAddedToState(event.body, currentState, event.imageUrl);
+        }
         if (event is PostsFetch && !_hasReachedMax(currentState)) {
           yield* _mapPostFetchToState(currentState);
         }
@@ -76,6 +79,25 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     } catch (_) {
       yield PostError();
     }
+  }
+
+
+  Stream<PostState> _mapPostAddedToState(
+      String body, PostLoaded currentState, String imageUrl) async* {
+    assert(body != null);
+
+    final post = await postRepository.addPost(
+       currentUser, body, imageUrl); // TODO: Add Try Catch
+
+    final newState = currentState.copyWith(
+        firstPostTime: post.postTime,
+        posts: currentState.posts
+          .toList()
+          ..insert(0, post));
+
+    assert(newState != currentState);
+
+    yield newState;
   }
 
   Stream<PostState> _mapPostRefreshToState(PostLoaded currentState) async* {

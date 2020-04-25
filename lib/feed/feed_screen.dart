@@ -46,15 +46,26 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final postBloc = BlocProvider.of<PostBloc>(context);
     return Scaffold(
       appBar: mainAppBar(context),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) {
+            return BlocProvider.value(
+                value: postBloc, child: CreatePostScreen());
+          }),
+        ),
+        backgroundColor: Theme.of(context).backgroundColor,
+        child: Icon(Icons.add, color: Colors.white),
+      ),
       body: RefreshIndicator(
         color: Theme.of(context).primaryColor,
         onRefresh: _onRefresh,
         child: CustomScrollView(
           controller: _feedController,
           slivers: <Widget>[
-            _onYourMind(),
+            _onYourMind(postBloc),
             _postList(),
           ],
         ),
@@ -62,13 +73,14 @@ class _FeedScreenState extends State<FeedScreen> {
     );
   }
 
-  Widget _onYourMind() {
+  Widget _onYourMind(PostBloc postBloc) {
     return SliverList(
       delegate: SliverChildListDelegate([
         GestureDetector(
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(builder: (context) {
-              return CreatePostScreen();
+              return BlocProvider.value(
+                  value: postBloc, child: CreatePostScreen());
             }),
           ),
           child: Container(
@@ -107,6 +119,7 @@ class _FeedScreenState extends State<FeedScreen> {
       // When refreshing feed
       if (previousState is PostLoaded && state is PostLoaded) {
         if (state.isRefreshed == true) return true;
+        if(previousState.firstPostTime != state.firstPostTime) return true;
       }
       //Default
       return false;
@@ -155,12 +168,10 @@ class _FeedScreenState extends State<FeedScreen> {
               } else if (index >= postState.posts.length) {
                 return BottomLoader();
               } else {
-
                 return PostCard(
                   post: postState.posts[index],
                 );
               }
-
             },
             childCount: postState.posts.length + 1,
           ),

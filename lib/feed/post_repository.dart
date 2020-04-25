@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ut_social/core/entities/post.dart';
+import 'package:ut_social/core/entities/student.dart';
 import 'package:ut_social/core/util/globals.dart';
 
 abstract class PostRepository {
@@ -10,6 +11,7 @@ abstract class PostRepository {
   Future<void> unlikePost(String postId, String userId);
   Future<void> likePost(String postId, String userId);
   Future<List<Post>> retrieveLatestPosts(DateTime startBefore);
+  Future<Post> addPost(Student author, String body, String imageUrl);
 }
 
 class FirebasePostRepository extends PostRepository {
@@ -38,6 +40,38 @@ class FirebasePostRepository extends PostRepository {
     return newPosts;
   }
 
+  Future<Post> addPost(Student author, String body, String imageUrl) async {
+    assert(author != null);
+    assert(body != null);
+
+    final timestamp = DateTime.now();
+
+    var docRef = await Global.postsRef.add({
+      'authorId': author.id,
+      'authorName': author.fullName,
+      'postTime': timestamp,
+      'imageUrl': imageUrl,
+      'body': body,
+      'avatarUrl': author.avatarUrl,
+      'likeCount': 0,
+      'likedBy': [],
+      'commentCount': 0,
+    });
+
+    assert(docRef.documentID != null);
+
+    return Post(
+        postId: docRef.documentID,
+        authorId: author.id,
+        avatarUrl: author.avatarUrl,
+        authorName: author.fullName,
+        body: body,
+        postTime: timestamp,
+        likeCount: 0,
+        likedBy: [],
+        commentCount: 0);
+  }
+
   Future<List<Post>> retrieveLatestPosts(DateTime startBefore) async {
     var newDocumentList = await _firestore
         .collection("posts")
@@ -59,7 +93,6 @@ class FirebasePostRepository extends PostRepository {
   Future<List<Post>> fetchNextPage(
       {@required DateTime startAfter, int limit = 20}) async {
     assert(startAfter != null);
-
 
     var newDocumentList = await _firestore
         .collection("posts")

@@ -9,6 +9,16 @@ abstract class PostEvent extends Equatable {
 
 class PostsFetch extends PostEvent {}
 
+class PostAdded extends PostEvent {
+  final String body;
+  final String imageUrl;
+
+  const PostAdded(this.body, this.imageUrl);
+
+  @override
+  List<Object> get props => [body, imageUrl];
+}
+
 class PostRefresh extends PostEvent {}
 
 class PostLike extends PostEvent {

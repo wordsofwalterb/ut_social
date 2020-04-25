@@ -21,7 +21,7 @@ class CommentLoaded extends CommentState {
   CommentLoaded({this.postId, this.comments});
 
   @override
-  List<Object> get props => [postId];
+  List<Object> get props => [postId, comments];
 
   @override
   String toString() => 'postId: $postId, comments: ${comments.length}';
