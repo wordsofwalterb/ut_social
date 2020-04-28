@@ -6,6 +6,7 @@ import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 
 import '../core/widgets/main_app_bar.dart';
 import '../core/widgets/post_card.dart';
+import './bottom_loader.dart';
 
 class FeedScreen extends StatefulWidget {
   @override
@@ -63,7 +64,7 @@ class _FeedScreenState extends State<FeedScreen> {
         color: Theme.of(context).primaryColor,
         onRefresh: _onRefresh,
         child: CustomScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(),
           controller: _feedController,
           slivers: <Widget>[
             _onYourMind(postBloc),
@@ -92,7 +93,7 @@ class _FeedScreenState extends State<FeedScreen> {
             ),
             width: MediaQuery.of(context).size.width,
             height: 45,
-            margin: EdgeInsets.fromLTRB(8, 14, 8, 4),
+            margin: const EdgeInsets.fromLTRB(8, 14, 8, 4),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Padding(
@@ -120,17 +121,16 @@ class _FeedScreenState extends State<FeedScreen> {
       // When refreshing feed
       if (previousState is PostLoaded && state is PostLoaded) {
         if (state.isRefreshed == true) return true;
-        if(previousState.firstPostTime != state.firstPostTime) return true;
+        if (previousState.firstPostTime != state.firstPostTime) return true;
       }
       //Default
       return false;
     }, builder: (context, postState) {
-      print('feed rebuilt');
       if (postState is PostInitial) {
         return SliverList(
           delegate: SliverChildListDelegate(
             [
-              Center(
+              const Center(
                 child: CircularProgressIndicator(),
               ),
             ],
@@ -140,7 +140,7 @@ class _FeedScreenState extends State<FeedScreen> {
       if (postState is PostError) {
         return SliverList(
             delegate: SliverChildListDelegate([
-          Center(
+          const Center(
             child: Text('failed to fetch posts'),
           ),
         ]));
@@ -149,7 +149,7 @@ class _FeedScreenState extends State<FeedScreen> {
         if (postState.posts.isEmpty) {
           return SliverList(
               delegate: SliverChildListDelegate([
-            Center(
+            const Center(
               child: Text('no posts'),
             ),
           ]));
@@ -161,7 +161,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 return Container(
                   width: MediaQuery.of(context).size.width,
                   height: 50,
-                  child: Align(
+                  child: const Align(
                     alignment: Alignment.center,
                     child: Text('No more posts :/'),
                   ),
@@ -178,25 +178,7 @@ class _FeedScreenState extends State<FeedScreen> {
           ),
         );
       }
-      return SliverPadding(padding: const EdgeInsets.all(0));
+      return const SliverPadding(padding: EdgeInsets.all(0));
     });
-  }
-}
-
-class BottomLoader extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      child: Center(
-        child: SizedBox(
-          width: 33,
-          height: 33,
-          child: CircularProgressIndicator(
-            strokeWidth: 1.5,
-          ),
-        ),
-      ),
-    );
   }
 }

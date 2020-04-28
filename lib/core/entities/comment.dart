@@ -2,52 +2,52 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
 
-class Comment extends Equatable {
+import 'identity.dart';
+
+class Comment extends Equatable implements Identity {
   final String authorId;
   final String postId;
-  final String commentId;
+  @override
+  final String id;
   final String body;
   final int likeCount;
   final String authorName;
   final String authorAvatar;
   final DateTime timestamp;
   final String imageUrl;
+  final bool isLikedByUser;
 
   const Comment({
-    @required this.authorId,
-    @required this.postId,
-    @required this.commentId,
-    @required this.body,
-    @required this.likeCount,
-    @required this.authorName,
-    @required this.authorAvatar,
-    @required this.timestamp,
+    this.authorId,
+    this.postId,
+    this.id,
+    this.body,
+    this.likeCount,
+    this.authorName,
+    this.authorAvatar,
+    this.isLikedByUser,
+    this.timestamp,
     this.imageUrl,
-  })  : assert(authorId != null),
-        assert(postId != null),
-        assert(commentId != null),
-        assert(body != null),
-        assert(likeCount != null),
-        assert(authorName != null),
-        assert(timestamp != null);
+  });
 
   Comment copyWith({
     String authorId,
     String postId,
-    String commentId,
+    String id,
     String body,
     int likeCount,
     String authorName,
     String authorAvatar,
     DateTime timestamp,
     String imageUrl,
+    bool isLikedByUser,
   }) {
     return Comment(
       authorId: authorId ?? this.authorId,
       postId: postId ?? this.postId,
-      commentId: commentId ?? this.commentId,
+      isLikedByUser: isLikedByUser ?? this.isLikedByUser,
+      id: id ?? this.id,
       body: body ?? this.body,
       likeCount: likeCount ?? this.likeCount,
       authorName: authorName ?? this.authorName,
@@ -58,15 +58,16 @@ class Comment extends Equatable {
   }
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
+    return {
       'authorId': authorId,
       'postId': postId,
-      'commentId': commentId,
+      'id': id,
       'body': body,
       'likeCount': likeCount,
       'authorName': authorName,
+      'isLikedByUser': isLikedByUser,
       'authorAvatar': authorAvatar,
-      'timestamp': timestamp.millisecondsSinceEpoch,
+      'timestamp': timestamp,
       'imageUrl': imageUrl,
     };
   }
@@ -77,9 +78,10 @@ class Comment extends Equatable {
     return Comment(
       authorId: map['authorId'] as String,
       postId: map['postId'] as String,
-      commentId: map['commentId'] as String,
+      id: map['id'] as String,
       body: map['body'] as String,
       likeCount: map['likeCount'] as int,
+      isLikedByUser: map['isLikedByUser'] as bool,
       authorName: map['authorName'] as String,
       authorAvatar: map['authorAvatar'] as String,
       timestamp: (map['timestamp'] as Timestamp).toDate(),
@@ -100,7 +102,7 @@ class Comment extends Equatable {
     return [
       authorId,
       postId,
-      commentId,
+      id,
       body,
       likeCount,
       authorName,

@@ -39,7 +39,7 @@ android {
 
     defaultConfig {
         applicationId "org.brandonwalter.utSocial"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

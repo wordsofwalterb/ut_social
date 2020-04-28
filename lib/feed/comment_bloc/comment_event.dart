@@ -1,30 +1,50 @@
 part of 'comment_bloc.dart';
 
-abstract class CommentEvent extends Equatable {
-  const CommentEvent();
+abstract class CommentsEvent extends Equatable {
+  const CommentsEvent();
 
   @override
   List<Object> get props => const [];
 }
 
-class CommentAdded extends CommentEvent {
-  final String body;
+class CommentAdded extends CommentsEvent {
+  final Map<String, dynamic> map;
 
-  CommentAdded(this.body);
-
-  @override
-  List<Object> get props => [body];
-}
-
-class CommentLiked extends CommentEvent {}
-
-class CommentSetup extends CommentEvent {
-  final String postId;
-
-  CommentSetup(this.postId);
+  /// Map Requires atleast:
+  ///   authorName
+  ///   authorId
+  ///   postId
+  const CommentAdded(this.map);
 
   @override
-  List<Object> get props => [postId];
+  List<Object> get props => [map];
 }
 
-class CommentUnliked extends CommentEvent {}
+class CommentLiked extends CommentsEvent {
+  final String id;
+
+  const CommentLiked(this.id);
+
+  @override
+  List<Object> get props => [id];
+}
+
+class CommentsRefreshed extends CommentsEvent {}
+
+class CommentsFetched extends CommentsEvent {}
+
+class CommentUnliked extends CommentsEvent {
+  final String id;
+
+  const CommentUnliked(this.id);
+
+  @override
+  List<Object> get props => [id];
+}
+
+class CommentsSetup extends CommentsEvent {
+  const CommentsSetup();
+
+  @override
+  List<Object> get props => [];
+}

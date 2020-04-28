@@ -21,7 +21,7 @@ class PostCard extends StatelessWidget {
   final bool isLiked;
   final int likeCount;
 
-  PostCard(
+  const PostCard(
       {Key key,
       @required Post post,
       this.disableComment = false,
@@ -41,7 +41,7 @@ class PostCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.all(
+          borderRadius: const BorderRadius.all(
             Radius.circular(4),
           ),
         ),
@@ -71,14 +71,14 @@ class PostCard extends StatelessWidget {
                 ),
               ),
             ]), // End User Info Block
-            Spacer(),
+            const Spacer(),
             IconButton(
               onPressed: () => {},
               icon: const Icon(
                 SFSymbols.chevron_down,
                 size: 20,
               ),
-              color: Color(0xff9b9b9b),
+              color: const Color(0xff9b9b9b),
             ),
           ]), // End Top Section
 
@@ -100,11 +100,10 @@ class PostCard extends StatelessWidget {
                   ? GestureDetector(
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) {
-                          return BlocProvider<CommentBloc>(
-                            create: (context) => CommentBloc(
-                              commentRepository: FirebaseCommentRepository(),
-                              authBloc:
-                                  BlocProvider.of<AuthenticationBloc>(context),
+                          return BlocProvider<CommentsBloc>(
+                            create: (context) => CommentsBloc(
+                              _post.id,
+                              commentRepository: FirebaseCommentsRepository(),
                             ),
                             child: BlocProvider.value(
                                 value: postBloc, child: CommentScreen(_post)),
@@ -125,12 +124,12 @@ class PostCard extends StatelessWidget {
                     )
                   : Container(),
               (!disableComment)
-                  ? Spacer(
+                  ? const Spacer(
                       flex: 1,
                     )
                   : Container(),
               LikeCounter(_post.id),
-              Spacer(
+              const Spacer(
                 flex: 9,
               ),
               const Icon(
@@ -153,7 +152,7 @@ class PostCard extends StatelessWidget {
 class ImageWidget extends StatelessWidget {
   final String imageUrl;
 
-  ImageWidget(this.imageUrl, {Key key}) : super(key: key);
+  const ImageWidget(this.imageUrl, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -177,7 +176,7 @@ class ImageWidget extends StatelessWidget {
 class LikeCounter extends StatefulWidget {
   final String id;
 
-  LikeCounter(this.id);
+  const LikeCounter(this.id);
 
   @override
   _LikeCounterState createState() => _LikeCounterState();
@@ -197,26 +196,29 @@ class _LikeCounterState extends State<LikeCounter> {
 
   Future<bool> _onLikeButtonTapped(BuildContext context) async {
     if (isLiked) {
-      BlocProvider.of<PostBloc>(context)..add(PostUnlike(widget.id));
+      BlocProvider.of<PostBloc>(context).add(PostUnlike(widget.id));
       return false;
     } else {
-      BlocProvider.of<PostBloc>(context)..add(PostLike(widget.id));
+      BlocProvider.of<PostBloc>(context).add(PostLike(widget.id));
       return true;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var authBlocState = BlocProvider.of<AuthenticationBloc>(context).state;
-    if (authBlocState is AuthAuthenticated)
+    final authBlocState = BlocProvider.of<AuthenticationBloc>(context).state;
+
+    if (authBlocState is AuthAuthenticated) {
       currentUserId = authBlocState.currentUser.id;
+    }
+
     return BlocBuilder<PostBloc, PostState>(condition: (previousState, state) {
       if (state is PostLoaded && state.lastPostLiked == widget.id) return true;
       if (state is PostLoaded && state.isRefreshed != null) return true;
       return false;
     }, builder: (context, state) {
       if (state is PostLoaded) {
-        var results = state.posts.firstWhere((e) => e.id == widget.id);
+        final results = state.posts.firstWhere((e) => e.id == widget.id);
         isLiked = results.likedBy.contains(currentUserId);
         return LikeButton(
           size: 20,
@@ -233,20 +235,21 @@ class _LikeCounterState extends State<LikeCounter> {
             Widget result;
             if (count == 0) {
               result = Text(
-                "",
+                '',
                 style: TextStyle(color: Colors.grey),
               );
-            } else
+            } else {
               result = Text(
                 text,
                 style: TextStyle(color: Colors.grey),
               );
+            }
             return result;
           },
         );
       } else {
         return const Padding(
-          padding: const EdgeInsets.all(0),
+          padding: EdgeInsets.all(0),
         );
       }
     });

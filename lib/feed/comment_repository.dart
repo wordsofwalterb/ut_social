@@ -2,36 +2,38 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ut_social/core/entities/comment.dart';
-import 'package:ut_social/core/entities/student.dart';
 import 'package:ut_social/core/util/globals.dart';
 
 abstract class CommentRepository {
-  Future<List<Comment>> fetchNextPage({DateTime startAfter, int limit});
-  Future<List<Comment>> setupFeed(String postId);
-  Future<Comment> addComment(String commentId, Student author, String body);
+  Future<List<Comment>> fetchNextPage(
+      {@required DateTime startAfter, int limit, @required String postId});
+  Future<List<Comment>> setupCommentsFor(String postId);
+  Future<Comment> addComment(Map<String, dynamic> map);
+  Future<void> unlikeComment(String commentId);
+  Future<void> likeComment(String commentId);
 }
 
-class FirebaseCommentRepository extends CommentRepository {
+class FirebaseCommentsRepository extends CommentRepository {
   final Firestore _firestore;
+  final FirebaseAuth _firebaseAuth;
 
-  FirebaseCommentRepository({Firestore firestore})
-      : _firestore = firestore ?? Firestore.instance;
+  FirebaseCommentsRepository({Firestore firestore, FirebaseAuth firebaseAuth})
+      : _firestore = firestore ?? Firestore.instance,
+        _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   @override
-  Future<List<Comment>> setupFeed(String postId) async {
-    var newDocumentList = await _firestore
-        .collection("comments")
+  Future<List<Comment>> setupCommentsFor(String postId) async {
+    final newDocumentList = await _firestore
+        .collection('comments')
         .where('postId', isEqualTo: postId)
-        .orderBy("timestamp", descending: true)
+        .orderBy('timestamp', descending: true)
         .limit(20)
         .getDocuments();
 
-    var newComments = newDocumentList.documents
-        .map(
-          (v) => Comment.fromMap(
-            v.data..addAll({'commentId': v.documentID}),
-          ),
-        )
+    final newComments = newDocumentList.documents
+        .map((v) => Comment.fromMap(
+              v.data..addAll({'id': v.documentID}),
+            ))
         .toList();
 
     return newComments;
@@ -39,65 +41,72 @@ class FirebaseCommentRepository extends CommentRepository {
 
   @override
   Future<List<Comment>> fetchNextPage(
-      {@required DateTime startAfter, int limit = 20}) async {
+      {@required DateTime startAfter,
+      int limit = 20,
+      @required String postId}) async {
     assert(startAfter != null);
 
-    var newDocumentList = await _firestore
-        .collection("comments")
-        .orderBy("timestamp", descending: true)
-        .where('timestamp', isLessThan: startAfter)
+    final newDocumentList = await _firestore
+        .collection('comments')
+        .where('postId', isEqualTo: postId)
+        .orderBy('timestamp', descending: true)
         .startAfter([startAfter])
         .limit(limit)
         .getDocuments();
 
-    var newComments = newDocumentList.documents
-        .map(
-          (v) => Comment.fromMap(
-            v.data..addAll({'commentId': v.documentID}),
-          ),
-        )
+    final newComments = newDocumentList.documents
+        .map((v) => Comment.fromMap(
+              v.data..addAll({'id': v.documentID}),
+            ))
         .toList();
 
     return newComments;
   }
 
+  /// Creates new comment in Database and returns a new Comment Object
+  /// based upon the passed map.
+  ///
+  /// PostId, AuthorId, and AuthorName must not be null
+  @override
+  Future<Comment> addComment(Map<String, dynamic> map) async {
+    assert(map != null);
+    assert(map['postId'] != null);
+    assert(map['authorId'] != null);
+    assert(map['authorName'] != null);
+
+    final DateTime timestamp = DateTime.now();
+
+    final docRef = await Global.commentsRef.add({
+      'postId': map['postId'],
+      'body': map['body'],
+      'authorId': map['authorId'],
+      'authorName': map['authorName'],
+      'authorAvatar': map['authorAvatar'],
+      'timestamp': timestamp,
+      'likeCount': 0,
+      'imageUrl': map['imageUrl'],
+    });
+    assert(docRef.documentID != null);
+
+    return Comment(
+        id: docRef.documentID,
+        postId: map['postId'] as String,
+        authorId: map['authorId'] as String,
+        authorAvatar: map['authorAvatar'] as String,
+        authorName: map['authorName'] as String,
+        body: map['body'] as String,
+        timestamp: timestamp,
+        likeCount: 0);
+  }
+
+  @override
   Future<void> unlikeComment(String commentId) async {
     await Global.commentsRef.document(commentId).updateData({
       'likeCount': FieldValue.increment(-1),
     });
   }
 
-  /// Creates new comment in Database and returns a new Comment Object
-  Future<Comment> addComment(String postId, Student author, String body) async {
-    assert(postId != null);
-    assert(author != null);
-    assert(body != null);
-
-    final timestamp = DateTime.now();
-
-    var docRef = await Global.commentsRef.add({
-      'postId': postId,
-      'body': body,
-      'authorId': author.id,
-      'authorName': author.fullName,
-      'authorAvatar': author.avatarUrl,
-      'timestamp': timestamp,
-      'likeCount': 0,
-      'imageUrl': '',
-    });
-    assert(docRef.documentID != null);
-
-    return Comment(
-        commentId: docRef.documentID,
-        postId: postId,
-        authorId: author.id,
-        authorAvatar: author.avatarUrl,
-        authorName: author.fullName,
-        body: body,
-        timestamp: timestamp,
-        likeCount: 0);
-  }
-
+  @override
   Future<void> likeComment(String commentId) async {
     await Global.commentsRef.document(commentId).updateData({
       'likeCount': FieldValue.increment(1),

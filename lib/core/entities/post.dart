@@ -66,7 +66,7 @@ class Post extends PostSnippet implements Identity {
     return Post(
         imageUrl: map['imageUrl'] as String,
         id: map['id'] as String,
-        likedBy: List<String>.from(map['likedBy'] as List<String>),
+        likedBy: List<String>.from(map['likedBy'] as List),
         avatarUrl: map['avatarUrl'] as String,
         authorId: map['authorId'] as String,
         authorName: map['authorName'] as String,

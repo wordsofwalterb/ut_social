@@ -1,28 +1,123 @@
 part of 'comment_bloc.dart';
 
-abstract class CommentState extends Equatable {
-  const CommentState();
+abstract class CommentsState extends Equatable {
+  String get postId;
+  List<Comment> get comments;
+
+  const CommentsState();
+
+  CommentsState copyWith({String postId, List<Comment> comments});
 }
 
-class CommentInitial extends CommentState {
+class CommentsInitial extends CommentsState {
   @override
-  List<Object> get props => [];
-}
-
-class CommentError extends CommentState {
-  @override
-  List<Object> get props => [];
-}
-
-class CommentLoaded extends CommentState {
   final String postId;
-  final List<Comment> comments;
+  @override
+  final List<Comment> comments = const [];
 
-  CommentLoaded({this.postId, this.comments});
+  const CommentsInitial({@required this.postId});
 
   @override
   List<Object> get props => [postId, comments];
 
   @override
-  String toString() => 'postId: $postId, comments: ${comments.length}';
+  CommentsInitial copyWith({String postId, List<Comment> comments}) {
+    return CommentsInitial(
+      postId: postId ?? this.postId,
+    );
+  }
+}
+
+class CommentsError extends CommentsState {
+  @override
+  final String postId;
+  @override
+  final List<Comment> comments;
+  final Failure failure;
+
+  const CommentsError(
+      {@required this.failure, @required this.postId, this.comments});
+
+  @override
+  CommentsError copyWith(
+      {String postId, List<Comment> comments, Failure failure}) {
+    return CommentsError(
+        postId: postId ?? this.postId,
+        comments: comments ?? this.comments,
+        failure: failure ?? this.failure);
+  }
+
+  @override
+  List<Object> get props => [failure, postId, comments];
+}
+
+class CommentsEmpty extends CommentsState {
+  @override
+  final String postId;
+  @override
+  final List<Comment> comments = const [];
+
+  const CommentsEmpty({
+    @required this.postId,
+  });
+
+  @override
+  CommentsEmpty copyWith({String postId, List<Comment> comments}) {
+    return CommentsEmpty(postId: postId ?? this.postId);
+  }
+
+  @override
+  List<Object> get props => [postId, comments];
+}
+
+class CommentsReachedMax extends CommentsState {
+  @override
+  final String postId;
+  @override
+  final List<Comment> comments;
+
+  const CommentsReachedMax({
+    @required this.postId,
+    @required this.comments,
+  });
+
+  @override
+  CommentsReachedMax copyWith({
+    List<Comment> comments,
+    String postId,
+  }) {
+    return CommentsReachedMax(
+      postId: postId ?? this.postId,
+      comments: comments ?? this.comments,
+    );
+  }
+
+  @override
+  List<Object> get props => [postId, comments];
+}
+
+class CommentsLoaded extends CommentsState {
+  @override
+  final String postId;
+  @override
+  final List<Comment> comments;
+
+  const CommentsLoaded({
+    @required this.postId,
+    @required this.comments,
+  });
+
+  @override
+  CommentsLoaded copyWith({
+    String postId,
+    List<Comment> comments,
+  }) {
+    return CommentsLoaded(
+      postId: postId ?? this.postId,
+      comments: comments ?? this.comments,
+    );
+  }
+
+  @override
+  List<Object> get props => [postId, comments];
 }

@@ -102,7 +102,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         await postRepository.retrieveLatestPosts(currentState.lastPostTime);
 
     yield PostLoaded(
-        posts: posts
+        posts: posts.toList()
           ..addAll(currentState.posts)
           ..sort((a, b) => b.postTime.compareTo(a.postTime)),
         hasReachedMax: false,
@@ -178,7 +178,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     yield posts.isEmpty
         ? currentState.copyWith(hasReachedMax: true, loadingMore: true)
         : PostLoaded(
-            posts: posts
+            posts: posts.toList()
               ..addAll(currentState.posts)
               ..sort((a, b) => b.postTime.compareTo(a.postTime)),
             hasReachedMax: false,
@@ -200,19 +200,6 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       firstPostTime: (posts.isNotEmpty) ? posts.first.postTime : null,
     );
   }
-
-  // int likeCount(String postId) {
-  //   final currentState = state;
-  //   if (currentState is PostLoaded) {
-  //     return currentState.posts.firstWhere((e) => e.postId == postId).likeCount;
-  //   } else {
-  //     print('error');
-  //   }
-  // }
-
-  // bool isLiked(String postId) {
-  //   return currentUser.likedPosts.contains(postId);
-  // }
 
   bool _hasReachedMax(PostState state) =>
       state is PostLoaded && state.hasReachedMax;
