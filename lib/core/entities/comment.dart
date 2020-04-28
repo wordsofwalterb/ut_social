@@ -17,19 +17,20 @@ class Comment extends Equatable implements Identity {
   final DateTime timestamp;
   final String imageUrl;
   final bool isLikedByUser;
+  final List<String> likedBy;
 
-  const Comment({
-    this.authorId,
-    this.postId,
-    this.id,
-    this.body,
-    this.likeCount,
-    this.authorName,
-    this.authorAvatar,
-    this.isLikedByUser,
-    this.timestamp,
-    this.imageUrl,
-  });
+  const Comment(
+      {this.authorId,
+      this.postId,
+      this.id,
+      this.body,
+      this.likeCount,
+      this.authorName,
+      this.authorAvatar,
+      this.isLikedByUser,
+      this.timestamp,
+      this.imageUrl,
+      this.likedBy});
 
   Comment copyWith({
     String authorId,
@@ -42,19 +43,20 @@ class Comment extends Equatable implements Identity {
     DateTime timestamp,
     String imageUrl,
     bool isLikedByUser,
+    List<String> likedBy,
   }) {
     return Comment(
-      authorId: authorId ?? this.authorId,
-      postId: postId ?? this.postId,
-      isLikedByUser: isLikedByUser ?? this.isLikedByUser,
-      id: id ?? this.id,
-      body: body ?? this.body,
-      likeCount: likeCount ?? this.likeCount,
-      authorName: authorName ?? this.authorName,
-      authorAvatar: authorAvatar ?? this.authorAvatar,
-      timestamp: timestamp ?? this.timestamp,
-      imageUrl: imageUrl ?? this.imageUrl,
-    );
+        authorId: authorId ?? this.authorId,
+        postId: postId ?? this.postId,
+        isLikedByUser: isLikedByUser ?? this.isLikedByUser,
+        id: id ?? this.id,
+        body: body ?? this.body,
+        likeCount: likeCount ?? this.likeCount,
+        authorName: authorName ?? this.authorName,
+        authorAvatar: authorAvatar ?? this.authorAvatar,
+        timestamp: timestamp ?? this.timestamp,
+        imageUrl: imageUrl ?? this.imageUrl,
+        likedBy: likedBy ?? this.likedBy);
   }
 
   Map<String, dynamic> toMap() {
@@ -69,6 +71,7 @@ class Comment extends Equatable implements Identity {
       'authorAvatar': authorAvatar,
       'timestamp': timestamp,
       'imageUrl': imageUrl,
+      'likedBy': likedBy,
     };
   }
 
@@ -86,6 +89,7 @@ class Comment extends Equatable implements Identity {
       authorAvatar: map['authorAvatar'] as String,
       timestamp: (map['timestamp'] as Timestamp).toDate(),
       imageUrl: map['imageUrl'] as String,
+      likedBy: List<String>.from(map['likedBy'] as List),
     );
   }
 

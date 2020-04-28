@@ -5,12 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:like_button/like_button.dart';
 import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:ut_social/feed/comment_bloc/comment_bloc.dart';
 
 import '../entities/comment.dart';
 import '../util/helper.dart';
 import 'profile_avatar.dart';
 
-class CommentCard extends StatelessWidget {
+class CommentCard extends StatefulWidget {
   final Comment _comment;
 
   const CommentCard({Key key, @required Comment comment})
@@ -18,16 +19,21 @@ class CommentCard extends StatelessWidget {
         _comment = comment,
         super(key: key);
 
-  // Future<bool> _onLikeButtonTapped(bool isLiked, BuildContext context) async {
-  //   if (isLiked) {
-  //     BlocProvider.of<AuthenticationBloc>(context)
-  //       ..add(AuthDislikedComment(_comment.commentId));
-  //   } else {
-  //     BlocProvider.of<AuthenticationBloc>(context)
-  //       ..add(AuthLikedComment(_comment.commentId));
-  //   }
-  //   return !isLiked;
-  // }
+  @override
+  _CommentCardState createState() => _CommentCardState();
+}
+
+class _CommentCardState extends State<CommentCard> {
+  Future<bool> _onLikeButtonTapped(bool isLiked, BuildContext context) async {
+    if (isLiked) {
+      BlocProvider.of<CommentsBloc>(context)
+          .add(CommentUnliked(widget._comment.id));
+    } else {
+      BlocProvider.of<CommentsBloc>(context)
+          .add(CommentLiked(widget._comment.id));
+    }
+    return !isLiked;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,15 +51,15 @@ class CommentCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
               child: ProfileAvatar(
-                avatarUrl: _comment.authorAvatar,
-                userId: _comment.authorId,
+                avatarUrl: widget._comment.authorAvatar,
+                userId: widget._comment.authorId,
               ),
             ),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
                 child: Text(
-                  _comment.authorName,
+                  widget._comment.authorName,
                   style: Theme.of(context).textTheme.subtitle,
                   textAlign: TextAlign.left,
                 ),
@@ -61,7 +67,7 @@ class CommentCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.fromLTRB(0, 3, 0, 0),
                 child: Text(
-                  Helper.convertTime(_comment.timestamp),
+                  Helper.convertTime(widget._comment.timestamp),
                   style: Theme.of(context).textTheme.caption,
                 ),
               ),
@@ -73,14 +79,14 @@ class CommentCard extends StatelessWidget {
                 SFSymbols.chevron_down,
                 size: 20,
               ),
-              color: Color(0xff9b9b9b),
+              color: const Color(0xff9b9b9b),
             ),
           ]), // End Top Section
 
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
             child: Text(
-              _comment.body,
+              widget._comment.body,
               style: Theme.of(context).textTheme.body1,
             ),
           ),
@@ -91,37 +97,33 @@ class CommentCard extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(12, 6, 12, 12),
             child:
                 Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-              BlocBuilder<AuthenticationBloc, AuthenticationState>(
+              BlocBuilder<CommentsBloc, CommentsState>(
                   builder: (context, state) {
-                if (state is AuthAuthenticated) {
-                  return LikeButton(
-                    size: 20,
-                    //  likeCount: _comment?.likeCount,
-                    animationDuration: const Duration(milliseconds: 500),
-                    //  isLiked: state.currentUser.likedComments.contains(_comment.commentId),
-                    // onTap:  (result) => _onLikeButtonTapped(result, context),
-                    likeCountAnimationDuration:
-                        const Duration(milliseconds: 200),
-                    countBuilder: (int count, bool isLiked, String text) {
-                      Widget result;
-                      if (count == 0) {
-                        result = Text(
-                          "",
-                          style: TextStyle(color: Colors.grey),
-                        );
-                      } else
-                        result = Text(
-                          text,
-                          style: TextStyle(color: Colors.grey),
-                        );
-                      return result;
-                    },
-                  );
-                } else {
-                  return Container();
-                }
+                return LikeButton(
+                  size: 20,
+                  likeCount: widget._comment.likeCount,
+                  animationDuration: const Duration(milliseconds: 500),
+                  isLiked: widget._comment.isLikedByUser,
+                  onTap: (result) => _onLikeButtonTapped(result, context),
+                  likeCountAnimationDuration: const Duration(milliseconds: 200),
+                  countBuilder: (int count, bool isLiked, String text) {
+                    Widget result;
+                    if (count == 0) {
+                      result = Text(
+                        '',
+                        style: TextStyle(color: Colors.grey),
+                      );
+                    } else {
+                      result = Text(
+                        text,
+                        style: TextStyle(color: Colors.grey),
+                      );
+                    }
+                    return result;
+                  },
+                );
               }),
-              Spacer(
+              const Spacer(
                 flex: 9,
               ),
               const Icon(
@@ -144,7 +146,7 @@ class CommentCard extends StatelessWidget {
 class ImageWidget extends StatelessWidget {
   final String imageUrl;
 
-  ImageWidget(this.imageUrl, {Key key}) : super(key: key);
+  const ImageWidget(this.imageUrl, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

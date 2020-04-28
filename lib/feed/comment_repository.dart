@@ -30,9 +30,15 @@ class FirebaseCommentsRepository extends CommentRepository {
         .limit(20)
         .getDocuments();
 
+    final currentUser = await _firebaseAuth.currentUser();
     final newComments = newDocumentList.documents
         .map((v) => Comment.fromMap(
-              v.data..addAll({'id': v.documentID}),
+              v.data
+                ..addAll({
+                  'id': v.documentID,
+                  'isLikedByUser':
+                      (v.data['likedBy'] as List).contains(currentUser.uid),
+                }),
             ))
         .toList();
 
@@ -53,10 +59,15 @@ class FirebaseCommentsRepository extends CommentRepository {
         .startAfter([startAfter])
         .limit(limit)
         .getDocuments();
-
+    final currentUser = await _firebaseAuth.currentUser();
     final newComments = newDocumentList.documents
         .map((v) => Comment.fromMap(
-              v.data..addAll({'id': v.documentID}),
+              v.data
+                ..addAll({
+                  'id': v.documentID,
+                  'isLikedByUser':
+                      (v.data['likedBy'] as List).contains(currentUser.uid)
+                }),
             ))
         .toList();
 
@@ -82,6 +93,7 @@ class FirebaseCommentsRepository extends CommentRepository {
       'authorId': map['authorId'],
       'authorName': map['authorName'],
       'authorAvatar': map['authorAvatar'],
+      'likedBy': <String>[],
       'timestamp': timestamp,
       'likeCount': 0,
       'imageUrl': map['imageUrl'],
@@ -95,21 +107,27 @@ class FirebaseCommentsRepository extends CommentRepository {
         authorAvatar: map['authorAvatar'] as String,
         authorName: map['authorName'] as String,
         body: map['body'] as String,
+        likedBy: const <String>[],
+        isLikedByUser: false,
         timestamp: timestamp,
         likeCount: 0);
   }
 
   @override
   Future<void> unlikeComment(String commentId) async {
+    final currentUser = await _firebaseAuth.currentUser();
     await Global.commentsRef.document(commentId).updateData({
       'likeCount': FieldValue.increment(-1),
+      'likedBy': FieldValue.arrayRemove([currentUser.uid])
     });
   }
 
   @override
   Future<void> likeComment(String commentId) async {
+    final currentUser = await _firebaseAuth.currentUser();
     await Global.commentsRef.document(commentId).updateData({
       'likeCount': FieldValue.increment(1),
+      'likedBy': FieldValue.arrayUnion([currentUser.uid])
     });
   }
 }

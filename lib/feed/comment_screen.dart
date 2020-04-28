@@ -66,7 +66,7 @@ class _CommentScreenState extends State<CommentScreen> {
   }
 
   Future<void> _refreshFeed() async {
-    BlocProvider.of(context).add(CommentsRefreshed());
+    BlocProvider.of<CommentsBloc>(context).add(CommentsRefreshed());
   }
 
   @override
@@ -147,6 +147,7 @@ class _CommentScreenState extends State<CommentScreen> {
         );
       }
       if (state is CommentsError) {
+        print(state.failure.code);
         return SliverList(
             delegate: SliverChildListDelegate([
           Center(

@@ -78,10 +78,6 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     try {
       final newComments =
           await commentRepository.setupCommentsFor(state.postId);
-      if (newComments == state.comments) {
-        yield state;
-        return;
-      }
 
       if (newComments.isEmpty) {
         yield CommentsEmpty(
@@ -106,7 +102,6 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
                     b.timestamp.compareTo(a.timestamp)),
               newComments),
           'States Comment List must be properly sorted');
-      assert(state != newState);
 
       yield newState;
     } catch (error) {
@@ -212,7 +207,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     final currentState = state;
     CommentsState newState;
     if (currentState is CommentsEmpty) {
-      newState = CommentsLoaded(postId: state.postId, comments: [comment]);
+      newState = CommentsReachedMax(postId: state.postId, comments: [comment]);
     } else {
       newState =
           state.copyWith(comments: state.comments.toList()..insert(0, comment));
