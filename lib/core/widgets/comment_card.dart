@@ -36,7 +36,7 @@ class CommentCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.all(
+          borderRadius: const BorderRadius.all(
             Radius.circular(4),
           ),
         ),
@@ -66,7 +66,7 @@ class CommentCard extends StatelessWidget {
                 ),
               ),
             ]), // End User Info Block
-            Spacer(),
+            const Spacer(),
             IconButton(
               onPressed: () => {},
               icon: const Icon(
@@ -96,11 +96,12 @@ class CommentCard extends StatelessWidget {
                 if (state is AuthAuthenticated) {
                   return LikeButton(
                     size: 20,
-                  //  likeCount: _comment?.likeCount,
+                    //  likeCount: _comment?.likeCount,
                     animationDuration: const Duration(milliseconds: 500),
-                  //  isLiked: state.currentUser.likedComments.contains(_comment.commentId),
-                   // onTap:  (result) => _onLikeButtonTapped(result, context),
-                    likeCountAnimationDuration: const Duration(milliseconds: 200),
+                    //  isLiked: state.currentUser.likedComments.contains(_comment.commentId),
+                    // onTap:  (result) => _onLikeButtonTapped(result, context),
+                    likeCountAnimationDuration:
+                        const Duration(milliseconds: 200),
                     countBuilder: (int count, bool isLiked, String text) {
                       Widget result;
                       if (count == 0) {
@@ -116,10 +117,10 @@ class CommentCard extends StatelessWidget {
                       return result;
                     },
                   );
-                }else {
-                return Container();
+                } else {
+                  return Container();
                 }
-              } ),
+              }),
               Spacer(
                 flex: 9,
               ),

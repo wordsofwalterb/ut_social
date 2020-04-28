@@ -1,6 +1,4 @@
-
 import 'dart:io';
-
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +17,7 @@ class CreatePostScreen extends StatefulWidget {
 
 class _CreatePostScreenState extends State<CreatePostScreen> {
   File _image;
-  TextEditingController _captionController = TextEditingController();
+  final TextEditingController _captionController = TextEditingController();
   String _caption = '';
   bool _isLoading = false;
 
@@ -93,7 +91,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     FocusScope.of(context).unfocus();
     File imageFile = await ImagePicker.pickImage(source: source);
     if (imageFile != null) {
-      imageFile = await _cropImage(imageFile);
+      imageFile = await _cropImage(imageFile) as File;
       setState(() {
         _image = imageFile;
       });

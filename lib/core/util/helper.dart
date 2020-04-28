@@ -7,9 +7,9 @@ class Helper {
   }
 
   static InputDecoration textFieldStyle(
-      {String labelTextStr = "", String hintTextStr = ""}) {
+      {String labelTextStr = '', String hintTextStr = ''}) {
     return InputDecoration(
-      contentPadding: EdgeInsets.all(12),
+      contentPadding: const EdgeInsets.all(12),
       labelText: labelTextStr,
       hintText: hintTextStr,
       border: OutlineInputBorder(

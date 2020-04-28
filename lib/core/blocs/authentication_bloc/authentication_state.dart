@@ -4,7 +4,7 @@ abstract class AuthenticationState extends Equatable {
   const AuthenticationState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => const <Object>[];
 }
 
 class AuthInitial extends AuthenticationState {}
@@ -15,7 +15,7 @@ class AuthAuthenticated extends AuthenticationState {
   const AuthAuthenticated(this.currentUser);
 
   @override
-  List<Object> get props => [currentUser];
+  List<Object> get props => <Object>[currentUser];
 
   @override
   String toString() => 'Authenticated { currentUser: $currentUser }';

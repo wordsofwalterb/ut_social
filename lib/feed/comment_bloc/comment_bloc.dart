@@ -68,10 +68,11 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
         await commentRepository.setupFeed(postId); // TODO: Add Try Catch
 
     if (comments != null) {
-      assert(ListEquality().equals(
+      assert(const ListEquality<Comment>().equals(
           comments
             ..toList()
-            ..sort((a, b) => b.timestamp.compareTo(a.timestamp)),
+            ..sort(
+                (Comment a, Comment b) => b.timestamp.compareTo(a.timestamp)),
           comments)); // Ensures list is Properly sorted
 
       final newState = CommentLoaded(postId: postId, comments: comments);
@@ -90,9 +91,7 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
 
     final newState = CommentLoaded(
         postId: currentState.postId,
-        comments: currentState.comments
-          .toList()
-          ..insert(0, comment));
+        comments: currentState.comments.toList()..insert(0, comment));
 
     assert(newState != currentState);
 

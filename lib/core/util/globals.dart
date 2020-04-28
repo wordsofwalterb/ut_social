@@ -9,8 +9,8 @@ class Global {
   //static final FirebaseAnalytics analytics = FirebaseAnalytics();
 
   static final Map models = {
-    Student: (data) => Student.fromMap(data),
-    Post: (data) => Post.fromMap(data),
+    Student: (Map<String, dynamic> data) => Student.fromMap(data),
+    Post: (Map<String, dynamic> data) => Post.fromMap(data),
   };
 
   static final Map repository = {
@@ -21,8 +21,15 @@ class Global {
   static final UserData<Student> currentUserRef =
       UserData<Student>(collection: 'students');
 
-  static final likeRef = Firestore.instance.collection('likes');
-  static final commentsRef = Firestore.instance.collection('comments');
-  static final postsRef = Firestore.instance.collection('posts');
-  static final studentsRef = Firestore.instance.collection('students');
+  static final CollectionReference likeRef =
+      Firestore.instance.collection('likes');
+
+  static final CollectionReference commentsRef =
+      Firestore.instance.collection('comments');
+
+  static final CollectionReference postsRef =
+      Firestore.instance.collection('posts');
+
+  static final CollectionReference studentsRef =
+      Firestore.instance.collection('students');
 }

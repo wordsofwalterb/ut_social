@@ -2,11 +2,10 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
-
 import '../../core/repositories/user_repository.dart';
-
 
 part 'login_event.dart';
 part 'login_state.dart';
@@ -48,26 +47,26 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     try {
       await _userRepository.signInWithCredentials(email, password);
       yield LoginState.success(state.isPasswordObscured);
-    } catch (error) {
+    } on PlatformException catch (error) {
       String errorMessage;
       switch (error.code) {
-        case "ERROR_INVALID_EMAIL":
-          errorMessage = "Email address not found";
+        case 'ERROR_INVALID_EMAIL':
+          errorMessage = 'Email address not found';
           break;
-        case "ERROR_WRONG_PASSWORD":
-          errorMessage = "Password is incorrect";
+        case 'ERROR_WRONG_PASSWORD':
+          errorMessage = 'Password is incorrect';
           break;
-        case "ERROR_USER_NOT_FOUND":
+        case 'ERROR_USER_NOT_FOUND':
           errorMessage = "User with this email doesn't exist.";
           break;
-        case "ERROR_USER_DISABLED":
-          errorMessage = "User with this email has been disabled.";
+        case 'ERROR_USER_DISABLED':
+          errorMessage = 'User with this email has been disabled.';
           break;
-        case "ERROR_TOO_MANY_REQUESTS":
-          errorMessage = "Too many requests. Try again later.";
+        case 'ERROR_TOO_MANY_REQUESTS':
+          errorMessage = 'Too many requests. Try again later.';
           break;
-        case "ERROR_OPERATION_NOT_ALLOWED":
-          errorMessage = "Email and Password signup is not enabled.";
+        case 'ERROR_OPERATION_NOT_ALLOWED':
+          errorMessage = 'Email and Password signup is not enabled.';
           break;
         default:
           errorMessage = "An undefined Error happened.";

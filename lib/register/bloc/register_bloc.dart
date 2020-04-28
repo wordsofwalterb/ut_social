@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:ut_social/core/util/exceptions.dart';
@@ -27,18 +28,23 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     Stream<RegisterEvent> events,
     TransitionFunction<RegisterEvent, RegisterState> transitionFn,
   ) {
-    final nonDebounceStream = events.where((event) {
-      return (event is! RegisterEmailChanged && event is! RegisterPasswordChanged);
+    final Stream<RegisterEvent> nonDebounceStream =
+        events.where((RegisterEvent event) {
+      return event is! RegisterEmailChanged &&
+          event is! RegisterPasswordChanged;
     });
-    final debounceStream = events.where((event) {
-      return (event is RegisterEmailChanged || event is RegisterPasswordChanged);
-    }).debounceTime(Duration(milliseconds: 300));
+
+    final Stream<RegisterEvent> debounceStream =
+        events.where((RegisterEvent event) {
+      return event is RegisterEmailChanged || event is RegisterPasswordChanged;
+    }).debounceTime(const Duration(milliseconds: 300));
+
     return super.transformEvents(
       nonDebounceStream.mergeWith([debounceStream]),
       transitionFn,
     );
   }
-  
+
   @override
   Stream<RegisterState> mapEventToState(
     RegisterEvent event,
@@ -84,14 +90,18 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     String errorMessage;
     yield RegisterState.loading(state.isPasswordObscured);
     try {
-      if (!Validators.isValidFirstName(firstName))
+      if (!Validators.isValidFirstName(firstName)) {
         throw ValidationException('ERROR_FIRST_NAME');
-      if (!Validators.isValidLastName(lastName))
+      }
+      if (!Validators.isValidLastName(lastName)) {
         throw ValidationException('ERROR_LAST_NAME');
-      if (!Validators.isValidEmail(email))
+      }
+      if (!Validators.isValidEmail(email)) {
         throw ValidationException('ERROR_EMAIL');
-      if (!Validators.isValidUTEmail(email))
+      }
+      if (!Validators.isValidUTEmail(email)) {
         throw ValidationException('ERROR_EMAIL_UT');
+      }
       await _userRepository.signUp(
         email: email,
         password: password,
@@ -115,19 +125,19 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           break;
       }
       yield RegisterState.failure(state.isPasswordObscured, errorMessage);
-    } catch (error) {
+    } on PlatformException catch (error) {
       switch (error.code) {
-        case "ERROR_WEAK_PASSWORD":
-          errorMessage = "Password is too weak";
+        case 'ERROR_WEAK_PASSWORD':
+          errorMessage = 'Password is too weak';
           break;
-        case "ERROR_INVALID_EMAIL":
-          errorMessage = "Invalid email format";
+        case 'ERROR_INVALID_EMAIL':
+          errorMessage = 'Invalid email format';
           break;
-        case "ERROR_EMAIL_ALREADY_IN_USE":
-          errorMessage = "User with this email already exists.";
+        case 'ERROR_EMAIL_ALREADY_IN_USE':
+          errorMessage = 'User with this email already exists.';
           break;
         default:
-          errorMessage = "An undefined error happened.";
+          errorMessage = 'An undefined error happened.';
       }
       yield RegisterState.failure(state.isPasswordObscured, errorMessage);
     }

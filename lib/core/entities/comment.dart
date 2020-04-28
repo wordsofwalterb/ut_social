@@ -15,7 +15,7 @@ class Comment extends Equatable {
   final DateTime timestamp;
   final String imageUrl;
 
-  Comment({
+  const Comment({
     @required this.authorId,
     @required this.postId,
     @required this.commentId,
@@ -58,7 +58,7 @@ class Comment extends Equatable {
   }
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'authorId': authorId,
       'postId': postId,
       'commentId': commentId,
@@ -71,27 +71,26 @@ class Comment extends Equatable {
     };
   }
 
-  static Comment fromMap(Map<String, dynamic> map) {
+  factory Comment.fromMap(Map<String, dynamic> map) {
     if (map == null) return null;
 
-
-
     return Comment(
-      authorId: map['authorId'],
-      postId: map['postId'],
-      commentId: map['commentId'],
-      body: map['body'],
-      likeCount: map['likeCount'],
-      authorName: map['authorName'],
-      authorAvatar: map['authorAvatar'],
+      authorId: map['authorId'] as String,
+      postId: map['postId'] as String,
+      commentId: map['commentId'] as String,
+      body: map['body'] as String,
+      likeCount: map['likeCount'] as int,
+      authorName: map['authorName'] as String,
+      authorAvatar: map['authorAvatar'] as String,
       timestamp: (map['timestamp'] as Timestamp).toDate(),
-      imageUrl: map['imageUrl'],
+      imageUrl: map['imageUrl'] as String,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  static Comment fromJson(String source) => fromMap(json.decode(source));
+  factory Comment.fromJson(String source) =>
+      Comment.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   bool get stringify => true;

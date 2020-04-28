@@ -117,7 +117,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     if (authState is AuthAuthenticated) {
       // Find changed post and add like
       var initialPost =
-          currentState.posts.firstWhere((val) => val.postId == postId);
+          currentState.posts.firstWhere((val) => val.id == postId);
       var newLikedBy = initialPost.likedBy.toList();
       newLikedBy.addAll([authState.currentUser.id]);
       var changedPost = initialPost.copyWith(
@@ -129,7 +129,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
       var newPosts = currentState.posts.toList();
 
-      newPosts.removeWhere((val) => val.postId == postId);
+      newPosts.removeWhere((val) => val.id == postId);
       newPosts.add(changedPost);
 
       var newState = currentState.copyWith(
@@ -149,7 +149,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     if (authState is AuthAuthenticated) {
       // Find changed post and unlike
       var initialPost =
-          currentState.posts.firstWhere((val) => val.postId == postId);
+          currentState.posts.firstWhere((val) => val.id == postId);
       var newLikedBy = initialPost.likedBy.toList();
       newLikedBy.removeWhere((i) => i == authState.currentUser.id);
       var changedPost = initialPost.copyWith(
@@ -163,7 +163,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       var newState = currentState.copyWith(
           lastPostLiked: postId,
           posts: currentState.posts.toList()
-            ..removeWhere((val) => val.postId == postId)
+            ..removeWhere((val) => val.id == postId)
             ..add(changedPost));
 
       // Yield new version of posts
@@ -191,7 +191,6 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   Stream<PostState> _mapPostSetupToState() async* {
     final posts = await postRepository.setupFeed();
-
 
     yield PostLoaded(
       posts: posts..sort((a, b) => b.postTime.compareTo(a.postTime)),

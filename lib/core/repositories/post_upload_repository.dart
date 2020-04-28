@@ -5,7 +5,6 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
-
 // TODO: Refactor to Repository
 class StorageService {
   static Future<String> uploadUserProfileImage(
@@ -19,11 +18,12 @@ class StorageService {
       photoId = exp.firstMatch(url)[1];
     }
 
-    StorageUploadTask uploadTask = FirebaseStorage.instance.ref()
+    StorageUploadTask uploadTask = FirebaseStorage.instance
+        .ref()
         .child('images/users/userProfile_$photoId.jpg')
         .putFile(image);
     StorageTaskSnapshot storageSnap = await uploadTask.onComplete;
-    String downloadUrl = await storageSnap.ref.getDownloadURL();
+    String downloadUrl = await storageSnap.ref.getDownloadURL() as String;
     return downloadUrl;
   }
 
@@ -41,12 +41,12 @@ class StorageService {
   static Future<String> uploadPost(File imageFile) async {
     String photoId = Uuid().v4();
     File image = await compressImage(photoId, imageFile);
-    StorageUploadTask uploadTask = FirebaseStorage.instance.ref()
+    StorageUploadTask uploadTask = FirebaseStorage.instance
+        .ref()
         .child('images/posts/post_$photoId.jpg')
         .putFile(image);
     StorageTaskSnapshot storageSnap = await uploadTask.onComplete;
-    String downloadUrl = await storageSnap.ref.getDownloadURL();
+    String downloadUrl = await storageSnap.ref.getDownloadURL() as String;
     return downloadUrl;
   }
-
 }

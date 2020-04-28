@@ -5,7 +5,6 @@ import 'package:ut_social/core/util/globals.dart';
 
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
-  final Firestore _firestore = Firestore.instance;
 
   UserRepository({FirebaseAuth firebaseAuth})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
@@ -24,7 +23,8 @@ class UserRepository {
     String lastName,
   }) async {
     try {
-      var result = await _firebaseAuth.createUserWithEmailAndPassword(
+      final AuthResult result =
+          await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -36,7 +36,7 @@ class UserRepository {
   }
 
   Future<void> signOut() async {
-    return Future.wait([
+    return Future.wait(<Future<dynamic>>[
       _firebaseAuth.signOut(),
     ]);
   }
@@ -44,67 +44,33 @@ class UserRepository {
   Future<void> setupUser(
       {String firstName, String lastName, String email}) async {
     try {
-      await Global.currentUserRef.upsert({
+      await Global.currentUserRef.upsert(<String, dynamic>{
         if (firstName != null) 'firstName': firstName,
         if (lastName != null) 'lastName': lastName,
         if (email != null) 'email': email,
         if (firstName != null && lastName != null)
-          'fullName': firstName + ' ' + lastName,
-        'avatarUrl':  '',
+          'fullName': '$firstName $lastName',
+        'avatarUrl': '',
       });
     } catch (error) {
       print('Unable to setup user: $error');
     }
   }
 
-  // Future<void> likePost(String postId, String userId) async {
-  //   await Global.studentsRef.document(userId).setData({
-  //     'likedPosts': FieldValue.arrayUnion([postId]),
-  //   }, merge: true);
-
-  //   // await Global.postsRef
-  //   //     .document(postId)
-  //   //     .updateData({'likeCount': FieldValue.increment(1)});
-  // }
-
-  // Future<void> dislikePost(String postId, String userId) async {
-  //   await Global.studentsRef.document(userId).setData({
-  //     'likedPosts': FieldValue.arrayRemove([postId]),
-  //   }, merge: true);
-
-  //   // await Global.postsRef.document(postId).updateData({
-  //   //   'likeCount': FieldValue.increment(-1),
-  //   // });
-  // }
-
-  // Future<void> dislikeComment(String commentId, String userId) async {
-  //   await Global.studentsRef.document(userId).setData({
-  //     'likedPosts': FieldValue.arrayRemove([commentId]),
-  //   }, merge: true);
-
-  //   await Global.postsRef.document(commentId).updateData({
-  //     'likeCount': FieldValue.increment(-1),
-  //   });
-  // }
-
-  // Future<void> likeComment(String commentId, String userId) async {
-  //   await Global.studentsRef.document(userId).setData({
-  //     'likedPosts': FieldValue.arrayUnion([commentId]),
-  //   }, merge: true);
-
-  //   await Global.postsRef.document(commentId).updateData({
-  //     'likeCount': FieldValue.increment(1),
-  //   });
-  // }
-
   Future<bool> isSignedIn() async {
-    final currentUser = await _firebaseAuth.currentUser();
+    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
     return currentUser != null;
   }
 
   Future<Student> getUser() async {
-    final currentUser = await _firebaseAuth.currentUser();
-    var userDoc = await Global.studentsRef.document(currentUser.uid).get();
-    return Student.fromMap(userDoc.data..addAll({'id': userDoc.documentID}));
+    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+    final DocumentSnapshot userDoc =
+        await Global.studentsRef.document(currentUser.uid).get();
+    return Student.fromMap(
+      userDoc.data
+        ..addAll(
+          <String, dynamic>{'id': userDoc.documentID},
+        ),
+    );
   }
 }

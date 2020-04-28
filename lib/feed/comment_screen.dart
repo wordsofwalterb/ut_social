@@ -24,8 +24,7 @@ class _CommentScreenState extends State<CommentScreen> {
 
   @override
   void initState() {
-    BlocProvider.of<CommentBloc>(context)
-        .add(CommentSetup(widget._post.postId));
+    BlocProvider.of<CommentBloc>(context).add(CommentSetup(widget._post.id));
     super.initState();
   }
 

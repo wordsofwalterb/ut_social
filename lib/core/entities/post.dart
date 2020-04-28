@@ -2,53 +2,41 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
-class Post extends Equatable {
-  final String _postId, _authorId, _authorName, _body, _avatarUrl, _imageUrl;
-  final DateTime _postTime;
-  final int _commentCount, _likeCount;
-  final bool _likedByUser;
+import 'identity.dart';
+
+@immutable
+abstract class PostSnippet extends Equatable implements Identity {
+  const PostSnippet();
+}
+
+class Post extends PostSnippet implements Identity {
+  @override
+  final String id;
+  final String authorId, authorName, body, avatarUrl, imageUrl;
+  final DateTime postTime;
+  final int commentCount, likeCount;
+  final bool likedByUser;
   final List<String> likedBy;
 
-  String get postId => _postId;
-  String get imageUrl => _imageUrl;
-  String get avatarUrl => _avatarUrl;
-  String get authorId => _authorId;
-  String get body => _body;
-  String get authorName => _authorName;
-  DateTime get postTime => _postTime;
-  int get commentCount => _commentCount;
-  int get likeCount => _likeCount;
-  bool get likedByUser => _likedByUser;
-
-  Post(
-      {@required String postId,
-      @required String authorId,
-      @required String authorName,
-      @required DateTime postTime,
-      bool likedByUser,
-      String imageUrl,
-      String avatarUrl,
+  const Post(
+      {@required this.id,
+      @required this.authorId,
+      @required this.authorName,
+      @required this.postTime,
+      this.likedByUser,
+      this.imageUrl,
+      this.avatarUrl,
       this.likedBy,
-      String body,
-      int commentCount,
-      int likeCount})
-      : assert(postId != null),
+      this.body,
+      this.commentCount,
+      this.likeCount})
+      : assert(id != null),
         assert(authorId != null),
         assert(authorName != null),
-        assert(postTime != null),
-        _imageUrl = imageUrl,
-        _avatarUrl = avatarUrl,
-        _postId = postId,
-        _authorId = authorId,
-        _authorName = authorName,
-        _postTime = postTime,
-        _likedByUser = likedByUser ?? false,
-        _body = body ?? '',
-        _commentCount = commentCount ?? 0,
-        _likeCount = likeCount ?? 0;
+        assert(postTime != null);
 
   Post copyWith(
-      {String postId,
+      {String id,
       String authorId,
       String authorName,
       String imageUrl,
@@ -60,47 +48,47 @@ class Post extends Equatable {
       int commentCount,
       int likeCount}) {
     return Post(
-      postId: postId ?? this._postId,
+      id: id ?? this.id,
       likedBy: likedBy ?? this.likedBy,
-      imageUrl: imageUrl ?? this._imageUrl,
-      avatarUrl: avatarUrl ?? this._avatarUrl,
-      authorId: authorId ?? this._authorId,
-      authorName: authorName ?? this._authorName,
-      postTime: postTime ?? this._postTime,
-      body: body ?? this._body,
-      commentCount: commentCount ?? this._commentCount,
-      likedByUser: likedByUser ?? this._likedByUser,
-      likeCount: likeCount ?? this._likeCount,
+      imageUrl: imageUrl ?? this.imageUrl,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      authorId: authorId ?? this.authorId,
+      authorName: authorName ?? this.authorName,
+      postTime: postTime ?? this.postTime,
+      body: body ?? this.body,
+      commentCount: commentCount ?? this.commentCount,
+      likedByUser: likedByUser ?? this.likedByUser,
+      likeCount: likeCount ?? this.likeCount,
     );
   }
 
   factory Post.fromMap(Map<String, dynamic> map) {
     return Post(
-        imageUrl: map['imageUrl'],
-        postId: map['id'],
-        likedBy: List<String>.from(map['likedBy']),
-        avatarUrl: map['avatarUrl'],
-        authorId: map['authorId'],
-        authorName: map['authorName'],
+        imageUrl: map['imageUrl'] as String,
+        id: map['id'] as String,
+        likedBy: List<String>.from(map['likedBy'] as List<String>),
+        avatarUrl: map['avatarUrl'] as String,
+        authorId: map['authorId'] as String,
+        authorName: map['authorName'] as String,
         postTime: (map['postTime'] as Timestamp).toDate(),
-        body: map['body'],
-        likedByUser: map['likedByUser'],
-        commentCount: map['commentCount'],
-        likeCount: map['likeCount']);
+        body: map['body'] as String,
+        likedByUser: map['likedByUser'] as bool,
+        commentCount: map['commentCount'] as int,
+        likeCount: map['likeCount'] as int);
   }
 
   @override
-  List<Object> get props => [
-        _imageUrl,
-        _postId,
+  List<Object> get props => <Object>[
+        imageUrl,
+        id,
         likedBy,
-        _avatarUrl,
-        _authorId,
-        _authorName,
-        _postTime,
-        _body,
-        _commentCount,
-        _likeCount,
-        _likedByUser,
+        avatarUrl,
+        authorId,
+        authorName,
+        postTime,
+        body,
+        commentCount,
+        likeCount,
+        likedByUser,
       ];
 }

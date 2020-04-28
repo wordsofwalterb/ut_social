@@ -16,23 +16,22 @@ abstract class PostRepository {
 
 class FirebasePostRepository extends PostRepository {
   final Firestore _firestore;
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   FirebasePostRepository({Firestore firestore})
       : _firestore = firestore ?? Firestore.instance;
 
   @override
   Future<List<Post>> setupFeed() async {
-    var newDocumentList = await _firestore
-        .collection("posts")
-        .orderBy("postTime", descending: true)
+    final QuerySnapshot newDocumentList = await _firestore
+        .collection('posts')
+        .orderBy('postTime', descending: true)
         .limit(10)
         .getDocuments();
 
-    var newPosts = newDocumentList.documents
+    final List<Post> newPosts = newDocumentList.documents
         .map(
-          (v) => Post.fromMap(
-            v.data..addAll({'id': v.documentID}),
+          (DocumentSnapshot v) => Post.fromMap(
+            v.data..addAll(<String, dynamic>{'id': v.documentID}),
           ),
         )
         .toList();
@@ -40,13 +39,15 @@ class FirebasePostRepository extends PostRepository {
     return newPosts;
   }
 
+  @override
   Future<Post> addPost(Student author, String body, String imageUrl) async {
     assert(author != null);
     assert(body != null);
 
-    final timestamp = DateTime.now();
+    final DateTime timestamp = DateTime.now();
 
-    var docRef = await Global.postsRef.add({
+    final DocumentReference docRef =
+        await Global.postsRef.add(<String, dynamic>{
       'authorId': author.id,
       'authorName': author.fullName,
       'postTime': timestamp,
@@ -54,34 +55,35 @@ class FirebasePostRepository extends PostRepository {
       'body': body,
       'avatarUrl': author.avatarUrl,
       'likeCount': 0,
-      'likedBy': [],
+      'likedBy': const <String>[],
       'commentCount': 0,
     });
 
     assert(docRef.documentID != null);
 
     return Post(
-        postId: docRef.documentID,
+        id: docRef.documentID,
         authorId: author.id,
         avatarUrl: author.avatarUrl,
         authorName: author.fullName,
         body: body,
         postTime: timestamp,
         likeCount: 0,
-        likedBy: [],
+        likedBy: const <String>[],
         commentCount: 0);
   }
 
+  @override
   Future<List<Post>> retrieveLatestPosts(DateTime startBefore) async {
-    var newDocumentList = await _firestore
-        .collection("posts")
-        .orderBy("postTime", descending: false)
-        .startAfter([startBefore]).getDocuments();
+    final QuerySnapshot newDocumentList = await _firestore
+        .collection('posts')
+        .orderBy('postTime', descending: false)
+        .startAfter(<DateTime>[startBefore]).getDocuments();
 
-    var newPosts = newDocumentList.documents
+    final List<Post> newPosts = newDocumentList.documents
         .map(
-          (v) => Post.fromMap(
-            v.data..addAll({'id': v.documentID}),
+          (DocumentSnapshot v) => Post.fromMap(
+            v.data..addAll(<String, dynamic>{'id': v.documentID}),
           ),
         )
         .toList();
@@ -94,18 +96,18 @@ class FirebasePostRepository extends PostRepository {
       {@required DateTime startAfter, int limit = 20}) async {
     assert(startAfter != null);
 
-    var newDocumentList = await _firestore
-        .collection("posts")
-        .orderBy("postTime", descending: true)
+    final QuerySnapshot newDocumentList = await _firestore
+        .collection('posts')
+        .orderBy('postTime', descending: true)
         .where('postTime', isLessThan: startAfter)
-        .startAfter([startAfter])
+        .startAfter(<DateTime>[startAfter])
         .limit(limit)
         .getDocuments();
 
-    var newPosts = newDocumentList.documents
+    final List<Post> newPosts = newDocumentList.documents
         .map(
-          (v) => Post.fromMap(
-            v.data..addAll({'id': v.documentID}),
+          (DocumentSnapshot v) => Post.fromMap(
+            v.data..addAll(<String, dynamic>{'id': v.documentID}),
           ),
         )
         .toList();
@@ -113,17 +115,19 @@ class FirebasePostRepository extends PostRepository {
     return newPosts;
   }
 
+  @override
   Future<void> unlikePost(String postId, String userId) async {
-    Global.postsRef.document(postId).updateData({
+    Global.postsRef.document(postId).updateData(<String, dynamic>{
       'likeCount': FieldValue.increment(-1),
-      'likedBy': FieldValue.arrayRemove([userId]),
+      'likedBy': FieldValue.arrayRemove(<String>[userId]),
     });
   }
 
+  @override
   Future<void> likePost(String postId, String userId) async {
-    await Global.postsRef.document(postId).updateData({
+    await Global.postsRef.document(postId).updateData(<String, dynamic>{
       'likeCount': FieldValue.increment(1),
-      'likedBy': FieldValue.arrayUnion([userId]),
+      'likedBy': FieldValue.arrayUnion(<String>[userId]),
     });
   }
 }

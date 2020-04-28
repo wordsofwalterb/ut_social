@@ -129,7 +129,7 @@ class PostCard extends StatelessWidget {
                       flex: 1,
                     )
                   : Container(),
-              LikeCounter(_post.postId),
+              LikeCounter(_post.id),
               Spacer(
                 flex: 9,
               ),
@@ -216,12 +216,12 @@ class _LikeCounterState extends State<LikeCounter> {
       return false;
     }, builder: (context, state) {
       if (state is PostLoaded) {
-        var results = state.posts.firstWhere((e) => e.postId == widget.id);
+        var results = state.posts.firstWhere((e) => e.id == widget.id);
         isLiked = results.likedBy.contains(currentUserId);
         return LikeButton(
           size: 20,
           likeCount: state.posts
-              .firstWhere((element) => element.postId == widget.id)
+              .firstWhere((element) => element.id == widget.id)
               .likeCount,
           animationDuration: const Duration(milliseconds: 500),
           isLiked: isLiked,
