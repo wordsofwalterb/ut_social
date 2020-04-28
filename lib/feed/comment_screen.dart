@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 
 import '../core/entities/post.dart';
 import '../core/widgets/comment_card.dart';
@@ -62,6 +63,8 @@ class _CommentScreenState extends State<CommentScreen> {
           },
         ),
       );
+      BlocProvider.of<PostBloc>(context).add(PostCommentAdded(widget._post.id));
+      FocusScope.of(context).unfocus();
     }
   }
 
@@ -159,8 +162,11 @@ class _CommentScreenState extends State<CommentScreen> {
         return SliverList(
           delegate: SliverChildListDelegate(
             [
-              const Center(
-                child: Text('no comments'),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 40.0),
+                child: const Center(
+                  child: Text('no comments'),
+                ),
               ),
             ],
           ),

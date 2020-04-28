@@ -15,7 +15,7 @@ import '../entities/post.dart';
 import '../util/helper.dart';
 import 'profile_avatar.dart';
 
-class PostCard extends StatelessWidget {
+class PostCard extends StatefulWidget {
   final Post _post;
   final bool disableComment;
   final bool isLiked;
@@ -31,6 +31,11 @@ class PostCard extends StatelessWidget {
         _post = post,
         super(key: key);
 
+  @override
+  _PostCardState createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     final postBloc = BlocProvider.of<PostBloc>(context);
@@ -50,15 +55,15 @@ class PostCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
               child: ProfileAvatar(
-                avatarUrl: _post.avatarUrl,
-                userId: _post.authorId,
+                avatarUrl: widget._post.avatarUrl,
+                userId: widget._post.authorId,
               ),
             ),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
                 child: Text(
-                  _post.authorName,
+                  widget._post.authorName,
                   style: Theme.of(context).textTheme.subtitle,
                   textAlign: TextAlign.left,
                 ),
@@ -66,7 +71,7 @@ class PostCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.fromLTRB(0, 3, 0, 0),
                 child: Text(
-                  Helper.convertTime(_post.postTime),
+                  Helper.convertTime(widget._post.postTime),
                   style: Theme.of(context).textTheme.caption,
                 ),
               ),
@@ -85,28 +90,29 @@ class PostCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
             child: Text(
-              _post.body,
+              widget._post.body,
               style: Theme.of(context).textTheme.body1,
             ),
           ),
 
-          ImageWidget(_post.imageUrl),
+          ImageWidget(widget._post.imageUrl),
 
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 6, 12, 12),
             child:
                 Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-              (!disableComment)
+              (!widget.disableComment)
                   ? GestureDetector(
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) {
                           return BlocProvider<CommentsBloc>(
                             create: (context) => CommentsBloc(
-                              _post.id,
+                              widget._post.id,
                               commentRepository: FirebaseCommentsRepository(),
                             ),
                             child: BlocProvider.value(
-                                value: postBloc, child: CommentScreen(_post)),
+                                value: postBloc,
+                                child: CommentScreen(widget._post)),
                           );
                         }),
                       ),
@@ -116,19 +122,19 @@ class PostCard extends StatelessWidget {
                       ),
                     )
                   : Container(),
-              (!disableComment)
+              (!widget.disableComment)
                   ? Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                      child: Text(_post.commentCount.toString(),
+                      child: Text(widget._post.commentCount.toString(),
                           style: Theme.of(context).textTheme.overline),
                     )
                   : Container(),
-              (!disableComment)
+              (!widget.disableComment)
                   ? const Spacer(
                       flex: 1,
                     )
                   : Container(),
-              LikeCounter(_post.id),
+              LikeCounter(widget._post.id),
               const Spacer(
                 flex: 9,
               ),

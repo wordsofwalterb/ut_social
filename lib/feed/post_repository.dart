@@ -12,6 +12,7 @@ abstract class PostRepository {
   Future<void> likePost(String postId, String userId);
   Future<List<Post>> retrieveLatestPosts(DateTime startBefore);
   Future<Post> addPost(Student author, String body, String imageUrl);
+  Future<void> updateCommentCount(String postId, int byValue);
 }
 
 class FirebasePostRepository extends PostRepository {
@@ -77,7 +78,8 @@ class FirebasePostRepository extends PostRepository {
   Future<List<Post>> retrieveLatestPosts(DateTime startBefore) async {
     final QuerySnapshot newDocumentList = await _firestore
         .collection('posts')
-        .orderBy('postTime', descending: false)
+        .orderBy('postTime', descending: true)
+        .limit(20)
         .startAfter(<DateTime>[startBefore]).getDocuments();
 
     final List<Post> newPosts = newDocumentList.documents
@@ -115,9 +117,18 @@ class FirebasePostRepository extends PostRepository {
     return newPosts;
   }
 
+// TODO: ALL THESE NEEED TO HANDLE AND ADAPT TO SITUATIONS WHERE POST WAS
+// Deleted by another user and will be unable to update properly
+  @override
+  Future<void> updateCommentCount(String postId, int byValue) async {
+    await Global.postsRef.document(postId).updateData({
+      'commentCount': FieldValue.increment(byValue),
+    });
+  }
+
   @override
   Future<void> unlikePost(String postId, String userId) async {
-    Global.postsRef.document(postId).updateData(<String, dynamic>{
+    await Global.postsRef.document(postId).updateData(<String, dynamic>{
       'likeCount': FieldValue.increment(-1),
       'likedBy': FieldValue.arrayRemove(<String>[userId]),
     });

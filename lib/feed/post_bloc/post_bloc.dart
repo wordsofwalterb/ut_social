@@ -74,10 +74,46 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         }
         if (event is PostUnlike) {
           yield* _mapPostUnlikeToState(currentState, event.postId);
+        } else if (event is PostCommentRemoved) {
+          yield* _mapPostCommentRemovedToState(event.postId);
+        } else if (event is PostCommentAdded) {
+          yield* _mapPostCommentAddedToState(event.postId);
         }
       }
     } catch (_) {
       yield PostError();
+    }
+  }
+
+  Stream<PostState> _mapPostCommentAddedToState(String postId) async* {
+    final currentState = state;
+    if (currentState is PostLoaded) {
+      await postRepository.updateCommentCount(postId, 1);
+      final changedPostIndex =
+          currentState.posts.indexWhere((element) => element.id == postId);
+
+      final changedPosts = currentState.posts.toList()
+        ..[changedPostIndex] = currentState.posts[changedPostIndex].copyWith(
+            commentCount:
+                currentState.posts[changedPostIndex].commentCount + 1);
+
+      yield currentState.copyWith(posts: changedPosts);
+    }
+  }
+
+  Stream<PostState> _mapPostCommentRemovedToState(String postId) async* {
+    final currentState = state;
+    if (currentState is PostLoaded) {
+      await postRepository.updateCommentCount(postId, -1);
+      final changedPostIndex =
+          currentState.posts.indexWhere((element) => element.id == postId);
+
+      final changedPosts = currentState.posts.toList()
+        ..[changedPostIndex] = currentState.posts[changedPostIndex].copyWith(
+            commentCount:
+                currentState.posts[changedPostIndex].commentCount - 1);
+
+      yield currentState.copyWith(posts: changedPosts);
     }
   }
 
@@ -98,17 +134,14 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   Stream<PostState> _mapPostRefreshToState(PostLoaded currentState) async* {
-    final posts =
-        await postRepository.retrieveLatestPosts(currentState.lastPostTime);
+    final posts = await postRepository.setupFeed();
 
     yield PostLoaded(
-        posts: posts.toList()
-          ..addAll(currentState.posts)
-          ..sort((a, b) => b.postTime.compareTo(a.postTime)),
+        posts: posts,
         hasReachedMax: false,
         isRefreshed: true,
-        lastPostTime: posts.last.postTime,
-        firstPostTime: posts.first.postTime);
+        lastPostTime: posts?.last?.postTime,
+        firstPostTime: posts?.first.postTime);
   }
 
   Stream<PostState> _mapPostLikeToState(

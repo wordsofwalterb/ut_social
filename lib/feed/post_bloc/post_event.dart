@@ -21,6 +21,24 @@ class PostAdded extends PostEvent {
 
 class PostRefresh extends PostEvent {}
 
+class PostCommentAdded extends PostEvent {
+  final String postId;
+
+  const PostCommentAdded(this.postId);
+
+  @override
+  List<Object> get props => [postId];
+}
+
+class PostCommentRemoved extends PostEvent {
+  final String postId;
+
+  const PostCommentRemoved(this.postId);
+
+  @override
+  List<Object> get props => [postId];
+}
+
 class PostLike extends PostEvent {
   final String postId;
 

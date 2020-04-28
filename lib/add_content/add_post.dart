@@ -36,19 +36,19 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       context: context,
       builder: (BuildContext context) {
         return CupertinoActionSheet(
-          title: Text('Add Photo'),
+          title: const Text('Add Photo'),
           actions: <Widget>[
             CupertinoActionSheetAction(
-              child: Text('Take Photo'),
+              child: const Text('Take Photo'),
               onPressed: () => _handleImage(ImageSource.camera),
             ),
             CupertinoActionSheetAction(
-              child: Text('Choose From Gallery'),
+              child: const Text('Choose From Gallery'),
               onPressed: () => _handleImage(ImageSource.gallery),
             ),
           ],
           cancelButton: CupertinoActionSheetAction(
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
             onPressed: () => Navigator.pop(context),
           ),
         );
@@ -127,6 +127,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         _image = null;
         _isLoading = false;
       });
+      BlocProvider.of<PostBloc>(context).add(PostSetup());
+      Navigator.pop(context);
     }
   }
 

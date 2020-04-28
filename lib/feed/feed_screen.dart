@@ -35,7 +35,7 @@ class _FeedScreenState extends State<FeedScreen> {
   }
 
   Future<void> _onRefresh() async {
-    _postBloc.add(PostSetup());
+    _postBloc.add(PostRefresh());
   }
 
   @override
