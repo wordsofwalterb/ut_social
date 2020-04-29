@@ -2,10 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
-import 'package:ut_social/add_content/add_post.dart';
+
 import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
-import 'package:ut_social/feed/comment_bloc/comment_bloc.dart';
-import 'package:ut_social/feed/comment_repository.dart';
+
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 import 'package:ut_social/feed/post_repository.dart';
 
@@ -44,6 +43,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         body: PageView(
           controller: _pageController,
+          onPageChanged: (int index) {
+            setState(() {
+              _currentTab = index;
+            });
+          },
           children: <Widget>[
             FeedScreen(),
             SearchScreen(),
@@ -51,11 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ChatScreen(),
             NotificationScreen(),
           ],
-          onPageChanged: (int index) {
-            setState(() {
-              _currentTab = index;
-            });
-          },
         ),
         bottomNavigationBar: CupertinoTabBar(
           activeColor: Theme.of(context).primaryColor,

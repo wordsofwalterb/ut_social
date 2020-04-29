@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:like_button/like_button.dart';
-import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
+
 import 'package:ut_social/feed/comment_bloc/comment_bloc.dart';
 
 import '../entities/comment.dart';
@@ -60,7 +60,7 @@ class _CommentCardState extends State<CommentCard> {
                 padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
                 child: Text(
                   widget._comment.authorName,
-                  style: Theme.of(context).textTheme.subtitle,
+                  style: Theme.of(context).textTheme.subtitle2,
                   textAlign: TextAlign.left,
                 ),
               ),
@@ -87,7 +87,7 @@ class _CommentCardState extends State<CommentCard> {
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
             child: Text(
               widget._comment.body,
-              style: Theme.of(context).textTheme.body1,
+              style: Theme.of(context).textTheme.bodyText1,
             ),
           ),
 

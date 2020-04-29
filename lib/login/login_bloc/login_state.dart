@@ -8,7 +8,7 @@ class LoginState {
   final bool isFailure;
   final bool isPasswordObscured;
 
-  LoginState({
+  const LoginState({
     @required this.error,
     @required this.isSubmitting,
     @required this.isSuccess,
@@ -17,7 +17,7 @@ class LoginState {
   });
 
   factory LoginState.empty() {
-    return LoginState(
+    return const LoginState(
       error: null,
       isSubmitting: false,
       isSuccess: false,
@@ -26,7 +26,7 @@ class LoginState {
     );
   }
 
-  factory LoginState.loading(bool isPasswordObscured) {
+  factory LoginState.loading({bool isPasswordObscured}) {
     return LoginState(
       error: null,
       isSubmitting: true,
@@ -36,7 +36,7 @@ class LoginState {
     );
   }
 
-  factory LoginState.failure(bool isPasswordObscured, String error) {
+  factory LoginState.failure({bool isPasswordObscured, String error}) {
     return LoginState(
       error: error,
       isSubmitting: false,
@@ -46,7 +46,7 @@ class LoginState {
     );
   }
 
-  factory LoginState.success(bool isPasswordObscured) {
+  factory LoginState.success({bool isPasswordObscured}) {
     return LoginState(
       error: null,
       isSubmitting: false,

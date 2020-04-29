@@ -6,20 +6,16 @@ class NewContentScreen extends StatefulWidget {
 }
 
 class _NewContentScreenState extends State<NewContentScreen> {
-  final _textEditingController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        actions: <Widget>[
+        actions: const <Widget>[
           Text('Post'),
         ],
       ),
-      body: Container(
-        child: Text('hello'),
-      ),
+      body: const Text('hello'),
     );
   }
 }

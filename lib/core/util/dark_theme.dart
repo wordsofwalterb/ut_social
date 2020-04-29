@@ -2,99 +2,97 @@ import 'package:flutter/material.dart';
 
 ThemeData darkTheme() {
   return ThemeData(
-    cardColor: Color(0xff2e3035),
+    cardColor: const Color(0xff2e3035),
     textTheme: Typography.whiteCupertino.copyWith(
-      body1: Typography.whiteCupertino.body1.copyWith(
+      bodyText1: Typography.whiteCupertino.bodyText1.copyWith(
         fontFamily: 'SFProText',
-        color: Color(0xffffffff),
+        color: const Color(0xffffffff),
         fontSize: 16,
         fontWeight: FontWeight.w400,
         fontStyle: FontStyle.normal,
         letterSpacing: 0.2049999982118607,
-        
       ),
-      subtitle: Typography.whiteCupertino.body1.copyWith(
+      subtitle2: Typography.whiteCupertino.bodyText1.copyWith(
         fontFamily: 'SFProText',
-        color: Color(0xfffcfcfc),
+        color: const Color(0xfffcfcfc),
         fontSize: 17,
         fontWeight: FontWeight.w600,
         fontStyle: FontStyle.normal,
         letterSpacing: -0.1484128333333334,
       ),
-      caption: Typography.whiteCupertino.body1.copyWith(
+      caption: Typography.whiteCupertino.bodyText1.copyWith(
         fontFamily: 'SFProText',
-        color: Color(0xffcdcdcd),
+        color: const Color(0xffcdcdcd),
         fontSize: 13,
         fontWeight: FontWeight.w600,
         fontStyle: FontStyle.normal,
         letterSpacing: -0.1134921666666666,
       ),
-      overline: Typography.whiteCupertino.body1.copyWith(
+      overline: Typography.whiteCupertino.bodyText1.copyWith(
         fontFamily: 'SFProText',
-        color: Color(0xffcdcdcd),
+        color: const Color(0xffcdcdcd),
         fontSize: 13,
         fontWeight: FontWeight.w600,
         fontStyle: FontStyle.normal,
         letterSpacing: -0.1134921666666666,
       ),
-      body2: Typography.whiteCupertino.body1.copyWith(
+      bodyText2: Typography.whiteCupertino.bodyText2.copyWith(
         fontFamily: 'SFProText',
-        color: Color(0xff939393),
+        color: const Color(0xff939393),
         fontSize: 14,
         fontWeight: FontWeight.w700,
         fontStyle: FontStyle.normal,
         letterSpacing: -0.104762,
       ),
     ),
-    buttonTheme: ButtonThemeData(
+    buttonTheme: const ButtonThemeData(
       textTheme: ButtonTextTheme.primary,
       buttonColor: Color(0xff2e3035),
     ),
-    primaryColor: Color(0xffce7224),
-    backgroundColor: Color(0xff2e3035),
+    primaryColor: const Color(0xffce7224),
+    backgroundColor: const Color(0xff2e3035),
     brightness: Brightness.dark,
     fontFamily: 'SFProText',
-    scaffoldBackgroundColor: Color(0xff202225),
+    scaffoldBackgroundColor: const Color(0xff202225),
     inputDecorationTheme: InputDecorationTheme(
-      focusedBorder: new OutlineInputBorder(
+      focusedBorder: const OutlineInputBorder(
         borderSide: BorderSide.none,
-        borderRadius: const BorderRadius.all(
-          const Radius.circular(4),
+        borderRadius: BorderRadius.all(
+          Radius.circular(4),
         ),
       ),
-      enabledBorder: new OutlineInputBorder(
+      enabledBorder: const OutlineInputBorder(
         borderSide: BorderSide.none,
-        borderRadius: const BorderRadius.all(
-          const Radius.circular(4),
+        borderRadius: BorderRadius.all(
+          Radius.circular(4),
         ),
       ),
-      errorBorder: new OutlineInputBorder(
+      errorBorder: const OutlineInputBorder(
         borderSide: BorderSide.none,
-        borderRadius: const BorderRadius.all(
-          const Radius.circular(4),
+        borderRadius: BorderRadius.all(
+          Radius.circular(4),
         ),
       ),
-      disabledBorder: new OutlineInputBorder(
+      disabledBorder: const OutlineInputBorder(
         borderSide: BorderSide.none,
-        borderRadius: const BorderRadius.all(
-          const Radius.circular(4),
+        borderRadius: BorderRadius.all(
+          Radius.circular(4),
         ),
       ),
-      border: new OutlineInputBorder(
+      border: const OutlineInputBorder(
         borderSide: BorderSide.none,
-        borderRadius: const BorderRadius.all(
-          const Radius.circular(4),
+        borderRadius: BorderRadius.all(
+          Radius.circular(4),
         ),
       ),
       filled: true,
-      fillColor: Color(0xff2e3035),
+      fillColor: const Color(0xff2e3035),
       labelStyle: TextStyle(
-        color: Color(0xffcbcbcb),
+        color: const Color(0xffcbcbcb),
         fontSize: 16,
         fontWeight: FontWeight.w400,
         fontStyle: FontStyle.normal,
       ),
     ),
-    
   );
 }

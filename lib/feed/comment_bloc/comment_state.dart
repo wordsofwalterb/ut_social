@@ -13,7 +13,9 @@ class CommentsInitial extends CommentsState {
   @override
   final String postId;
   @override
-  final List<Comment> comments = const [];
+  final List<Comment>
+      comments = //ignore: avoid_field_initializers_in_const_classes
+      const [];
 
   const CommentsInitial({@required this.postId});
 
@@ -55,8 +57,10 @@ class CommentsEmpty extends CommentsState {
   @override
   final String postId;
   @override
-  final List<Comment> comments = const [];
+  final List<Comment>
+      comments = //ignore: avoid_field_initializers_in_const_classes
 
+      const [];
   const CommentsEmpty({
     @required this.postId,
   });

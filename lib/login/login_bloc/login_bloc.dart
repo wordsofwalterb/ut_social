@@ -11,7 +11,7 @@ part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  UserRepository _userRepository;
+  final UserRepository _userRepository;
 
   LoginBloc({
     @required UserRepository userRepository,
@@ -43,10 +43,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     String email,
     String password,
   }) async* {
-    yield LoginState.loading(state.isPasswordObscured);
+    yield LoginState.loading(isPasswordObscured: state.isPasswordObscured);
     try {
       await _userRepository.signInWithCredentials(email, password);
-      yield LoginState.success(state.isPasswordObscured);
+      yield LoginState.success(isPasswordObscured: state.isPasswordObscured);
     } on PlatformException catch (error) {
       String errorMessage;
       switch (error.code) {
@@ -69,9 +69,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           errorMessage = 'Email and Password signup is not enabled.';
           break;
         default:
-          errorMessage = "An undefined Error happened.";
+          errorMessage = 'An undefined Error happened.';
       }
-      yield LoginState.failure(state.isPasswordObscured, errorMessage);
+      yield LoginState.failure(
+          isPasswordObscured: state.isPasswordObscured, error: errorMessage);
     }
   }
 }

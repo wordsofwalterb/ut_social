@@ -88,7 +88,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     String lastName,
   ) async* {
     String errorMessage;
-    yield RegisterState.loading(state.isPasswordObscured);
+    yield RegisterState.loading(isPasswordObscured: state.isPasswordObscured);
     try {
       if (!Validators.isValidFirstName(firstName)) {
         throw ValidationException('ERROR_FIRST_NAME');
@@ -108,7 +108,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         firstName: firstName,
         lastName: lastName,
       );
-      yield RegisterState.success(state.isPasswordObscured);
+      yield RegisterState.success(isPasswordObscured: state.isPasswordObscured);
     } on ValidationException catch (error) {
       switch (error.code) {
         case 'ERROR_FIRST_NAME':
@@ -124,7 +124,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           errorMessage = 'UTexas email is required';
           break;
       }
-      yield RegisterState.failure(state.isPasswordObscured, errorMessage);
+      yield RegisterState.failure(
+          isPasswordObscured: state.isPasswordObscured, error: errorMessage);
     } on PlatformException catch (error) {
       switch (error.code) {
         case 'ERROR_WEAK_PASSWORD':
@@ -139,7 +140,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         default:
           errorMessage = 'An undefined error happened.';
       }
-      yield RegisterState.failure(state.isPasswordObscured, errorMessage);
+      yield RegisterState.failure(
+          isPasswordObscured: state.isPasswordObscured, error: errorMessage);
     }
   }
 }

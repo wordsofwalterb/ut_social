@@ -12,7 +12,7 @@ class RegisterState {
 
   bool get isFormValid => isEmailValid && isPasswordValid;
 
-  RegisterState({
+  const RegisterState({
     @required this.error,
     @required this.isPasswordObscured,
     @required this.isEmailValid,
@@ -23,7 +23,7 @@ class RegisterState {
   });
 
   factory RegisterState.initial() {
-    return RegisterState(
+    return const RegisterState(
       error: null,
       isPasswordObscured: true,
       isEmailValid: true,
@@ -34,7 +34,7 @@ class RegisterState {
     );
   }
 
-  factory RegisterState.loading(bool isPasswordObscured) {
+  factory RegisterState.loading({bool isPasswordObscured}) {
     return RegisterState(
       error: null,
       isPasswordObscured: isPasswordObscured,
@@ -46,7 +46,7 @@ class RegisterState {
     );
   }
 
-  factory RegisterState.failure(bool isPasswordObscured, String error) {
+  factory RegisterState.failure({bool isPasswordObscured, String error}) {
     return RegisterState(
       error: error,
       isPasswordObscured: isPasswordObscured,
@@ -58,7 +58,7 @@ class RegisterState {
     );
   }
 
-  factory RegisterState.success(bool isPasswordObscured) {
+  factory RegisterState.success({bool isPasswordObscured}) {
     return RegisterState(
       error: null,
       isPasswordObscured: isPasswordObscured,

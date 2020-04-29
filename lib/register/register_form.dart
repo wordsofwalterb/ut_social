@@ -5,6 +5,7 @@ import '../core/blocs/authentication_bloc/authentication_bloc.dart';
 import 'bloc/register_bloc.dart';
 
 class RegisterForm extends StatefulWidget {
+  @override
   State<RegisterForm> createState() => _RegisterFormState();
 }
 
@@ -44,7 +45,7 @@ class _RegisterFormState extends State<RegisterForm> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
+      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
       child: BlocListener<RegisterBloc, RegisterState>(
         listener: (context, state) {
           if (state.isFailure) {
@@ -70,9 +71,9 @@ class _RegisterFormState extends State<RegisterForm> {
                     children: [
                       Text(
                         'Creating Account...',
-                        style: Theme.of(context).textTheme.subhead,
+                        style: Theme.of(context).textTheme.subtitle1,
                       ),
-                      CircularProgressIndicator(),
+                      const CircularProgressIndicator(),
                     ],
                   ),
                   backgroundColor: Theme.of(context).backgroundColor,
@@ -101,11 +102,11 @@ class _RegisterFormState extends State<RegisterForm> {
                       controller: _firstNameController,
                       decoration: InputDecoration(
                         alignLabelWithHint: true,
-                        hasFloatingPlaceholder: false,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
                         hintText: 'First Name',
                         errorText:
-                            (state.error == "First name needs to be provided")
-                                ? "First name needs to be provided"
+                            (state.error == 'First name needs to be provided')
+                                ? 'First name needs to be provided'
                                 : null,
                       ),
                       keyboardType: TextInputType.emailAddress,
@@ -123,10 +124,10 @@ class _RegisterFormState extends State<RegisterForm> {
                       controller: _lastNameController,
                       decoration: InputDecoration(
                         alignLabelWithHint: true,
-                        hasFloatingPlaceholder: false,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
                         hintText: 'Last Name',
                         errorText:
-                            (state.error == "Last name needs to be provided")
+                            (state.error == 'Last name needs to be provided')
                                 ? state.error
                                 : null,
                       ),
@@ -144,14 +145,14 @@ class _RegisterFormState extends State<RegisterForm> {
                       controller: _emailController,
                       decoration: InputDecoration(
                         alignLabelWithHint: true,
-                        hasFloatingPlaceholder: false,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
                         hintText: 'UT Email',
                         errorText: (state.error ==
                                     'Email format is incorrect' ||
                                 state.error == 'UTexas email is required' ||
                                 state.error ==
                                     'User with this email already exists.' ||
-                                state.error == "Invalid email format")
+                                state.error == 'Invalid email format')
                             ? state.error
                             : null,
                       ),
@@ -169,7 +170,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       controller: _passwordController,
                       decoration: InputDecoration(
                         alignLabelWithHint: true,
-                        hasFloatingPlaceholder: false,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
                         errorText: (state.error == 'Password is too weak')
                             ? 'Password too weak, use atleast 8 characters and a number'
                             : null,
@@ -201,9 +202,9 @@ class _RegisterFormState extends State<RegisterForm> {
                           Container(
                             height: 50,
                             child: FlatButton(
-                              child: const Text('Register'),
                               color: Theme.of(context).backgroundColor,
                               onPressed: _onFormSubmitted,
+                              child: const Text('Register'),
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -220,7 +221,7 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
-  _fieldFocusChange(
+  void _fieldFocusChange(
       BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);

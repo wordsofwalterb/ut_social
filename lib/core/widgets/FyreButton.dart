@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'; // ignore: file_names
 
 class FyreButton extends StatelessWidget {
   @override
@@ -8,7 +8,7 @@ class FyreButton extends StatelessWidget {
       child: FlatButton(
         onPressed: () => {},
         color: Colors.blue,
-        padding: EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(10.0),
         child: Text(
           'Login',
           style: TextStyle(

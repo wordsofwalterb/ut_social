@@ -64,7 +64,7 @@ class _PostCardState extends State<PostCard> {
                 padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
                 child: Text(
                   widget._post.authorName,
-                  style: Theme.of(context).textTheme.subtitle,
+                  style: Theme.of(context).textTheme.subtitle2,
                   textAlign: TextAlign.left,
                 ),
               ),
@@ -91,7 +91,7 @@ class _PostCardState extends State<PostCard> {
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
             child: Text(
               widget._post.body,
-              style: Theme.of(context).textTheme.body1,
+              style: Theme.of(context).textTheme.bodyText1,
             ),
           ),
 
@@ -101,39 +101,42 @@ class _PostCardState extends State<PostCard> {
             padding: const EdgeInsets.fromLTRB(12, 6, 12, 12),
             child:
                 Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-              (!widget.disableComment)
-                  ? GestureDetector(
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) {
-                          return BlocProvider<CommentsBloc>(
-                            create: (context) => CommentsBloc(
-                              widget._post.id,
-                              commentRepository: FirebaseCommentsRepository(),
-                            ),
-                            child: BlocProvider.value(
-                                value: postBloc,
-                                child: CommentScreen(widget._post)),
-                          );
-                        }),
-                      ),
-                      child: const Icon(
-                        SFSymbols.bubble_left,
-                        size: 20,
-                      ),
-                    )
-                  : Container(),
-              (!widget.disableComment)
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                      child: Text(widget._post.commentCount.toString(),
-                          style: Theme.of(context).textTheme.overline),
-                    )
-                  : Container(),
-              (!widget.disableComment)
-                  ? const Spacer(
-                      flex: 1,
-                    )
-                  : Container(),
+              if (!widget.disableComment)
+                GestureDetector(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) {
+                      return BlocProvider<CommentsBloc>(
+                        create: (context) => CommentsBloc(
+                          widget._post.id,
+                          commentRepository: FirebaseCommentsRepository(),
+                        ),
+                        child: BlocProvider.value(
+                            value: postBloc,
+                            child: CommentScreen(widget._post)),
+                      );
+                    }),
+                  ),
+                  child: const Icon(
+                    SFSymbols.bubble_left,
+                    size: 20,
+                  ),
+                )
+              else
+                Container(),
+              if (!widget.disableComment)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                  child: Text(widget._post.commentCount.toString(),
+                      style: Theme.of(context).textTheme.overline),
+                )
+              else
+                Container(),
+              if (!widget.disableComment)
+                const Spacer(
+                  flex: 1,
+                )
+              else
+                Container(),
               LikeCounter(widget._post.id),
               const Spacer(
                 flex: 9,

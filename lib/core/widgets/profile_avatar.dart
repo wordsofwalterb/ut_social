@@ -15,7 +15,7 @@ class ProfileAvatar extends StatelessWidget {
   final double size;
   final AvatarOutline outline;
 
-  ProfileAvatar(
+  const ProfileAvatar(
       {@required this.avatarUrl,
       @required this.userId,
       this.size = 37,
@@ -41,7 +41,7 @@ class ProfileAvatar extends StatelessWidget {
             height: size,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              image: DecorationImage(
+              image: const DecorationImage(
                 image: AssetImage(
                   'assets/images/default.jpg',
                 ),

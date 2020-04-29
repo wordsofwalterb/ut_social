@@ -162,9 +162,9 @@ class _CommentScreenState extends State<CommentScreen> {
         return SliverList(
           delegate: SliverChildListDelegate(
             [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 40.0),
-                child: const Center(
+              const Padding(
+                padding: EdgeInsets.only(bottom: 40.0),
+                child: Center(
                   child: Text('no comments'),
                 ),
               ),

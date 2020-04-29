@@ -10,27 +10,28 @@ class StorageService {
   static Future<String> uploadUserProfileImage(
       String url, File imageFile) async {
     String photoId = Uuid().v4();
-    File image = await compressImage(photoId, imageFile);
+    final File image = await compressImage(photoId, imageFile);
 
     if (url.isNotEmpty) {
       // Updating user profile image
-      RegExp exp = RegExp(r'userProfile_(.*).jpg');
+      final RegExp exp = RegExp(r'userProfile_(.*).jpg');
       photoId = exp.firstMatch(url)[1];
     }
 
-    StorageUploadTask uploadTask = FirebaseStorage.instance
+    final StorageUploadTask uploadTask = FirebaseStorage.instance
         .ref()
         .child('images/users/userProfile_$photoId.jpg')
         .putFile(image);
-    StorageTaskSnapshot storageSnap = await uploadTask.onComplete;
-    String downloadUrl = await storageSnap.ref.getDownloadURL() as String;
+    final StorageTaskSnapshot storageSnap = await uploadTask.onComplete;
+    final String downloadUrl = await storageSnap.ref.getDownloadURL() as String;
     return downloadUrl;
   }
 
   static Future<File> compressImage(String photoId, File image) async {
     final tempDir = await getTemporaryDirectory();
     final path = tempDir.path;
-    File compressedImageFile = await FlutterImageCompress.compressAndGetFile(
+    final File compressedImageFile =
+        await FlutterImageCompress.compressAndGetFile(
       image.absolute.path,
       '$path/img_$photoId.jpg',
       quality: 70,
@@ -39,14 +40,14 @@ class StorageService {
   }
 
   static Future<String> uploadPost(File imageFile) async {
-    String photoId = Uuid().v4();
-    File image = await compressImage(photoId, imageFile);
-    StorageUploadTask uploadTask = FirebaseStorage.instance
+    final String photoId = Uuid().v4();
+    final File image = await compressImage(photoId, imageFile);
+    final StorageUploadTask uploadTask = FirebaseStorage.instance
         .ref()
         .child('images/posts/post_$photoId.jpg')
         .putFile(image);
-    StorageTaskSnapshot storageSnap = await uploadTask.onComplete;
-    String downloadUrl = await storageSnap.ref.getDownloadURL() as String;
+    final StorageTaskSnapshot storageSnap = await uploadTask.onComplete;
+    final String downloadUrl = await storageSnap.ref.getDownloadURL() as String;
     return downloadUrl;
   }
 }

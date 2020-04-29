@@ -27,11 +27,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     super.dispose();
   }
 
-  _showSelectImageDialog() {
+  dynamic _showSelectImageDialog() {
     return Platform.isIOS ? _iosBottomSheet() : _androidDialog();
   }
 
-  _iosBottomSheet() {
+  dynamic _iosBottomSheet() {
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
@@ -39,46 +39,46 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           title: const Text('Add Photo'),
           actions: <Widget>[
             CupertinoActionSheetAction(
-              child: const Text('Take Photo'),
               onPressed: () => _handleImage(ImageSource.camera),
+              child: const Text('Take Photo'),
             ),
             CupertinoActionSheetAction(
-              child: const Text('Choose From Gallery'),
               onPressed: () => _handleImage(ImageSource.gallery),
+              child: const Text('Choose From Gallery'),
             ),
           ],
           cancelButton: CupertinoActionSheetAction(
-            child: const Text('Cancel'),
             onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
           ),
         );
       },
     );
   }
 
-  _androidDialog() {
+  dynamic _androidDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: Text('Add Photo'),
+          title: const Text('Add Photo'),
           children: <Widget>[
             SimpleDialogOption(
-              child: Text('Take Photo'),
               onPressed: () => _handleImage(ImageSource.camera),
+              child: const Text('Take Photo'),
             ),
             SimpleDialogOption(
-              child: Text('Choose From Gallery'),
               onPressed: () => _handleImage(ImageSource.gallery),
+              child: const Text('Choose From Gallery'),
             ),
             SimpleDialogOption(
+              onPressed: () => Navigator.pop(context),
               child: Text(
                 'Cancel',
                 style: TextStyle(
                   color: Colors.redAccent,
                 ),
               ),
-              onPressed: () => Navigator.pop(context),
             ),
           ],
         );
@@ -86,27 +86,27 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     );
   }
 
-  _handleImage(ImageSource source) async {
+  Future<void> _handleImage(ImageSource source) async {
     Navigator.pop(context);
     FocusScope.of(context).unfocus();
     File imageFile = await ImagePicker.pickImage(source: source);
     if (imageFile != null) {
-      imageFile = await _cropImage(imageFile) as File;
+      imageFile = await _cropImage(imageFile);
       setState(() {
         _image = imageFile;
       });
     }
   }
 
-  _cropImage(File imageFile) async {
-    File croppedImage = await ImageCropper.cropImage(
+  Future<File> _cropImage(File imageFile) async {
+    final File croppedImage = await ImageCropper.cropImage(
       sourcePath: imageFile.path,
-      aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+      aspectRatio: const CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
     );
     return croppedImage;
   }
 
-  _submit() async {
+  Future<void> _submit() async {
     if (!_isLoading && _caption.isNotEmpty) {
       setState(() {
         _isLoading = true;
@@ -144,7 +144,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             onPressed: _submit,
             child: Text(
               'Post',
-              style: Theme.of(context).textTheme.subhead.copyWith(
+              style: Theme.of(context).textTheme.subtitle1.copyWith(
                     color: Theme.of(context).primaryColor,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -161,19 +161,20 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                _isLoading
-                    ? Padding(
-                        padding: EdgeInsets.only(bottom: 10.0),
-                        child: LinearProgressIndicator(
-                          backgroundColor: Colors.blue[200],
-                          valueColor: AlwaysStoppedAnimation(Colors.blue),
-                        ),
-                      )
-                    : SizedBox.shrink(),
+                if (_isLoading)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: LinearProgressIndicator(
+                      backgroundColor: Colors.blue[200],
+                      valueColor: AlwaysStoppedAnimation(Colors.blue),
+                    ),
+                  )
+                else
+                  const SizedBox.shrink(),
                 GestureDetector(
                   onTap: _showSelectImageDialog,
                   child: Container(
-                    margin: EdgeInsets.only(left: 20, top: 20),
+                    margin: const EdgeInsets.only(left: 20, top: 20),
                     height: width / 3,
                     width: width / 3,
                     color: Theme.of(context).backgroundColor,
@@ -189,12 +190,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           ),
                   ),
                 ),
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: TextField(
                     controller: _captionController,
-                    style: TextStyle(fontSize: 18.0),
+                    style: const TextStyle(fontSize: 18.0),
                     autofocus: true,
                     keyboardType: TextInputType.multiline,
                     maxLines: 3,

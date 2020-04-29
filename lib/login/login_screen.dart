@@ -9,7 +9,7 @@ import 'login_bloc/login_bloc.dart';
 class LoginScreen extends StatelessWidget {
   final UserRepository _userRepository;
 
-  LoginScreen({Key key, @required UserRepository userRepository})
+  const LoginScreen({Key key, @required UserRepository userRepository})
       : assert(userRepository != null),
         _userRepository = userRepository,
         super(key: key);
@@ -28,11 +28,12 @@ class LoginScreen extends StatelessWidget {
 class LoginForm extends StatefulWidget {
   final UserRepository _userRepository;
 
-  LoginForm({Key key, @required UserRepository userRepository})
+  const LoginForm({Key key, @required UserRepository userRepository})
       : assert(userRepository != null),
         _userRepository = userRepository,
         super(key: key);
 
+  @override
   State<LoginForm> createState() => _LoginFormState();
 }
 
@@ -92,9 +93,9 @@ class _LoginFormState extends State<LoginForm> {
                   children: [
                     Text(
                       'Logging In...',
-                      style: Theme.of(context).textTheme.subhead,
+                      style: Theme.of(context).textTheme.subtitle1,
                     ),
-                    CircularProgressIndicator(),
+                    const CircularProgressIndicator(),
                   ],
                 ),
                 backgroundColor: Theme.of(context).backgroundColor,
@@ -106,26 +107,27 @@ class _LoginFormState extends State<LoginForm> {
         }
       },
       child: GestureDetector(
-        onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
+        onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
         child: BlocBuilder<LoginBloc, LoginState>(
           builder: (context, state) {
             return Padding(
-              padding: EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20.0),
               child: Form(
                 child: ListView(
                   children: <Widget>[
                     SizedBox(height: MediaQuery.of(context).size.height * .1),
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
                       child:
                           Image.asset('assets/images/appbar.png', height: 90),
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     TextFormField(
                       controller: _emailController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         alignLabelWithHint: true,
-                        hasFloatingPlaceholder: false,
+                        // hasFloatingPlaceholder: false,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
                         hintText: 'UT Email',
                       ),
                       keyboardType: TextInputType.emailAddress,
@@ -137,12 +139,13 @@ class _LoginFormState extends State<LoginForm> {
                         _fieldFocusChange(context, _emailFocus, _passwordFocus);
                       },
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextFormField(
                       controller: _passwordController,
                       decoration: InputDecoration(
                         alignLabelWithHint: true,
-                        hasFloatingPlaceholder: false,
+                        // hasFloatingPlaceholder: false,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
                         hintText: 'Password',
                         suffixIcon: GestureDetector(
                           onTap: _onPasswordObscuredChanged,
@@ -164,50 +167,50 @@ class _LoginFormState extends State<LoginForm> {
                       },
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(vertical: 15),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
                       width: double.infinity,
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: Text(
                           'Lost Password',
-                          style: Theme.of(context).textTheme.body1.copyWith(
-                                color: Color(0xffcbcbcb),
+                          style: Theme.of(context).textTheme.bodyText1.copyWith(
+                                color: const Color(0xffcbcbcb),
                               ),
                         ),
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
                           Container(
                             height: 50,
                             child: FlatButton(
-                              child: Text('Login'),
                               color: Theme.of(context).backgroundColor,
                               onPressed: _onFormSubmitted,
+                              child: const Text('Login'),
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Container(
                             height: 50,
                             decoration: BoxDecoration(
                               border: Border.all(
                                 width: 1.0,
-                                color: Color(0xffc4c4c4),
+                                color: const Color(0xffc4c4c4),
                               ),
                             ),
                             child: FlatButton(
-                              child: Text(
-                                'Create an Account',
-                                style: TextStyle(color: Color(0xffc4c4c4)),
-                              ),
                               onPressed: () => Navigator.of(context).push(
                                 MaterialPageRoute(builder: (context) {
                                   return RegisterScreen(
                                       userRepository: _userRepository);
                                 }),
+                              ),
+                              child: const Text(
+                                'Create an Account',
+                                style: TextStyle(color: Color(0xffc4c4c4)),
                               ),
                             ),
                           ),
@@ -224,7 +227,7 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  _fieldFocusChange(
+  void _fieldFocusChange(
       BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);

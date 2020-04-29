@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -34,19 +33,19 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   @override
-  get initialState => PostInitial();
+  PostInitial get initialState => PostInitial();
 
   @override
   Stream<Transition<PostEvent, PostState>> transformEvents(
-    events,
-    next,
+    Stream<PostEvent> events,
+    Stream<Transition<PostEvent, PostState>> Function(PostEvent) next,
   ) {
-    var nonDebounceStream = events.where((event) {
-      return (event is! PostsFetch && event is! PostLike);
+    final nonDebounceStream = events.where((event) {
+      return event is! PostsFetch && event is! PostLike;
     });
-    var debounceStream = events.where((event) {
-      return (event is PostsFetch || event is PostLike);
-    }).debounceTime(Duration(milliseconds: 300));
+    final debounceStream = events.where((event) {
+      return event is PostsFetch || event is PostLike;
+    }).debounceTime(const Duration(milliseconds: 300));
 
     return super
         .transformEvents(nonDebounceStream.mergeWith([debounceStream]), next);
@@ -141,31 +140,31 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         hasReachedMax: false,
         isRefreshed: true,
         lastPostTime: posts?.last?.postTime,
-        firstPostTime: posts?.first.postTime);
+        firstPostTime: posts?.first?.postTime);
   }
 
   Stream<PostState> _mapPostLikeToState(
       PostLoaded currentState, String postId) async* {
-    var authState = authBloc.state;
+    final authState = authBloc.state;
     if (authState is AuthAuthenticated) {
       // Find changed post and add like
-      var initialPost =
+      final initialPost =
           currentState.posts.firstWhere((val) => val.id == postId);
-      var newLikedBy = initialPost.likedBy.toList();
+      final newLikedBy = initialPost.likedBy.toList();
       newLikedBy.addAll([authState.currentUser.id]);
-      var changedPost = initialPost.copyWith(
+      final changedPost = initialPost.copyWith(
           likeCount: initialPost.likeCount + 1, likedBy: newLikedBy);
 
       // Propagate to database
 
       await postRepository.likePost(postId, authState.currentUser.id);
 
-      var newPosts = currentState.posts.toList();
+      final newPosts = currentState.posts.toList();
 
       newPosts.removeWhere((val) => val.id == postId);
       newPosts.add(changedPost);
 
-      var newState = currentState.copyWith(
+      final newState = currentState.copyWith(
         posts: newPosts,
         lastPostLiked: postId,
       );
@@ -178,14 +177,14 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   Stream<PostState> _mapPostUnlikeToState(
       PostLoaded currentState, String postId) async* {
-    var authState = authBloc.state;
+    final authState = authBloc.state;
     if (authState is AuthAuthenticated) {
       // Find changed post and unlike
-      var initialPost =
+      final initialPost =
           currentState.posts.firstWhere((val) => val.id == postId);
-      var newLikedBy = initialPost.likedBy.toList();
+      final newLikedBy = initialPost.likedBy.toList();
       newLikedBy.removeWhere((i) => i == authState.currentUser.id);
-      var changedPost = initialPost.copyWith(
+      final changedPost = initialPost.copyWith(
           likeCount: initialPost.likeCount - 1, likedBy: newLikedBy);
 
       // Propagate to database
@@ -193,7 +192,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       await postRepository.unlikePost(postId, authState.currentUser.id);
 
       print(changedPost.likeCount);
-      var newState = currentState.copyWith(
+      final newState = currentState.copyWith(
           lastPostLiked: postId,
           posts: currentState.posts.toList()
             ..removeWhere((val) => val.id == postId)
@@ -205,7 +204,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   Stream<PostState> _mapPostFetchToState(PostLoaded currentState) async* {
-    var posts = await postRepository.fetchNextPage(
+    final posts = await postRepository.fetchNextPage(
         startAfter: currentState.lastPostTime, limit: 5);
 
     yield posts.isEmpty

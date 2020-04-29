@@ -12,15 +12,15 @@ import 'core/splash_screen.dart';
 import 'core/util/dark_theme.dart';
 import 'login/login_screen.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   BlocSupervisor.delegate = SimpleBlocDelegate();
 
   final prefs = await SharedPreferences.getInstance();
 
   if (prefs.getBool('first_run') ?? true) {
-    print("Clearing cache");
-    FlutterSecureStorage storage = FlutterSecureStorage();
+    print('Clearing cache');
+    const FlutterSecureStorage storage = FlutterSecureStorage();
     FirebaseAuth.instance.signOut();
 
     await storage.deleteAll();
@@ -42,7 +42,7 @@ void main() async {
 class App extends StatelessWidget {
   final UserRepository _userRepository;
 
-  App({Key key, @required UserRepository userRepository})
+  const App({Key key, @required UserRepository userRepository})
       : assert(userRepository != null),
         _userRepository = userRepository,
         super(key: key);
