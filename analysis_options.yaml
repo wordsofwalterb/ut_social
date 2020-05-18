@@ -74,7 +74,7 @@ linter:
     use_rethrow_when_possible : true
     use_function_type_syntax_for_parameters : true
     use_setters_to_change_properties : true
-    avoid_as : true
+    avoid_as : false
   
     # Back to the 80s
     lines_longer_than_80_chars: false

@@ -52,7 +52,6 @@ class _CommentCardState extends State<CommentCard> {
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
               child: ProfileAvatar(
                 avatarUrl: widget._comment.authorAvatar,
-                userId: widget._comment.authorId,
               ),
             ),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

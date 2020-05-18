@@ -10,6 +10,7 @@ import 'package:ut_social/feed/comment_repository.dart';
 
 import 'package:ut_social/feed/comment_screen.dart';
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
+import 'package:ut_social/profile/profile_screen.dart';
 
 import '../entities/post.dart';
 import '../util/helper.dart';
@@ -55,8 +56,14 @@ class _PostCardState extends State<PostCard> {
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
               child: ProfileAvatar(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return ProfileScreen(widget._post.authorId);
+                    },
+                  ),
+                ),
                 avatarUrl: widget._post.avatarUrl,
-                userId: widget._post.authorId,
               ),
             ),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

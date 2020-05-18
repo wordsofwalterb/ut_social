@@ -21,11 +21,11 @@ Future<void> main() async {
   if (prefs.getBool('first_run') ?? true) {
     print('Clearing cache');
     const FlutterSecureStorage storage = FlutterSecureStorage();
-    FirebaseAuth.instance.signOut();
+    await FirebaseAuth.instance.signOut();
 
     await storage.deleteAll();
 
-    prefs.setBool('first_run', false);
+    await prefs.setBool('first_run', false);
   }
 
   final UserRepository userRepository = UserRepository();

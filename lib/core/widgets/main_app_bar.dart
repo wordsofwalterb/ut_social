@@ -8,7 +8,9 @@ PreferredSizeWidget mainAppBar(BuildContext context) {
   return AppBar(
     leading: const Padding(
       padding: EdgeInsets.all(10.0),
-      child: ProfileAvatar(avatarUrl: '', userId: '1'),
+      child: ProfileAvatar(
+        avatarUrl: '',
+      ),
     ),
     title: Center(
       child: Container(

@@ -4,69 +4,93 @@ import 'package:flutter/material.dart';
 enum AvatarOutline {
   none,
   white,
+  dark,
 }
 
-/// Takes user to retrieve profile image, if image is not
-/// available then uses default image. Optional parameters for
-/// width and height.
+/// Displays a cached profile avatar
+///
+/// If [avatarUrl] is null will build using a default image
+/// from the assets folder at [defaultImageSrc]
 class ProfileAvatar extends StatelessWidget {
+  /// The url of the avatar
   final String avatarUrl;
-  final String userId;
+
+  /// The size of the avatar
   final double size;
+
+  /// The radius of the border
+  final double radius;
+
+  /// The src of the default image
+  final String defaultImageSrc;
+
+  /// When happens when the profile image is pressed
+  final GestureTapCallback onPressed;
+
+  /// The type of outline to apply
   final AvatarOutline outline;
 
-  const ProfileAvatar(
-      {@required this.avatarUrl,
-      @required this.userId,
-      this.size = 37,
-      this.outline = AvatarOutline.none});
+  final Color borderColor;
+  final double borderWidth;
+
+  /// Displays a cached profile avatar
+  ///
+  /// If [avatarUrl] is null will build using a default image
+  /// from the assets folder at [defaultImageSrc]
+  const ProfileAvatar({
+    this.avatarUrl,
+    this.size = 37,
+    this.radius = 8,
+    this.onPressed,
+    this.outline,
+    this.borderColor,
+    this.borderWidth = 0,
+    this.defaultImageSrc = 'assets/images/default.jpg',
+  });
 
   @override
   Widget build(BuildContext context) {
-    return (avatarUrl != null && avatarUrl != '')
-        ? CachedNetworkImage(
-            imageUrl: avatarUrl,
-            imageBuilder: (context, imageProvider) => Container(
+    return GestureDetector(
+      onTap: onPressed,
+      child: (avatarUrl != null && avatarUrl != '')
+          ? CachedNetworkImage(
+              imageUrl: avatarUrl,
+              imageBuilder: (context, imageProvider) => Container(
+                width: size,
+                height: size,
+                decoration: BoxDecoration(
+                  border: (borderColor != null)
+                      ? Border.all(
+                          color: borderColor,
+                          width: borderWidth,
+                        )
+                      : Border.all(),
+                  borderRadius: BorderRadius.circular(radius),
+                  image:
+                      DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                ),
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+            )
+          : Container(
               width: size,
               height: size,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-              ),
-            ),
-            errorWidget: (context, url, error) => Icon(Icons.error),
-          )
-        : Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              image: const DecorationImage(
-                image: AssetImage(
-                  'assets/images/default.jpg',
+                border: (borderColor != null)
+                    ? Border.all(
+                        color: borderColor,
+                        width: borderWidth,
+                      )
+                    : Border.all(),
+                borderRadius: BorderRadius.circular(radius),
+                image: DecorationImage(
+                  image: AssetImage(
+                    defaultImageSrc,
+                  ),
+                  fit: BoxFit.cover,
                 ),
-                fit: BoxFit.cover,
               ),
             ),
-          );
+    );
   }
-
-  // _boxDecoration() {
-  //   switch (outline) {
-  //     case AvatarOutline.white:
-  //       {
-  //         return BoxDecoration(
-  //           border: Border.all(width: 1, color: Colors.white),
-  //           borderRadius: BorderRadius.circular(8),
-  //         );
-  //       }
-
-  //     case AvatarOutline.none:
-  //       {
-  //         return BoxDecoration(
-  //           borderRadius: BorderRadius.circular(8),
-  //         );
-  //       }
-  //   }
-  // }
 }
