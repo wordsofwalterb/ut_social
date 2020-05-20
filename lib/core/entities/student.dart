@@ -72,6 +72,8 @@ class StudentChatSnippet extends StudentSnippet with EquatableMixin {
 class Student extends StudentSnippet {
   final String firstName;
   final String lastName;
+  final String bio;
+  final String coverPhotoUrl;
   final String email;
   @override
   final String fullName;
@@ -83,6 +85,8 @@ class Student extends StudentSnippet {
   const Student({
     this.firstName,
     this.lastName,
+    this.bio,
+    this.coverPhotoUrl,
     this.email,
     @required this.fullName,
     this.avatarUrl,
@@ -93,6 +97,8 @@ class Student extends StudentSnippet {
   Student copyWith({
     String firstName,
     String lastName,
+    String bio,
+    String coverPhotoUrl,
     String email,
     String fullName,
     String avatarUrl,
@@ -101,6 +107,8 @@ class Student extends StudentSnippet {
     return Student(
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
+      bio: bio ?? this.bio,
+      coverPhotoUrl: coverPhotoUrl ?? this.coverPhotoUrl,
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
       avatarUrl: avatarUrl ?? this.avatarUrl,
@@ -109,9 +117,11 @@ class Student extends StudentSnippet {
   }
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
+    return {
       'firstName': firstName,
       'lastName': lastName,
+      'bio': bio,
+      'coverPhotoUrl': coverPhotoUrl,
       'email': email,
       'fullName': fullName,
       'avatarUrl': avatarUrl,
@@ -139,9 +149,11 @@ class Student extends StudentSnippet {
 
   @override
   List<Object> get props {
-    return <Object>[
+    return [
       firstName,
       lastName,
+      bio,
+      coverPhotoUrl,
       email,
       fullName,
       avatarUrl,

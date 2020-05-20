@@ -10,6 +10,7 @@ import 'core/home_screen.dart';
 import 'core/repositories/user_repository.dart';
 import 'core/splash_screen.dart';
 import 'core/util/dark_theme.dart';
+import 'core/util/router.dart';
 import 'login/login_screen.dart';
 
 Future<void> main() async {
@@ -54,6 +55,7 @@ class App extends StatelessWidget {
       title: 'Fyrefly',
       debugShowCheckedModeBanner: false,
       theme: darkTheme(),
+      onGenerateRoute: Router.generateRoute,
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
           if (state is AuthInitial) {

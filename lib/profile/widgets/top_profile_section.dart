@@ -3,9 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:ut_social/core/widgets/profile_avatar.dart';
-import 'package:ut_social/profile/cover_photo.dart';
-import 'package:ut_social/profile/profile_button.dart';
 
+import 'cover_photo.dart';
+
+/// This widget displays the main overview information about a user
 class TopProfileSection extends StatelessWidget {
   final String coverPhotoUrl;
   final bool isCurrentUser;
@@ -46,17 +47,17 @@ class TopProfileSection extends StatelessWidget {
                     height: 100,
                     coverPhotoUrl: coverPhotoUrl,
                   ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: IconButton(
-                        color: Colors.white,
-                        icon: const Icon(SFSymbols.chevron_down),
-                        onPressed: () => {},
-                      ),
-                    ),
-                  ),
+                  // Align(
+                  //   alignment: Alignment.topRight,
+                  //   child: Padding(
+                  //     padding: const EdgeInsets.all(8.0),
+                  //     child: IconButton(
+                  //       color: Colors.white,
+                  //       icon: const Icon(SFSymbols.chevron_down),
+                  //       onPressed: () => {},
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
               Positioned(
@@ -74,25 +75,41 @@ class TopProfileSection extends StatelessWidget {
           ),
           const SizedBox(height: 42),
           Container(
-            margin: EdgeInsets.all(8),
+            margin: const EdgeInsets.all(8),
             child: Text(
               name,
               style: Theme.of(context).textTheme.bodyText1,
             ),
           ),
           Container(
-            margin: EdgeInsets.all(8),
+            margin: const EdgeInsets.all(8),
             child: Text(
               bio ?? '',
               style: Theme.of(context).textTheme.bodyText1,
             ),
           ),
           const SizedBox(height: 8),
-          FlatButton(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            onPressed: null,
-            child: Text('Edit Profile'),
+          GestureDetector(
+            onTap: () => {},
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(6),
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(
+                  width: 1,
+                  color: const Color(0xff424040),
+                ),
+              ),
+              child: const Text(
+                'Edit Profile',
+                textAlign: TextAlign.center,
+              ),
+            ),
           ),
+          const SizedBox(height: 3),
         ],
       ),
     );

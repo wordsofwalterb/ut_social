@@ -5,12 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:like_button/like_button.dart';
 import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:ut_social/core/util/router.dart';
 import 'package:ut_social/feed/comment_bloc/comment_bloc.dart';
 import 'package:ut_social/feed/comment_repository.dart';
 
 import 'package:ut_social/feed/comment_screen.dart';
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
-import 'package:ut_social/profile/profile_screen.dart';
 
 import '../entities/post.dart';
 import '../util/helper.dart';
@@ -37,10 +37,16 @@ class PostCard extends StatefulWidget {
 }
 
 class _PostCardState extends State<PostCard> {
+  bool byCurrentUser = false;
+
   @override
   Widget build(BuildContext context) {
     final postBloc = BlocProvider.of<PostBloc>(context);
-    // var isLiked = postBloc.isLiked(_post.postId);
+    final authBlocState = BlocProvider.of<AuthenticationBloc>(context).state;
+
+    if (authBlocState is AuthAuthenticated) {
+      byCurrentUser = authBlocState.currentUser.id == widget._post.id;
+    }
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -56,12 +62,11 @@ class _PostCardState extends State<PostCard> {
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
               child: ProfileAvatar(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return ProfileScreen(widget._post.authorId);
-                    },
-                  ),
+                onPressed: () => Navigator.pushNamed(
+                  context,
+                  Routes.profile,
+                  arguments: ProfileArgs(widget._post.id,
+                      isCurrentUser: byCurrentUser),
                 ),
                 avatarUrl: widget._post.avatarUrl,
               ),
@@ -200,14 +205,14 @@ class LikeCounter extends StatefulWidget {
 
 class _LikeCounterState extends State<LikeCounter> {
   bool isLiked = false;
-  AuthenticationState authBlocState;
+  // AuthenticationState authBlocState;
   String currentUserId;
 
   @override
   void initState() {
     super.initState();
     // isLiked = BlocProvider.of<PostBloc>(context).isLiked(widget.id);
-    authBlocState = BlocProvider.of<AuthenticationBloc>(context).state;
+    //authBlocState = BlocProvider.of<AuthenticationBloc>(context).state;
   }
 
   Future<bool> _onLikeButtonTapped(BuildContext context) async {
