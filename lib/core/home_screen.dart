@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
               index,
             );
           },
-          items: [
+          items: const [
             BottomNavigationBarItem(
               icon: Icon(
                 SFSymbols.rectangle_grid_1x2_fill,

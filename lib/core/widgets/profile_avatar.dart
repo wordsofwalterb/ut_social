@@ -70,7 +70,7 @@ class ProfileAvatar extends StatelessWidget {
                       DecorationImage(image: imageProvider, fit: BoxFit.cover),
                 ),
               ),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
             )
           : Container(
               width: size,

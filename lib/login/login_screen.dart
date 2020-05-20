@@ -77,7 +77,10 @@ class _LoginFormState extends State<LoginForm> {
               SnackBar(
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [Text(_failureType(state)), Icon(Icons.error)],
+                  children: [
+                    Text(_failureType(state)),
+                    const Icon(Icons.error)
+                  ],
                 ),
                 backgroundColor: Theme.of(context).primaryColor,
               ),

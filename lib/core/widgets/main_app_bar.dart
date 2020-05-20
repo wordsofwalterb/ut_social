@@ -21,7 +21,7 @@ PreferredSizeWidget mainAppBar(BuildContext context) {
     backgroundColor: Theme.of(context).backgroundColor,
     actions: <Widget>[
       IconButton(
-        icon: Icon(Icons.exit_to_app),
+        icon: const Icon(Icons.exit_to_app),
         onPressed: () {
           BlocProvider.of<AuthenticationBloc>(context).add(
             AuthLoggedOut(),

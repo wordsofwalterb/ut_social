@@ -238,7 +238,7 @@ class _CommentScreenState extends State<CommentScreen> {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 4.0),
               child: IconButton(
-                icon: Icon(Icons.send),
+                icon: const Icon(Icons.send),
                 onPressed: () {
                   if (_isCommenting) {
                     _addComment();

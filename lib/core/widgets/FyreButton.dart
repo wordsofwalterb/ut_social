@@ -9,7 +9,7 @@ class FyreButton extends StatelessWidget {
         onPressed: () => {},
         color: Colors.blue,
         padding: const EdgeInsets.all(10.0),
-        child: Text(
+        child: const Text(
           'Login',
           style: TextStyle(
             color: Colors.white,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
+
 import 'package:ut_social/core/entities/student.dart';
 import 'package:ut_social/profile/student_repository.dart';
 
@@ -37,13 +37,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Theme.of(context).backgroundColor,
-        title: Text(
+        title: const Text(
           'Your Profile',
         ),
       ),
       body: RefreshIndicator(
         onRefresh: _onRefresh,
-        child: CustomScrollView(
+        child: const CustomScrollView(
           slivers: [
             SliverList(
               delegate: SliverChildListDelegate.fixed(

@@ -58,7 +58,7 @@ class _FeedScreenState extends State<FeedScreen> {
           }),
         ),
         backgroundColor: Theme.of(context).backgroundColor,
-        child: Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       body: RefreshIndicator(
         color: Theme.of(context).primaryColor,

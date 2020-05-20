@@ -54,41 +54,41 @@ ThemeData darkTheme() {
     brightness: Brightness.dark,
     fontFamily: 'SFProText',
     scaffoldBackgroundColor: const Color(0xff202225),
-    inputDecorationTheme: InputDecorationTheme(
-      focusedBorder: const OutlineInputBorder(
+    inputDecorationTheme: const InputDecorationTheme(
+      focusedBorder: OutlineInputBorder(
         borderSide: BorderSide.none,
         borderRadius: BorderRadius.all(
           Radius.circular(4),
         ),
       ),
-      enabledBorder: const OutlineInputBorder(
+      enabledBorder: OutlineInputBorder(
         borderSide: BorderSide.none,
         borderRadius: BorderRadius.all(
           Radius.circular(4),
         ),
       ),
-      errorBorder: const OutlineInputBorder(
+      errorBorder: OutlineInputBorder(
         borderSide: BorderSide.none,
         borderRadius: BorderRadius.all(
           Radius.circular(4),
         ),
       ),
-      disabledBorder: const OutlineInputBorder(
+      disabledBorder: OutlineInputBorder(
         borderSide: BorderSide.none,
         borderRadius: BorderRadius.all(
           Radius.circular(4),
         ),
       ),
-      border: const OutlineInputBorder(
+      border: OutlineInputBorder(
         borderSide: BorderSide.none,
         borderRadius: BorderRadius.all(
           Radius.circular(4),
         ),
       ),
       filled: true,
-      fillColor: const Color(0xff2e3035),
+      fillColor: Color(0xff2e3035),
       labelStyle: TextStyle(
-        color: const Color(0xffcbcbcb),
+        color: Color(0xffcbcbcb),
         fontSize: 16,
         fontWeight: FontWeight.w400,
         fontStyle: FontStyle.normal,

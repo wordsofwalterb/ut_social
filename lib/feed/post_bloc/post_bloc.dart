@@ -226,7 +226,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
     yield PostLoaded(
       posts: posts..sort((a, b) => b.postTime.compareTo(a.postTime)),
-      hasReachedMax: (posts.length <= 20) ? true : false,
+      hasReachedMax: posts.length <= 20,
       isRefreshed: true,
       lastPostTime: (posts.isNotEmpty) ? posts.last.postTime : null,
       firstPostTime: (posts.isNotEmpty) ? posts.first.postTime : null,

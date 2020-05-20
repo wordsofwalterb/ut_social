@@ -73,7 +73,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             ),
             SimpleDialogOption(
               onPressed: () => Navigator.pop(context),
-              child: Text(
+              child: const Text(
                 'Cancel',
                 style: TextStyle(
                   color: Colors.redAccent,
@@ -166,7 +166,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: LinearProgressIndicator(
                       backgroundColor: Colors.blue[200],
-                      valueColor: AlwaysStoppedAnimation(Colors.blue),
+                      valueColor: const AlwaysStoppedAnimation(Colors.blue),
                     ),
                   )
                 else
@@ -199,7 +199,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     autofocus: true,
                     keyboardType: TextInputType.multiline,
                     maxLines: 3,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       filled: false,
                       floatingLabelBehavior: FloatingLabelBehavior.never,
                       hintText: "What's on your mind?",

@@ -16,9 +16,9 @@ class ProfileButton extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: Color(0xff202225),
+          color: const Color(0xff202225),
           border: Border.all(
-            color: Color(0xff424040),
+            color: const Color(0xff424040),
             width: 1,
           ),
           borderRadius: BorderRadius.circular(4),

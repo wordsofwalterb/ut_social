@@ -255,14 +255,14 @@ class _LikeCounterState extends State<LikeCounter> {
           countBuilder: (int count, bool isLiked, String text) {
             Widget result;
             if (count == 0) {
-              result = Text(
+              result = const Text(
                 '',
                 style: TextStyle(color: Colors.grey),
               );
             } else {
               result = Text(
                 text,
-                style: TextStyle(color: Colors.grey),
+                style: const TextStyle(color: Colors.grey),
               );
             }
             return result;
