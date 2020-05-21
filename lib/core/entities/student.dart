@@ -139,6 +139,7 @@ class Student extends StudentSnippet {
       fullName: map['fullName'] as String ?? '',
       avatarUrl: map['avatarUrl'] as String ?? '',
       id: map['id'] as String ?? '',
+      coverPhotoUrl: map['coverPhotoUrl'].toString(),
     );
   }
 

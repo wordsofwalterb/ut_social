@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ut_social/core/util/router.dart';
 
 import 'package:ut_social/core/widgets/profile_avatar.dart';
 
@@ -43,25 +44,14 @@ class TopProfileSection extends StatelessWidget {
               Stack(
                 children: [
                   CoverPhoto(
-                    height: 100,
+                    height: 120,
                     coverPhotoUrl: coverPhotoUrl,
                   ),
-                  // Align(
-                  //   alignment: Alignment.topRight,
-                  //   child: Padding(
-                  //     padding: const EdgeInsets.all(8.0),
-                  //     child: IconButton(
-                  //       color: Colors.white,
-                  //       icon: const Icon(SFSymbols.chevron_down),
-                  //       onPressed: () => {},
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
               Positioned(
                 bottom: -42,
-                left: 10,
+                left: 15,
                 child: ProfileAvatar(
                   avatarUrl: avatarUrl,
                   borderWidth: 4,
@@ -75,39 +65,43 @@ class TopProfileSection extends StatelessWidget {
           const SizedBox(height: 42),
           Container(
             margin: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(horizontal: 9),
             child: Text(
               name,
               style: Theme.of(context).textTheme.bodyText1,
             ),
           ),
-          Container(
-            margin: const EdgeInsets.all(8),
-            child: Text(
-              bio ?? '',
-              style: Theme.of(context).textTheme.bodyText1,
-            ),
-          ),
-          const SizedBox(height: 8),
-          GestureDetector(
-            onTap: () => {},
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(6),
+          if (bio != null)
+            Container(
               margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  width: 1,
-                  color: const Color(0xff424040),
+              padding: const EdgeInsets.symmetric(horizontal: 9),
+              child: Text(
+                bio,
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+            ),
+          const SizedBox(height: 8),
+          if (isCurrentUser)
+            GestureDetector(
+              onTap: () => Navigator.pushNamed(context, Routes.editProfile),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(6),
+                margin: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    width: 1,
+                    color: const Color(0xff424040),
+                  ),
+                ),
+                child: const Text(
+                  'Edit Profile',
+                  textAlign: TextAlign.center,
                 ),
               ),
-              child: const Text(
-                'Edit Profile',
-                textAlign: TextAlign.center,
-              ),
             ),
-          ),
           const SizedBox(height: 3),
         ],
       ),

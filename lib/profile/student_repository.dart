@@ -27,7 +27,7 @@ class FirebaseStudentRepository extends StudentRepository {
     try {
       final document =
           await _firestore.collection('students').document(id).get();
-      if (document.data == null) {
+      if (document.data.isNotEmpty) {
         return StudentResult(
             student: Student.fromMap(document.data), hasError: false);
       } else {

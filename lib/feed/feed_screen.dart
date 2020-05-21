@@ -67,7 +67,7 @@ class _FeedScreenState extends State<FeedScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           controller: _feedController,
           slivers: <Widget>[
-            _onYourMind(postBloc),
+            // _onYourMind(postBloc),
             _postList(),
           ],
         ),

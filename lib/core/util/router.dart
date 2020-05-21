@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ut_social/feed/feed_screen.dart';
+import 'package:ut_social/profile/edit_profile_screen.dart';
 import 'package:ut_social/profile/profile_info_bloc/profile_info_bloc.dart';
 import 'package:ut_social/profile/profile_screen.dart';
 import 'package:ut_social/profile/student_repository.dart';
@@ -12,6 +13,7 @@ class Routes {
   static const String home = '/';
   static const String feed = 'feed';
   static const String profile = 'profile';
+  static const String editProfile = 'editProfile';
 }
 
 /// Correlates routes names to builders
@@ -30,6 +32,8 @@ class Router {
         }
         throw Exception('Invalid arguments for ${settings.name}');
         break;
+      case Routes.editProfile:
+        return MaterialPageRoute(builder: (_) => EditProfileScreen());
       default:
         return _errorRoute(settings);
     }
@@ -41,7 +45,7 @@ class Router {
         create: (BuildContext context) => ProfileInfoBloc(
           args.userId,
           repository: FirebaseStudentRepository(),
-        ),
+        )..add(const LoadProfile()),
         child: ProfileScreen(isCurrentUser: args.isCurrentUser),
       ),
     );

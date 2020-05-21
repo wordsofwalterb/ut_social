@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:like_button/like_button.dart';
+import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:ut_social/core/util/router.dart';
 
 import 'package:ut_social/feed/comment_bloc/comment_bloc.dart';
 
@@ -24,6 +26,8 @@ class CommentCard extends StatefulWidget {
 }
 
 class _CommentCardState extends State<CommentCard> {
+  bool byCurrentUser = false;
+
   Future<bool> _onLikeButtonTapped(bool isLiked, BuildContext context) async {
     if (isLiked) {
       BlocProvider.of<CommentsBloc>(context)
@@ -37,6 +41,12 @@ class _CommentCardState extends State<CommentCard> {
 
   @override
   Widget build(BuildContext context) {
+    final authBlocState = BlocProvider.of<AuthenticationBloc>(context).state;
+
+    if (authBlocState is AuthAuthenticated) {
+      byCurrentUser = authBlocState.currentUser.id == widget._comment.authorId;
+    }
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
       child: Container(
@@ -51,6 +61,12 @@ class _CommentCardState extends State<CommentCard> {
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
               child: ProfileAvatar(
+                onPressed: () => Navigator.pushNamed(
+                  context,
+                  Routes.profile,
+                  arguments: ProfileArgs(widget._comment.authorId,
+                      isCurrentUser: byCurrentUser),
+                ),
                 avatarUrl: widget._comment.authorAvatar,
               ),
             ),

@@ -41,25 +41,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'Your Profile',
         ),
       ),
-      body: RefreshIndicator(
-        onRefresh: _onRefresh,
-        child: const CustomScrollView(
-          slivers: [
-            SliverList(
-              delegate: SliverChildListDelegate.fixed(
-                [
-                  TopProfileSection(
-                    isCurrentUser: true,
-                    name: 'Brandon',
-                    bio: 'Bio' ??
-                        'This is an example bio, showing what is supposed to be here',
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+      body: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          _topSection(),
+        ],
       ),
+    );
+  }
+
+  Widget _topSection() {
+    return BlocBuilder<ProfileInfoBloc, ProfileInfoState>(
+      builder: (BuildContext context, ProfileInfoState state) {
+        if (state is ProfileInfoInitial || state is ProfileInfoLoading) {
+          return SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ],
+            ),
+          );
+        }
+        if (state is ProfileInfoFailure) {
+          return SliverList(
+              delegate: SliverChildListDelegate([
+            const Center(
+              child: Text('Failed to fetch profile'),
+            ),
+          ]));
+        }
+        if (state is ProfileInfoLoaded) {
+          return SliverList(
+            delegate: SliverChildListDelegate([
+              TopProfileSection(
+                avatarUrl: state.student.avatarUrl,
+                coverPhotoUrl: state.student.coverPhotoUrl,
+                isCurrentUser: widget.isCurrentUser,
+                name: state.student.fullName,
+                bio: state.student.bio,
+              ),
+            ]),
+          );
+        }
+        return const SliverPadding(padding: EdgeInsets.all(0));
+      },
     );
   }
 }

@@ -45,7 +45,7 @@ class _PostCardState extends State<PostCard> {
     final authBlocState = BlocProvider.of<AuthenticationBloc>(context).state;
 
     if (authBlocState is AuthAuthenticated) {
-      byCurrentUser = authBlocState.currentUser.id == widget._post.id;
+      byCurrentUser = authBlocState.currentUser.id == widget._post.authorId;
     }
 
     return Padding(
@@ -65,7 +65,7 @@ class _PostCardState extends State<PostCard> {
                 onPressed: () => Navigator.pushNamed(
                   context,
                   Routes.profile,
-                  arguments: ProfileArgs(widget._post.id,
+                  arguments: ProfileArgs(widget._post.authorId,
                       isCurrentUser: byCurrentUser),
                 ),
                 avatarUrl: widget._post.avatarUrl,

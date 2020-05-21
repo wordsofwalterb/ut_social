@@ -59,7 +59,8 @@ class _CommentScreenState extends State<CommentScreen> {
             'postId': widget._post.id,
             'body': _commentController.text,
             'authorName': authBlocState.currentUser.fullName,
-            'authorId': authBlocState.currentUser.id
+            'authorId': authBlocState.currentUser.id,
+            'authorAvatar': authBlocState.currentUser.avatarUrl,
           },
         ),
       );
