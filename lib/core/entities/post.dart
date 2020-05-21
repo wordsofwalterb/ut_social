@@ -1,21 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+
 import 'package:flutter/foundation.dart';
 
-import 'identity.dart';
-
-@immutable
-abstract class PostSnippet extends Equatable implements Identity {
-  const PostSnippet();
-}
-
-class Post extends PostSnippet implements Identity {
-  @override
+class Post extends Equatable {
   final String id;
   final String authorId, authorName, body, avatarUrl, imageUrl;
   final DateTime postTime;
   final int commentCount, likeCount;
   final bool likedByUser;
+  // List of student ids that liked this post
   final List<String> likedBy;
 
   const Post(

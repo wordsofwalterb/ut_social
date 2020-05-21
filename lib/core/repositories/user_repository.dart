@@ -1,13 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:meta/meta.dart';
 import 'package:ut_social/core/entities/student.dart';
 import 'package:ut_social/core/util/globals.dart';
 
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
+  final Firestore _firestore;
 
-  UserRepository({FirebaseAuth firebaseAuth})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+  UserRepository({FirebaseAuth firebaseAuth, Firestore firestore})
+      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _firestore = firestore ?? Firestore.instance;
 
   Future<AuthResult> signInWithCredentials(String email, String password) {
     return _firebaseAuth.signInWithEmailAndPassword(
@@ -35,22 +38,33 @@ class UserRepository {
     }
   }
 
+  /// Signs the current user out
   Future<void> signOut() async {
     return Future.wait(<Future<dynamic>>[
       _firebaseAuth.signOut(),
     ]);
   }
 
+  /// Creates document for user in firestore after registration.
+  ///
+  /// [firstName], [lastName], and [email], must not be
+  /// null.
   Future<void> setupUser(
-      {String firstName, String lastName, String email}) async {
+      {@required String firstName,
+      @required String lastName,
+      @required String email}) async {
+    assert(firstName != null);
+    assert(lastName != null);
+    assert(email != null);
+
     try {
-      await Global.currentUserRef.upsert(<String, dynamic>{
-        if (firstName != null) 'firstName': firstName,
-        if (lastName != null) 'lastName': lastName,
-        if (email != null) 'email': email,
-        if (firstName != null && lastName != null)
-          'fullName': '$firstName $lastName',
-        'avatarUrl': '',
+      final currentUser = await _firebaseAuth.currentUser();
+
+      await Global.studentsRef.document(currentUser.uid).setData({
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'fullName': '$firstName $lastName',
       });
     } catch (error) {
       print('Unable to setup user: $error');

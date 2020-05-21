@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:like_button/like_button.dart';
-import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
 import 'package:ut_social/core/util/router.dart';
 
 import 'package:ut_social/feed/comment_bloc/comment_bloc.dart';
@@ -41,10 +41,10 @@ class _CommentCardState extends State<CommentCard> {
 
   @override
   Widget build(BuildContext context) {
-    final authBlocState = BlocProvider.of<AuthenticationBloc>(context).state;
+    final userBlocState = BlocProvider.of<UserBloc>(context).state;
 
-    if (authBlocState is AuthAuthenticated) {
-      byCurrentUser = authBlocState.currentUser.id == widget._comment.authorId;
+    if (userBlocState is UserAuthenticated) {
+      byCurrentUser = userBlocState.currentUser.id == widget._comment.authorId;
     }
 
     return Padding(

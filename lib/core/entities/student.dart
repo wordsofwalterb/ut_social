@@ -4,93 +4,34 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
-import 'package:ut_social/core/entities/identity.dart';
-
-@immutable
-abstract class StudentSnippet extends Equatable implements Identity {
-  String get fullName;
-  String get avatarUrl;
-  const StudentSnippet();
-}
-
-class StudentChatSnippet extends StudentSnippet with EquatableMixin {
-  @override
-  final String fullName;
-  @override
-  final String avatarUrl;
-  @override
-  final String id;
-
-  StudentChatSnippet({
-    this.fullName,
-    this.avatarUrl,
-    this.id,
-  });
-
-  StudentChatSnippet copyWith({
-    String fullName,
-    String avatarUrl,
-    String id,
-  }) {
-    return StudentChatSnippet(
-      fullName: fullName ?? this.fullName,
-      avatarUrl: avatarUrl ?? this.avatarUrl,
-      id: id ?? this.id,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'fullName': fullName,
-      'avatarUrl': avatarUrl,
-      'id': id,
-    };
-  }
-
-  factory StudentChatSnippet.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
-    return StudentChatSnippet(
-      fullName: map['fullName'] as String ?? '',
-      avatarUrl: map['avatarUrl'] as String ?? '',
-      id: map['id'] as String ?? '',
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory StudentChatSnippet.fromJson(String source) =>
-      StudentChatSnippet.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  @override
-  List<Object> get props => [fullName, avatarUrl, id];
-
-  @override
-  bool get stringify => true;
-}
-
-class Student extends StudentSnippet {
+/// The student class represents the publically available
+/// information about a student user.
+class Student extends Equatable {
   final String firstName;
   final String lastName;
   final String bio;
   final String coverPhotoUrl;
   final String email;
-  @override
   final String fullName;
-  @override
   final String avatarUrl;
-  @override
   final String id;
 
+  /// Creates an object representing public information about
+  /// a student user.
+  ///
+  /// Although this information may be obscured to other users,
+  /// it will be available if app is compromised hence public.
+  ///
+  /// [fullName] and [id] are required and must not be null
   const Student({
+    @required this.id,
+    @required this.fullName,
     this.firstName,
     this.lastName,
     this.bio,
     this.coverPhotoUrl,
     this.email,
-    @required this.fullName,
     this.avatarUrl,
-    @required this.id,
   })  : assert(fullName != null),
         assert(id != null);
 
@@ -130,15 +71,17 @@ class Student extends StudentSnippet {
   }
 
   factory Student.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
+    assert(map != null);
+    assert(map['id'] != null);
+    assert(map['fullName'] != null);
 
     return Student(
-      firstName: map['firstName'] as String ?? '',
-      lastName: map['lastName'] as String ?? '',
-      email: map['email'] as String ?? '',
-      fullName: map['fullName'] as String ?? '',
-      avatarUrl: map['avatarUrl'] as String ?? '',
-      id: map['id'] as String ?? '',
+      firstName: map['firstName'] as String,
+      lastName: map['lastName'] as String,
+      email: map['email'] as String,
+      fullName: map['fullName'] as String,
+      avatarUrl: map['avatarUrl'] as String,
+      id: map['id'] as String,
       coverPhotoUrl: map['coverPhotoUrl'].toString(),
     );
   }
@@ -161,7 +104,4 @@ class Student extends StudentSnippet {
       id,
     ];
   }
-
-  @override
-  bool get stringify => true;
 }

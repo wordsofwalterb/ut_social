@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ut_social/core/entities/student.dart';
 import 'package:ut_social/core/util/router.dart';
 
-import '../blocs/authentication_bloc/authentication_bloc.dart';
+import '../blocs/user_bloc/user_bloc.dart';
 import 'profile_avatar.dart';
 
 PreferredSizeWidget mainAppBar(BuildContext context) {
-  final authBlocState = BlocProvider.of<AuthenticationBloc>(context).state;
+  final userBlocState = BlocProvider.of<UserBloc>(context).state;
   Student currentUser;
-  if (authBlocState is AuthAuthenticated) {
-    currentUser = authBlocState.currentUser;
+  if (userBlocState is UserAuthenticated) {
+    currentUser = userBlocState.currentUser;
   }
   return AppBar(
     leading: Padding(
@@ -35,8 +35,8 @@ PreferredSizeWidget mainAppBar(BuildContext context) {
       IconButton(
         icon: const Icon(Icons.exit_to_app),
         onPressed: () {
-          BlocProvider.of<AuthenticationBloc>(context).add(
-            AuthLoggedOut(),
+          BlocProvider.of<UserBloc>(context).add(
+            LogOutUser(),
           );
         },
       )

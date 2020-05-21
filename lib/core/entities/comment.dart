@@ -3,12 +3,9 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
-import 'identity.dart';
-
-class Comment extends Equatable implements Identity {
+class Comment extends Equatable {
   final String authorId;
   final String postId;
-  @override
   final String id;
   final String body;
   final int likeCount;

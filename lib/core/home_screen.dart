@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 
-import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
 
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 import 'package:ut_social/feed/post_repository.dart';
@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
         BlocProvider<PostBloc>(
           create: (context) => PostBloc(
               postRepository: FirebasePostRepository(),
-              authBloc: BlocProvider.of<AuthenticationBloc>(context))
+              authBloc: BlocProvider.of<UserBloc>(context))
             ..add(PostSetup()),
         ),
       ],

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ut_social/core/entities/post.dart';
 import 'package:ut_social/core/entities/student.dart';
 import 'package:ut_social/core/repositories/user_repository.dart';
-import 'package:ut_social/core/util/database_service.dart';
 import 'package:ut_social/feed/post_repository.dart';
 
 class Global {
@@ -17,9 +16,6 @@ class Global {
     Post: () => FirebasePostRepository(),
     Student: () => UserRepository(),
   };
-
-  static final UserData<Student> currentUserRef =
-      UserData<Student>(collection: 'students');
 
   static final CollectionReference likeRef =
       Firestore.instance.collection('likes');

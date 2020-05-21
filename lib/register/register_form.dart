@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../core/blocs/authentication_bloc/authentication_bloc.dart';
+import '../core/blocs/user_bloc/user_bloc.dart';
 import 'bloc/register_bloc.dart';
 
 class RegisterForm extends StatefulWidget {
@@ -85,7 +85,7 @@ class _RegisterFormState extends State<RegisterForm> {
           }
           if (state.isSuccess) {
             Navigator.of(context).pop();
-            BlocProvider.of<AuthenticationBloc>(context).add(AuthLoggedIn());
+            BlocProvider.of<UserBloc>(context).add(LogInUser());
           }
         },
         child: BlocBuilder<RegisterBloc, RegisterState>(
@@ -115,6 +115,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       keyboardType: TextInputType.emailAddress,
                       autovalidate: true,
                       autocorrect: false,
+                      textCapitalization: TextCapitalization.words,
                       focusNode: _firstNameFocus,
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (term) {
@@ -137,6 +138,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       keyboardType: TextInputType.emailAddress,
                       autovalidate: false,
                       autocorrect: false,
+                      textCapitalization: TextCapitalization.words,
                       focusNode: _lastNameFocus,
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (term) {

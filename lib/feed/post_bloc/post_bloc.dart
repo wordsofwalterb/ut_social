@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
 import 'package:ut_social/core/entities/post.dart';
 import 'package:ut_social/core/entities/student.dart';
 import 'package:ut_social/feed/post_repository.dart';
@@ -13,13 +13,13 @@ part 'post_state.dart';
 
 class PostBloc extends Bloc<PostEvent, PostState> {
   final PostRepository postRepository;
-  final AuthenticationBloc authBloc;
+  final UserBloc authBloc;
   Student currentUser;
-  StreamSubscription authBlocSubscription;
+  StreamSubscription userBlocSubscription;
 
   PostBloc({this.postRepository, this.authBloc}) {
-    authBlocSubscription = authBloc.listen((state) {
-      if (state is AuthAuthenticated) {
+    userBlocSubscription = authBloc.listen((state) {
+      if (state is UserAuthenticated) {
         currentUser = state.currentUser;
       }
       assert(currentUser != null);
@@ -28,7 +28,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   @override
   Future<void> close() {
-    authBlocSubscription.cancel();
+    userBlocSubscription.cancel();
     return super.close();
   }
 
@@ -145,19 +145,19 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   Stream<PostState> _mapPostLikeToState(
       PostLoaded currentState, String postId) async* {
-    final authState = authBloc.state;
-    if (authState is AuthAuthenticated) {
+    final userState = authBloc.state;
+    if (userState is UserAuthenticated) {
       // Find changed post and add like
       final initialPost =
           currentState.posts.firstWhere((val) => val.id == postId);
       final newLikedBy = initialPost.likedBy.toList();
-      newLikedBy.addAll([authState.currentUser.id]);
+      newLikedBy.addAll([userState.currentUser.id]);
       final changedPost = initialPost.copyWith(
           likeCount: initialPost.likeCount + 1, likedBy: newLikedBy);
 
       // Propagate to database
 
-      await postRepository.likePost(postId, authState.currentUser.id);
+      await postRepository.likePost(postId, userState.currentUser.id);
 
       final newPosts = currentState.posts.toList();
 
@@ -177,19 +177,19 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   Stream<PostState> _mapPostUnlikeToState(
       PostLoaded currentState, String postId) async* {
-    final authState = authBloc.state;
-    if (authState is AuthAuthenticated) {
+    final userState = authBloc.state;
+    if (userState is UserAuthenticated) {
       // Find changed post and unlike
       final initialPost =
           currentState.posts.firstWhere((val) => val.id == postId);
       final newLikedBy = initialPost.likedBy.toList();
-      newLikedBy.removeWhere((i) => i == authState.currentUser.id);
+      newLikedBy.removeWhere((i) => i == userState.currentUser.id);
       final changedPost = initialPost.copyWith(
           likeCount: initialPost.likeCount - 1, likedBy: newLikedBy);
 
       // Propagate to database
 
-      await postRepository.unlikePost(postId, authState.currentUser.id);
+      await postRepository.unlikePost(postId, userState.currentUser.id);
 
       print(changedPost.likeCount);
       final newState = currentState.copyWith(

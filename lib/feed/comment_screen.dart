@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:ut_social/core/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 
 import '../core/entities/post.dart';
@@ -51,16 +51,16 @@ class _CommentScreenState extends State<CommentScreen> {
   }
 
   void _addComment() {
-    final authBlocState = BlocProvider.of<AuthenticationBloc>(context).state;
-    if (authBlocState is AuthAuthenticated) {
+    final userBlocState = BlocProvider.of<UserBloc>(context).state;
+    if (userBlocState is UserAuthenticated) {
       BlocProvider.of<CommentsBloc>(context).add(
         CommentAdded(
           {
             'postId': widget._post.id,
             'body': _commentController.text,
-            'authorName': authBlocState.currentUser.fullName,
-            'authorId': authBlocState.currentUser.id,
-            'authorAvatar': authBlocState.currentUser.avatarUrl,
+            'authorName': userBlocState.currentUser.fullName,
+            'authorId': userBlocState.currentUser.id,
+            'authorAvatar': userBlocState.currentUser.avatarUrl,
           },
         ),
       );

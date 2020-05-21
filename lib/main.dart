@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'core/blocs/authentication_bloc/authentication_bloc.dart';
 import 'core/blocs/simple_bloc_delegate.dart';
+import 'core/blocs/user_bloc/user_bloc.dart';
 import 'core/home_screen.dart';
 import 'core/repositories/user_repository.dart';
 import 'core/splash_screen.dart';
@@ -33,8 +33,8 @@ Future<void> main() async {
 
   runApp(
     BlocProvider(
-      create: (context) => AuthenticationBloc(userRepository: userRepository)
-        ..add(AuthAppStarted()),
+      create: (context) =>
+          UserBloc(userRepository: userRepository)..add(InitializeUser()),
       child: App(userRepository: userRepository),
     ),
   );
@@ -56,15 +56,15 @@ class App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: darkTheme(),
       onGenerateRoute: Router.generateRoute,
-      home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+      home: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
-          if (state is AuthInitial) {
+          if (state is UserInitial) {
             return SplashScreen();
           }
-          if (state is AuthAuthenticated) {
+          if (state is UserAuthenticated) {
             return HomeScreen();
           }
-          if (state is AuthUnauthenticated) {
+          if (state is UserUnauthenticated) {
             return LoginScreen(
               userRepository: _userRepository,
             );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../core/blocs/authentication_bloc/authentication_bloc.dart';
+import '../core/blocs/user_bloc/user_bloc.dart';
 import '../core/repositories/user_repository.dart';
 import '../register/register_screen.dart';
 import 'login_bloc/login_bloc.dart';
@@ -106,7 +106,7 @@ class _LoginFormState extends State<LoginForm> {
             );
         }
         if (state.isSuccess) {
-          BlocProvider.of<AuthenticationBloc>(context).add(AuthLoggedIn());
+          BlocProvider.of<UserBloc>(context).add(LogInUser());
         }
       },
       child: GestureDetector(
