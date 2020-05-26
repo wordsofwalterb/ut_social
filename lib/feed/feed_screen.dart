@@ -52,6 +52,7 @@ class _FeedScreenState extends State<FeedScreen>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     _postBloc = BlocProvider.of<PostBloc>(context);
     return Scaffold(
       appBar: mainAppBar(context),
