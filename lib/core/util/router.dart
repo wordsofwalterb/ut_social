@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ut_social/add_content/add_post.dart';
 import 'package:ut_social/feed/feed_screen.dart';
+import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 import 'package:ut_social/profile/edit_profile_screen.dart';
 import 'package:ut_social/profile/profile_info_bloc/profile_info_bloc.dart';
 import 'package:ut_social/profile/profile_screen.dart';
@@ -14,6 +16,7 @@ class Routes {
   static const String feed = 'feed';
   static const String profile = 'profile';
   static const String editProfile = 'editProfile';
+  static const String createPost = 'createPost';
 }
 
 /// Correlates routes names to builders
@@ -32,11 +35,22 @@ class Router {
         }
         throw Exception('Invalid arguments for ${settings.name}');
         break;
+      case Routes.createPost:
+        return _createPostRoute();
       case Routes.editProfile:
         return MaterialPageRoute(builder: (_) => EditProfileScreen());
       default:
         return _errorRoute(settings);
     }
+  }
+
+  static Route<dynamic> _createPostRoute() {
+    return MaterialPageRoute(
+      builder: (context) => BlocProvider.value(
+        value: BlocProvider.of<PostBloc>(context),
+        child: CreatePostScreen(),
+      ),
+    );
   }
 
   static Route<dynamic> _profileRoute(ProfileArgs args) {

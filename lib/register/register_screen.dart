@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../core/repositories/user_repository.dart';
 
-import 'bloc/register_bloc.dart';
+import 'register_bloc/register_bloc.dart';
 import 'register_form.dart';
 
 class RegisterScreen extends StatelessWidget {

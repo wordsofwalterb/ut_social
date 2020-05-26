@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ut_social/core/entities/post.dart';
 import 'package:ut_social/core/entities/student.dart';
+import 'package:ut_social/core/repositories/post_repository.dart';
 import 'package:ut_social/core/repositories/user_repository.dart';
-import 'package:ut_social/feed/post_repository.dart';
 
 class Global {
   //static final FirebaseAnalytics analytics = FirebaseAnalytics();

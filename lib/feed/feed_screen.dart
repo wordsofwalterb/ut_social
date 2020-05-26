@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ut_social/add_content/add_post.dart';
+import 'package:ut_social/core/util/router.dart';
+import 'package:ut_social/core/widgets/bottom_loader.dart';
 
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 
 import '../core/widgets/main_app_bar.dart';
 import '../core/widgets/post_card.dart';
-import './bottom_loader.dart';
 
 class FeedScreen extends StatefulWidget {
   @override
@@ -47,16 +48,11 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final postBloc = BlocProvider.of<PostBloc>(context);
+    // final postBloc = BlocProvider.of<PostBloc>(context);
     return Scaffold(
       appBar: mainAppBar(context),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) {
-            return BlocProvider.value(
-                value: postBloc, child: CreatePostScreen());
-          }),
-        ),
+        onPressed: () => Navigator.of(context).pushNamed(Routes.createPost),
         backgroundColor: Theme.of(context).backgroundColor,
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -67,7 +63,7 @@ class _FeedScreenState extends State<FeedScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           controller: _feedController,
           slivers: <Widget>[
-            // _onYourMind(postBloc),
+            _onYourMind(),
             _postList(),
           ],
         ),
@@ -75,16 +71,11 @@ class _FeedScreenState extends State<FeedScreen> {
     );
   }
 
-  Widget _onYourMind(PostBloc postBloc) {
+  Widget _onYourMind() {
     return SliverList(
       delegate: SliverChildListDelegate([
         GestureDetector(
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) {
-              return BlocProvider.value(
-                  value: postBloc, child: CreatePostScreen());
-            }),
-          ),
+          onTap: () => Navigator.of(context).pushNamed(Routes.createPost),
           child: Container(
             decoration: BoxDecoration(
               color: Theme.of(context).backgroundColor,

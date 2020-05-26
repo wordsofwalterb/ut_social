@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
+import 'package:ut_social/core/widgets/bottom_loader.dart';
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 
 import '../core/entities/post.dart';
 import '../core/widgets/comment_card.dart';
 import '../core/widgets/post_card.dart';
-import './bottom_loader.dart';
+
 import 'comment_bloc/comment_bloc.dart';
 
 class CommentScreen extends StatefulWidget {
@@ -30,7 +31,7 @@ class _CommentScreenState extends State<CommentScreen> {
 
   @override
   void initState() {
-    BlocProvider.of<CommentsBloc>(context).add(const CommentsSetup());
+    BlocProvider.of<CommentsBloc>(context).add(const SetupComments());
     _feedController.addListener(_onScroll);
     super.initState();
   }
@@ -46,7 +47,7 @@ class _CommentScreenState extends State<CommentScreen> {
     final maxScroll = _feedController.position.maxScrollExtent;
     final currentScroll = _feedController.position.pixels;
     if (maxScroll - currentScroll <= _scrollThreshold) {
-      BlocProvider.of<CommentsBloc>(context).add(CommentsFetched());
+      BlocProvider.of<CommentsBloc>(context).add(FetchComments());
     }
   }
 
@@ -54,7 +55,7 @@ class _CommentScreenState extends State<CommentScreen> {
     final userBlocState = BlocProvider.of<UserBloc>(context).state;
     if (userBlocState is UserAuthenticated) {
       BlocProvider.of<CommentsBloc>(context).add(
-        CommentAdded(
+        AddComment(
           {
             'postId': widget._post.id,
             'body': _commentController.text,
@@ -70,7 +71,7 @@ class _CommentScreenState extends State<CommentScreen> {
   }
 
   Future<void> _refreshFeed() async {
-    BlocProvider.of<CommentsBloc>(context).add(CommentsRefreshed());
+    BlocProvider.of<CommentsBloc>(context).add(RefreshComments());
   }
 
   @override

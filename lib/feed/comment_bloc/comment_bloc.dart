@@ -6,7 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:ut_social/core/entities/comment.dart';
 import 'package:ut_social/core/entities/error.dart';
-import 'package:ut_social/feed/comment_repository.dart';
+import 'package:ut_social/core/repositories/comment_repository.dart';
 
 part 'comment_event.dart';
 part 'comment_state.dart';
@@ -31,43 +31,43 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     final currentState = state;
 
     if (currentState is CommentsInitial) {
-      if (event is CommentsSetup) {
+      if (event is SetupComments) {
         yield* _mapCommentSetupToState();
       }
     }
     if (currentState is CommentsError) {
-      if (event is CommentsRefreshed) {
+      if (event is RefreshComments) {
         yield* _mapCommentsRefreshedToState();
       }
     }
     if (currentState is CommentsEmpty) {
-      if (event is CommentsRefreshed) {
+      if (event is RefreshComments) {
         yield* _mapCommentsRefreshedToState();
-      } else if (event is CommentAdded) {
+      } else if (event is AddComment) {
         yield* _mapCommentAddedToState(event.map);
       }
     }
     if (currentState is CommentsReachedMax) {
-      if (event is CommentAdded) {
+      if (event is AddComment) {
         yield* _mapCommentAddedToState(event.map);
-      } else if (event is CommentLiked) {
+      } else if (event is LikeComment) {
         yield* _mapCommentLikedToState(event.id);
-      } else if (event is CommentUnliked) {
+      } else if (event is UnlikeComment) {
         yield* _mapCommentUnlikedToState(event.id);
-      } else if (event is CommentsRefreshed) {
+      } else if (event is RefreshComments) {
         yield* _mapCommentsRefreshedToState();
       }
     }
     if (currentState is CommentsLoaded) {
-      if (event is CommentAdded) {
+      if (event is AddComment) {
         yield* _mapCommentAddedToState(event.map);
-      } else if (event is CommentLiked) {
+      } else if (event is LikeComment) {
         yield* _mapCommentLikedToState(event.id);
-      } else if (event is CommentUnliked) {
+      } else if (event is UnlikeComment) {
         yield* _mapCommentUnlikedToState(event.id);
-      } else if (event is CommentsRefreshed) {
+      } else if (event is RefreshComments) {
         yield* _mapCommentsRefreshedToState();
-      } else if (event is CommentsFetched) {
+      } else if (event is FetchComments) {
         yield* _mapCommentsFetchedToState();
       }
     }
@@ -193,7 +193,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     }
   }
 
-  /// Adds comment to held comment Data
+  /// Adds comment to hold comment Data
   ///
   /// Can be used when in CommentsLoaded, CommentsEmpty, or CommentsReachedMax
   Stream<CommentsState> _mapCommentAddedToState(

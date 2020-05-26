@@ -7,43 +7,43 @@ abstract class CommentsEvent extends Equatable {
   List<Object> get props => const [];
 }
 
-class CommentAdded extends CommentsEvent {
+class AddComment extends CommentsEvent {
   final Map<String, dynamic> map;
 
   /// Map Requires atleast:
   ///   authorName
   ///   authorId
   ///   postId
-  const CommentAdded(this.map);
+  const AddComment(this.map);
 
   @override
   List<Object> get props => [map];
 }
 
-class CommentLiked extends CommentsEvent {
+class LikeComment extends CommentsEvent {
   final String id;
 
-  const CommentLiked(this.id);
+  const LikeComment(this.id);
 
   @override
   List<Object> get props => [id];
 }
 
-class CommentsRefreshed extends CommentsEvent {}
+class RefreshComments extends CommentsEvent {}
 
-class CommentsFetched extends CommentsEvent {}
+class FetchComments extends CommentsEvent {}
 
-class CommentUnliked extends CommentsEvent {
+class UnlikeComment extends CommentsEvent {
   final String id;
 
-  const CommentUnliked(this.id);
+  const UnlikeComment(this.id);
 
   @override
   List<Object> get props => [id];
 }
 
-class CommentsSetup extends CommentsEvent {
-  const CommentsSetup();
+class SetupComments extends CommentsEvent {
+  const SetupComments();
 
   @override
   List<Object> get props => [];

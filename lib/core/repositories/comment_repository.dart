@@ -80,7 +80,6 @@ class FirebaseCommentsRepository extends CommentRepository {
   /// PostId, AuthorId, and AuthorName must not be null
   @override
   Future<Comment> addComment(Map<String, dynamic> map) async {
-    assert(map != null);
     assert(map['postId'] != null);
     assert(map['authorId'] != null);
     assert(map['authorName'] != null);

@@ -6,13 +6,13 @@ import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
 
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
-import 'package:ut_social/feed/post_repository.dart';
 
 import '../add_content/new_content_screen.dart';
 import '../chats/chat_screen.dart';
 import '../feed/feed_screen.dart';
 import '../notifications/notification_screen.dart';
 import '../search/search_screen.dart';
+import 'repositories/post_repository.dart';
 
 class HomeScreen extends StatefulWidget {
   @override

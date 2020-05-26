@@ -6,7 +6,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
 import 'package:ut_social/core/entities/post.dart';
 import 'package:ut_social/core/entities/student.dart';
-import 'package:ut_social/feed/post_repository.dart';
+import 'package:ut_social/core/repositories/post_repository.dart';
 
 part 'post_event.dart';
 part 'post_state.dart';

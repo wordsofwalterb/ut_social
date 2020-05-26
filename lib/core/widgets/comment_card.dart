@@ -31,10 +31,10 @@ class _CommentCardState extends State<CommentCard> {
   Future<bool> _onLikeButtonTapped(bool isLiked, BuildContext context) async {
     if (isLiked) {
       BlocProvider.of<CommentsBloc>(context)
-          .add(CommentUnliked(widget._comment.id));
+          .add(UnlikeComment(widget._comment.id));
     } else {
       BlocProvider.of<CommentsBloc>(context)
-          .add(CommentLiked(widget._comment.id));
+          .add(LikeComment(widget._comment.id));
     }
     return !isLiked;
   }

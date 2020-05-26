@@ -5,9 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:like_button/like_button.dart';
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
+import 'package:ut_social/core/repositories/comment_repository.dart';
 import 'package:ut_social/core/util/router.dart';
 import 'package:ut_social/feed/comment_bloc/comment_bloc.dart';
-import 'package:ut_social/feed/comment_repository.dart';
 
 import 'package:ut_social/feed/comment_screen.dart';
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
