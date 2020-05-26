@@ -82,7 +82,7 @@ class Student extends Equatable {
       fullName: map['fullName'] as String,
       avatarUrl: map['avatarUrl'] as String,
       id: map['id'] as String,
-      coverPhotoUrl: map['coverPhotoUrl'].toString(),
+      coverPhotoUrl: map['coverPhotoUrl'] as String,
     );
   }
 

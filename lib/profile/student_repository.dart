@@ -29,7 +29,10 @@ class FirebaseStudentRepository extends StudentRepository {
           await _firestore.collection('students').document(id).get();
       if (document.data.isNotEmpty) {
         return StudentResult(
-            student: Student.fromMap(document.data), hasError: false);
+            student: Student.fromMap(
+              document.data..addAll(<String, dynamic>{'id': id}),
+            ),
+            hasError: false);
       } else {
         throw Failure('Profile info was not found', 'DATA_NULL');
       }

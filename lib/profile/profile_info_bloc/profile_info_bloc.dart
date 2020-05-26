@@ -36,6 +36,7 @@ class ProfileInfoBloc extends Bloc<ProfileInfoEvent, ProfileInfoState> {
   Stream<ProfileInfoState> _mapLoadProfileToState() async* {
     final studentResult = await _repository.getStudentById(_userId);
     if (studentResult.hasError) {
+      print(studentResult.error);
       yield ProfileInfoFailure(studentResult.error);
     } else {
       yield ProfileInfoLoaded(studentResult.student);
