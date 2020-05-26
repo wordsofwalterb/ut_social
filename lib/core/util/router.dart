@@ -36,7 +36,11 @@ class Router {
         throw Exception('Invalid arguments for ${settings.name}');
         break;
       case Routes.createPost:
-        return _createPostRoute();
+        if (args is PostBloc) {
+          return _createPostRoute(args);
+        }
+        throw Exception('Invalid arguments for ${settings.name}');
+        break;
       case Routes.editProfile:
         return MaterialPageRoute(builder: (_) => EditProfileScreen());
       default:
@@ -44,10 +48,10 @@ class Router {
     }
   }
 
-  static Route<dynamic> _createPostRoute() {
+  static Route<dynamic> _createPostRoute(PostBloc bloc) {
     return MaterialPageRoute(
       builder: (context) => BlocProvider.value(
-        value: BlocProvider.of<PostBloc>(context),
+        value: bloc,
         child: CreatePostScreen(),
       ),
     );

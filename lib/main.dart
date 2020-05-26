@@ -7,10 +7,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/blocs/simple_bloc_delegate.dart';
 import 'core/blocs/user_bloc/user_bloc.dart';
 import 'core/home_screen.dart';
+import 'core/repositories/post_repository.dart';
 import 'core/repositories/user_repository.dart';
 import 'core/splash_screen.dart';
 import 'core/util/dark_theme.dart';
 import 'core/util/router.dart';
+import 'feed/post_bloc/post_bloc.dart';
 import 'login/login_screen.dart';
 
 Future<void> main() async {
@@ -62,7 +64,13 @@ class App extends StatelessWidget {
             return SplashScreen();
           }
           if (state is UserAuthenticated) {
-            return HomeScreen();
+            return BlocProvider<PostBloc>(
+              create: (context) => PostBloc(
+                  postRepository: FirebasePostRepository(),
+                  authBloc: BlocProvider.of<UserBloc>(context))
+                ..add(PostSetup()),
+              child: HomeScreen(),
+            );
           }
           if (state is UserUnauthenticated) {
             return LoginScreen(

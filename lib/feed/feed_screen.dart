@@ -14,10 +14,14 @@ class FeedScreen extends StatefulWidget {
   _FeedScreenState createState() => _FeedScreenState();
 }
 
-class _FeedScreenState extends State<FeedScreen> {
+class _FeedScreenState extends State<FeedScreen>
+    with AutomaticKeepAliveClientMixin<FeedScreen> {
   final _feedController = ScrollController();
   final _scrollThreshold = 200.0;
   PostBloc _postBloc;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -48,11 +52,12 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final postBloc = BlocProvider.of<PostBloc>(context);
+    _postBloc = BlocProvider.of<PostBloc>(context);
     return Scaffold(
       appBar: mainAppBar(context),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.of(context).pushNamed(Routes.createPost),
+        onPressed: () => Navigator.of(context)
+            .pushNamed(Routes.createPost, arguments: _postBloc),
         backgroundColor: Theme.of(context).backgroundColor,
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -75,7 +80,8 @@ class _FeedScreenState extends State<FeedScreen> {
     return SliverList(
       delegate: SliverChildListDelegate([
         GestureDetector(
-          onTap: () => Navigator.of(context).pushNamed(Routes.createPost),
+          onTap: () => Navigator.of(context)
+              .pushNamed(Routes.createPost, arguments: _postBloc),
           child: Container(
             decoration: BoxDecoration(
               color: Theme.of(context).backgroundColor,
