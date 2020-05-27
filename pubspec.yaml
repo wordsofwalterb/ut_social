@@ -35,6 +35,7 @@ dependencies:
   like_button: ^0.2.0
   flutter_secure_storage: ^3.3.3
   shared_preferences: ^0.5.7
+  fluttertoast: ^4.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
