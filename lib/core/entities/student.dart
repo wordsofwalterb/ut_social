@@ -15,6 +15,8 @@ class Student extends Equatable {
   final String fullName;
   final String avatarUrl;
   final String id;
+  final List<Map<String, dynamic>> channels;
+  final int reportCount;
 
   /// Creates an object representing public information about
   /// a student user.
@@ -26,6 +28,8 @@ class Student extends Equatable {
   const Student({
     @required this.id,
     @required this.fullName,
+    this.channels,
+    this.reportCount,
     this.firstName,
     this.lastName,
     this.bio,
@@ -44,10 +48,14 @@ class Student extends Equatable {
     String fullName,
     String avatarUrl,
     String id,
+    int reportCount,
+    List<Map<String, dynamic>> channels,
   }) {
     return Student(
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
+      reportCount: reportCount ?? this.reportCount,
+      channels: channels ?? this.channels,
       bio: bio ?? this.bio,
       coverPhotoUrl: coverPhotoUrl ?? this.coverPhotoUrl,
       email: email ?? this.email,
@@ -61,6 +69,8 @@ class Student extends Equatable {
     return {
       'firstName': firstName,
       'lastName': lastName,
+      'reportCount': reportCount,
+      'channels': channels,
       'bio': bio,
       'coverPhotoUrl': coverPhotoUrl,
       'email': email,
@@ -81,6 +91,8 @@ class Student extends Equatable {
       email: map['email'] as String,
       fullName: map['fullName'] as String,
       avatarUrl: map['avatarUrl'] as String,
+      channels: List<Map<String, dynamic>>.from(map['channels'] as List),
+      reportCount: map['reportCount'] as int,
       id: map['id'] as String,
       coverPhotoUrl: map['coverPhotoUrl'] as String,
     );
@@ -96,6 +108,8 @@ class Student extends Equatable {
     return [
       firstName,
       lastName,
+      reportCount,
+      channels,
       bio,
       coverPhotoUrl,
       email,
