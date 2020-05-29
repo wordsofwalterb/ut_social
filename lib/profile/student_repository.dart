@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meta/meta.dart';
-import 'package:ut_social/core/entities/error.dart';
+import 'package:ut_social/core/entities/failure.dart';
 import 'package:ut_social/core/entities/student.dart';
 
 abstract class StudentRepository {

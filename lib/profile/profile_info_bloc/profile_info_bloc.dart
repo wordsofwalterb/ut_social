@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:ut_social/core/entities/error.dart';
+import 'package:ut_social/core/entities/failure.dart';
 import 'package:ut_social/core/entities/student.dart';
 import 'package:ut_social/profile/student_repository.dart';
 
