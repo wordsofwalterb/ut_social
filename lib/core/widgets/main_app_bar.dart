@@ -13,6 +13,7 @@ PreferredSizeWidget mainAppBar(BuildContext context) {
     currentUser = userBlocState.currentUser;
   }
   return AppBar(
+    elevation: 2,
     leading: Padding(
       padding: const EdgeInsets.all(10.0),
       child: ProfileAvatar(

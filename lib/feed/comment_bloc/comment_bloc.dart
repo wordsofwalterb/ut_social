@@ -5,7 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:ut_social/core/entities/comment.dart';
-import 'package:ut_social/core/entities/error.dart';
+import 'package:ut_social/core/entities/failure.dart';
 import 'package:ut_social/core/repositories/comment_repository.dart';
 
 part 'comment_event.dart';

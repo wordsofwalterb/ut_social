@@ -212,8 +212,9 @@ class ImageMessage extends Message {
       timestamp: (map['postTime'] as Timestamp).toDate(),
       reportCount: map['reportCount'] as int,
       author: Map<String, dynamic>.from(map['author'] as Map),
-      reactions: List<Map<String, dynamic>>.from(
-          (map['reactions'] as List)?.map((x) => x as Map)),
+      reactions: (map['reactions'] as List)
+          ?.map((x) => Map<String, dynamic>.from(x as Map))
+          ?.toList(),
     );
   }
 

@@ -2,13 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
+import 'package:ut_social/chats/chat_overview_screen.dart';
 
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
 
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 
 import '../add_content/new_content_screen.dart';
-import '../chats/chat_screen.dart';
 import '../feed/feed_screen.dart';
 import '../notifications/notification_screen.dart';
 import '../search/search_screen.dart';
@@ -31,18 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return
-        // MultiBlocProvider(
-        //   providers: [
-        //     BlocProvider<PostBloc>(
-        //       create: (context) => PostBloc(
-        //           postRepository: FirebasePostRepository(),
-        //           authBloc: BlocProvider.of<UserBloc>(context))
-        //         ..add(PostSetup()),
-        //     ),
-        //   ],
-        //   child:
-        Scaffold(
+    return Scaffold(
       body: PageView(
         controller: _pageController,
         onPageChanged: (int index) {
@@ -54,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
           FeedScreen(),
           SearchScreen(),
           NewContentScreen(),
-          ChatScreen(),
+          ChatOverviewScreen(),
           NotificationScreen(),
         ],
       ),

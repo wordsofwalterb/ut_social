@@ -1,5 +1,16 @@
 import 'package:flutter/material.dart';
 
+LinearGradient orangeGradient() {
+  return const LinearGradient(
+    colors: [Color(0xffce7224), Color(0xffcd5000)],
+    stops: [0, 1],
+    begin: Alignment(-0.78, -0.63),
+    end: Alignment(0.78, 0.63),
+    // angle: 129,
+    // scale: undefined,
+  );
+}
+
 ThemeData darkTheme() {
   return ThemeData(
     cardColor: const Color(0xff2e3035),
