@@ -67,7 +67,7 @@ class _ChatOverviewScreenState extends State<ChatOverviewScreen> {
           margin: const EdgeInsets.only(bottom: 6),
           onTap: () => Navigator.of(context).pushNamed(Routes.chatDetail),
         );
-      }, childCount: 3),
+      }, childCount: 10),
     );
   }
 

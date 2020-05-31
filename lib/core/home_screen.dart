@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           FeedScreen(),
           SearchScreen(),
-          NewContentScreen(),
+          // NewContentScreen(),
           ChatOverviewScreen(),
           NotificationScreen(),
         ],
@@ -72,12 +72,12 @@ class _HomeScreenState extends State<HomeScreen> {
               size: 28.0,
             ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              SFSymbols.plus_square,
-              size: 34.0,
-            ),
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(
+          //     SFSymbols.plus_square,
+          //     size: 34.0,
+          //   ),
+          // ),
           BottomNavigationBarItem(
             icon: Icon(
               SFSymbols.bubble_left,
