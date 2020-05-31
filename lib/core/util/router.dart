@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ut_social/add_content/add_post.dart';
+import 'package:ut_social/chats/chat_detail_screen.dart';
 import 'package:ut_social/feed/feed_screen.dart';
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 import 'package:ut_social/profile/edit_profile_screen.dart';
@@ -17,6 +18,7 @@ class Routes {
   static const String profile = 'profile';
   static const String editProfile = 'editProfile';
   static const String createPost = 'createPost';
+  static const String chatDetail = 'chatDetail';
 }
 
 /// Correlates routes names to builders
@@ -42,11 +44,19 @@ class Router {
         throw Exception('Invalid arguments for ${settings.name}');
         break;
       case Routes.editProfile:
-        return MaterialPageRoute(builder: (_) => EditProfileScreen());
+        return MaterialPageRoute(
+          builder: (_) => EditProfileScreen(),
+        );
+      case Routes.chatDetail:
+        return MaterialPageRoute(
+          builder: (_) => ChatDetailScreen(),
+        );
       default:
         return _errorRoute(settings);
     }
   }
+
+// Moved route generation to this section for brevity in previous section
 
   static Route<dynamic> _createPostRoute(PostBloc bloc) {
     return MaterialPageRoute(

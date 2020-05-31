@@ -37,7 +37,7 @@ class GroupCard extends StatelessWidget {
               Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.transparent, Colors.black45],
+                    colors: [Colors.transparent, Colors.black54],
                     stops: [0, 1],
                     begin: Alignment(-0.00, -1.00),
                     end: Alignment(0.00, 1.00),

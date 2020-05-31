@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ut_social/core/util/router.dart';
 import 'package:ut_social/core/widgets/main_app_bar.dart';
 
 import 'chat_tile.dart';
@@ -30,7 +31,7 @@ class _ChatOverviewScreenState extends State<ChatOverviewScreen> {
     return SliverList(
       delegate: SliverChildListDelegate([
         Container(
-          height: 140,
+          height: 135,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.symmetric(horizontal: 0),
@@ -45,7 +46,7 @@ class _ChatOverviewScreenState extends State<ChatOverviewScreen> {
                   );
                 }
                 return GroupCard(
-                  title: 'Delta Sigma Pi is',
+                  title: 'Delta Sigma Pi',
                   subtitle: '3 members',
                   imageUrl: 'https://placeimg.com/480/480/any',
                 );
@@ -64,6 +65,7 @@ class _ChatOverviewScreenState extends State<ChatOverviewScreen> {
           lastMessageDate: DateTime.now(),
           numUnreadMessages: 9,
           margin: const EdgeInsets.only(bottom: 6),
+          onTap: () => Navigator.of(context).pushNamed(Routes.chatDetail),
         );
       }, childCount: 3),
     );
@@ -73,7 +75,7 @@ class _ChatOverviewScreenState extends State<ChatOverviewScreen> {
     return SliverList(
       delegate: SliverChildListDelegate.fixed([
         Padding(
-          padding: const EdgeInsets.fromLTRB(12, 28, 12, 16),
+          padding: const EdgeInsets.fromLTRB(12, 28, 12, 12),
           child: Row(children: [
             Container(
               child: Text(
