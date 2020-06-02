@@ -64,7 +64,7 @@ class ProfileAvatar extends StatelessWidget {
                           color: borderColor,
                           width: borderWidth,
                         )
-                      : Border.all(),
+                      : null,
                   borderRadius: BorderRadius.circular(radius),
                   image:
                       DecorationImage(image: imageProvider, fit: BoxFit.cover),
@@ -81,7 +81,7 @@ class ProfileAvatar extends StatelessWidget {
                         color: borderColor,
                         width: borderWidth,
                       )
-                    : Border.all(),
+                    : null,
                 borderRadius: BorderRadius.circular(radius),
                 image: DecorationImage(
                   image: AssetImage(

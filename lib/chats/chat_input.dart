@@ -16,7 +16,7 @@ class ChatInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 50.0,
+     // height: 50.0,
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
       decoration: const BoxDecoration(
         color: Color(0xff35393f),
@@ -45,7 +45,7 @@ class ChatInput extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 18),
               child: TextField(
                 style: TextStyle(
-                    color: Theme.of(context).primaryColor, fontSize: 15.0),
+                    color: Colors.white, fontSize: 15.0),
                 controller: textController,
                 decoration: const InputDecoration.collapsed(
                   hintText: 'Type your message...',
