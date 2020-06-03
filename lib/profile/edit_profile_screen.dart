@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
 import 'package:ut_social/core/widgets/profile_avatar.dart';
 
 import 'widgets/cover_photo.dart';
 
-class EditProfileScreen extends StatelessWidget {
+class EditProfileScreen extends StatefulWidget {
+  @override
+  _EditProfileScreenState createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
+  String coverPhotoUrl;
+  String avatarUrl;
+
   @override
   Widget build(BuildContext context) {
+    final userState = BlocProvider.of<UserBloc>(context);
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -46,9 +60,12 @@ class EditProfileScreen extends StatelessWidget {
         children: [
           Stack(
             children: [
-              CoverPhoto(
-                height: 120,
-                coverPhotoUrl: '',
+              GestureDetector(
+                onTap: null,
+                child: CoverPhoto(
+                  height: 120,
+                  coverPhotoUrl: '',
+                ),
               ),
             ],
           ),
@@ -68,7 +85,74 @@ class EditProfileScreen extends StatelessWidget {
 
   Widget _textFields() {
     return Column(children: [
-      
+      SizedBox(
+        height: 20,
+      ),
+      TextFormField(
+        controller: _firstNameController,
+        decoration: InputDecoration(
+          alignLabelWithHint: true,
+          floatingLabelBehavior: FloatingLabelBehavior.never,
+          hintText: 'First Name',
+          // errorText: (state.error == 'Last name needs to be provided')
+          //     ? state.error
+          //     : null,
+        ),
+        autovalidate: false,
+        autocorrect: false,
+        textCapitalization: TextCapitalization.words,
+        // focusNode: _lastNameFocus,
+        textInputAction: TextInputAction.next,
+        // onFieldSubmitted: (term) {
+        //    _fieldFocusChange(context, _lastNameFocus, _emailFocus);
+        // },
+      ),
+      SizedBox(
+        height: 3,
+      ),
+      TextFormField(
+        controller: _lastNameController,
+        decoration: InputDecoration(
+          alignLabelWithHint: true,
+          floatingLabelBehavior: FloatingLabelBehavior.never,
+          hintText: 'Last Name',
+          // errorText: (state.error == 'Last name needs to be provided')
+          //     ? state.error
+          //     : null,
+        ),
+        keyboardType: TextInputType.emailAddress,
+        autovalidate: false,
+        autocorrect: false,
+        textCapitalization: TextCapitalization.words,
+        // focusNode: _lastNameFocus,
+        textInputAction: TextInputAction.next,
+        // onFieldSubmitted: (term) {
+        //    _fieldFocusChange(context, _lastNameFocus, _emailFocus);
+        // },
+      ),
+      SizedBox(
+        height: 3,
+      ),
+      TextFormField(
+        controller: _bioController,
+        decoration: InputDecoration(
+          alignLabelWithHint: true,
+          floatingLabelBehavior: FloatingLabelBehavior.never,
+          hintText: 'Bio',
+          // errorText: (state.error == 'Last name needs to be provided')
+          //     ? state.error
+          //     : null,
+        ),
+        keyboardType: TextInputType.emailAddress,
+        autovalidate: false,
+        autocorrect: false,
+        textCapitalization: TextCapitalization.words,
+        // focusNode: _lastNameFocus,
+        textInputAction: TextInputAction.next,
+        // onFieldSubmitted: (term) {
+        //    _fieldFocusChange(context, _lastNameFocus, _emailFocus);
+        // },
+      ),
     ]);
   }
 }
