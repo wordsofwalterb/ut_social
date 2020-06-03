@@ -99,12 +99,16 @@ class _PostCardState extends State<PostCard> {
             ),
           ]), // End Top Section
 
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
-            child: Text(
-              widget._post.body,
-              style: Theme.of(context).textTheme.bodyText1,
+          if (widget._post.body != '')
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+              child: Text(
+                widget._post.body,
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
             ),
+          SizedBox(
+            height: 6,
           ),
 
           ImageWidget(widget._post.imageUrl),

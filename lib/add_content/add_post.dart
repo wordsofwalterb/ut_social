@@ -107,7 +107,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_isLoading && _caption.isNotEmpty) {
+    if (!_isLoading && (_caption.isNotEmpty || _image != null)) {
       setState(() {
         _isLoading = true;
       });
