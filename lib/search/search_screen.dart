@@ -41,6 +41,19 @@ class _SearchScreenState extends State<SearchScreen> {
           searchBarStyle: SearchBarStyle(
             padding: EdgeInsets.symmetric(horizontal: 10),
           ),
+          header: Container(
+            width: double.infinity,
+            padding: EdgeInsets.only(bottom: 20, top: 12),
+            child: Text(
+              'Search Results',
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                color: Color(0xffffffff),
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
           // emptyWidget: Center(child: Text("empty")),
           // indexedScaledTileBuilder: (int index) =>
           //     ScaledTile.count(1, index.isEven ? 2 : 1),
