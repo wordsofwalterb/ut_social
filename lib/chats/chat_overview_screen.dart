@@ -91,7 +91,7 @@ class _ChatOverviewScreenState extends State<ChatOverviewScreen> {
       body: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
-          _sectionHeader(leading: 'Join a Group', trailing: 'View All'),
+          _sectionHeader(leading: 'Your group hubs', trailing: 'View All'),
           _groupSection(),
           _sectionHeader(leading: 'Chats'),
           _chatSection(),
