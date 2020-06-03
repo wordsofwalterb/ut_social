@@ -43,6 +43,8 @@ class ChatTile extends StatelessWidget {
           ),
           subtitle: Text(
             subtitle,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Color(0xffa1a1a1),
               fontSize: 14,
@@ -62,7 +64,7 @@ class ChatTile extends StatelessWidget {
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                if (numUnreadMessages != null)
+                if (numUnreadMessages != null && numUnreadMessages != 0)
                   Container(
                     padding: const EdgeInsets.all(4),
                     decoration: const BoxDecoration(

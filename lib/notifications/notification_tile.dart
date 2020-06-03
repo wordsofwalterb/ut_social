@@ -4,6 +4,7 @@ import 'package:ut_social/core/widgets/profile_avatar.dart';
 class NotificationTile extends StatelessWidget {
   final String title;
   final Icon icon;
+  final String imageUrl;
   final VoidCallback onTap;
   final EdgeInsetsGeometry margin;
   final EdgeInsetsGeometry padding;
@@ -11,6 +12,7 @@ class NotificationTile extends StatelessWidget {
   const NotificationTile({
     this.title,
     this.icon,
+    this.imageUrl,
     this.onTap,
     this.margin,
     this.padding,
@@ -25,10 +27,14 @@ class NotificationTile extends StatelessWidget {
         margin: margin,
         padding: padding,
         child: ListTile(
-          leading: IconButton(
-            icon: icon,
-            onPressed: null,
-          ),
+          leading: (imageUrl != null)
+              ? ProfileAvatar(
+                  avatarUrl: imageUrl,
+                )
+              : IconButton(
+                  icon: icon,
+                  onPressed: null,
+                ),
           title: Text(
             title,
             style: const TextStyle(
