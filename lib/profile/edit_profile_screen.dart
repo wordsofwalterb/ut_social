@@ -67,6 +67,8 @@ class EditProfileScreen extends StatelessWidget {
   }
 
   Widget _textFields() {
-    return Column(children: []);
+    return Column(children: [
+      
+    ]);
   }
 }

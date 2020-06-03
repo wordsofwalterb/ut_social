@@ -5,6 +5,7 @@ import 'package:ut_social/core/entities/student.dart';
 
 abstract class StudentRepository {
   Future<StudentResult> getStudentById(String id);
+  Future<List<Student>> findStudentsByName(String keyword);
 }
 
 class StudentResult {
@@ -21,6 +22,18 @@ class FirebaseStudentRepository extends StudentRepository {
   FirebaseStudentRepository({
     Firestore firestore,
   }) : _firestore = firestore ?? Firestore.instance;
+
+  Future<List<Student>> findStudentsByName(String keyword) async {
+    final query = await _firestore
+        .collection('students')
+        .where('firstName', isGreaterThanOrEqualTo: keyword)
+        .getDocuments();
+
+    return query.documents
+        .map((e) => Student.fromMap(
+            e.data..addAll(<String, dynamic>{'id': e.documentID})))
+        .toList();
+  }
 
   @override
   Future<StudentResult> getStudentById(String id) async {
