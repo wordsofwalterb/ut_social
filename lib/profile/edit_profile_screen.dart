@@ -10,6 +10,11 @@ import 'package:ut_social/core/widgets/profile_avatar.dart';
 
 import 'widgets/cover_photo.dart';
 
+enum ImageToChange {
+  profileImage,
+  coverImage,
+}
+
 class EditProfileScreen extends StatefulWidget {
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
@@ -28,26 +33,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _bioController.dispose();
+    avatarFile.delete();
+    coverPhotoFile.delete();
     super.dispose();
   }
 
-  dynamic _showSelectImageDialog(File file) {
-    return Platform.isIOS ? _iosBottomSheet(file) : _androidDialog(file);
+  Future<void> _showSelectImageDialog(ImageToChange toChange) {
+    return Platform.isIOS
+        ? _iosBottomSheet(toChange)
+        : _androidDialog(toChange);
   }
 
-  dynamic _iosBottomSheet(File file) {
-    showCupertinoModalPopup(
+  Future<void> _iosBottomSheet(ImageToChange toChange) async {
+    await showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
         return CupertinoActionSheet(
           title: const Text('Add Photo'),
           actions: <Widget>[
             CupertinoActionSheetAction(
-              onPressed: () => _handleImage(ImageSource.camera, file),
+              onPressed: () => _handleImage(ImageSource.camera, toChange),
               child: const Text('Take Photo'),
             ),
             CupertinoActionSheetAction(
-              onPressed: () => _handleImage(ImageSource.gallery, file),
+              onPressed: () => _handleImage(ImageSource.gallery, toChange),
               child: const Text('Choose From Gallery'),
             ),
           ],
@@ -60,19 +69,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  dynamic _androidDialog(File file) {
-    showDialog(
+  Future<void> _androidDialog(ImageToChange toChange) async {
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
           title: const Text('Add Photo'),
           children: <Widget>[
             SimpleDialogOption(
-              onPressed: () => _handleImage(ImageSource.camera, file),
+              onPressed: () => _handleImage(ImageSource.camera, toChange),
               child: const Text('Take Photo'),
             ),
             SimpleDialogOption(
-              onPressed: () => _handleImage(ImageSource.gallery, file),
+              onPressed: () => _handleImage(ImageSource.gallery, toChange),
               child: const Text('Choose From Gallery'),
             ),
             SimpleDialogOption(
@@ -90,14 +99,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Future<void> _handleImage(ImageSource source, File file) async {
+  Future<void> _handleImage(ImageSource source, ImageToChange toChange) async {
     Navigator.pop(context);
     FocusScope.of(context).unfocus();
     File imageFile = await ImagePicker.pickImage(source: source);
     if (imageFile != null) {
       imageFile = await _cropImage(imageFile);
       setState(() {
-        avatarFile = imageFile;
+        switch (toChange) {
+          case ImageToChange.profileImage:
+            {
+              avatarFile = imageFile;
+              break;
+            }
+          case ImageToChange.coverImage:
+            {
+              coverPhotoFile = imageFile;
+              break;
+            }
+        }
       });
     }
   }
@@ -139,43 +159,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         body: SingleChildScrollView(
           child: Column(children: [
-            _changeImages(),
+            _coverPhoto(),
+            _profilePhoto(),
             _textFields(),
           ]),
         ));
   }
 
-  Widget _changeImages() {
+  Widget _coverPhoto() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(19, 17, 19, 50),
-      child: Stack(
-        overflow: Overflow.visible,
-        children: [
-          Stack(
-            children: [
-              GestureDetector(
-                onTap: null,
-                child: CoverPhoto(
-                  height: 120,
-                  coverPhotoUrl: '',
-                ),
-              ),
-            ],
-          ),
-          Positioned(
-            bottom: -42,
-            left: 15,
-            child: GestureDetector(
-              onTap: () => _showSelectImageDialog(avatarFile),
-              child: ProfileAvatar(
-                avatarUrl: userState.currentUser.avatarUrl,
-                radius: 100,
-                size: 90,
-              ),
-            ),
-          ),
-        ],
+      padding: const EdgeInsets.fromLTRB(19, 17, 19, 10),
+      child: CoverPhoto(
+        onPressed: () => _showSelectImageDialog(ImageToChange.coverImage),
+        fileImage: (coverPhotoFile != null) ? FileImage(coverPhotoFile) : null,
+        height: 120,
+        width: double.infinity,
+        coverPhotoUrl: userState.currentUser.coverPhotoUrl,
       ),
+    );
+  }
+
+  Widget _profilePhoto() {
+    return ProfileAvatar(
+      onPressed: () => _showSelectImageDialog(ImageToChange.profileImage),
+      avatarUrl: userState.currentUser.avatarUrl,
+      fileImage: (avatarFile != null) ? FileImage(avatarFile) : null,
+      radius: 100,
+      size: 90,
     );
   }
 
