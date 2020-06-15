@@ -56,7 +56,7 @@ class ChatDetailScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           if (index == 0) {
             return SizedBox(
-              height: 24,
+              height: 12,
             );
           }
           return ChatMessage(
