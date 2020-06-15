@@ -28,24 +28,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _onRefresh() async {
-    BlocProvider.of<ProfileInfoBloc>(context).add(const LoadProfile());
+    //BlocProvider.of<ProfileInfoBloc>(context).add(const LoadProfile());
+    bloc.add(const LoadProfile());
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Theme.of(context).backgroundColor,
-        title: const Text(
-          'Your Profile',
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Theme.of(context).backgroundColor,
+          title: const Text(
+            'Your Profile',
+          ),
         ),
-      ),
-      body: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          _topSection(),
-        ],
+        body: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            _topSection(),
+          ],
+        ),
       ),
     );
   }

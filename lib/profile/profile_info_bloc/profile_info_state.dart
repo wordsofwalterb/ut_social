@@ -19,10 +19,16 @@ class ProfileInfoLoaded extends ProfileInfoState {
   final Student student;
 
   const ProfileInfoLoaded(this.student) : assert(student != null);
+
+  @override
+  List<Object> get props => [student];
 }
 
 class ProfileInfoFailure extends ProfileInfoState {
   final Failure failure;
 
   const ProfileInfoFailure(this.failure) : assert(failure != null);
+
+  @override
+  List<Object> get props => [failure];
 }

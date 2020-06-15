@@ -97,13 +97,9 @@ class Student extends Equatable {
       reportCount: map['reportCount'] as int,
       id: map['id'] as String,
       coverPhotoUrl: map['coverPhotoUrl'] as String,
+      bio: map['bio'] as String,
     );
   }
-
-  String toJson() => json.encode(toMap());
-
-  factory Student.fromJson(String source) =>
-      Student.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   List<Object> get props {

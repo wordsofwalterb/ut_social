@@ -44,9 +44,11 @@ class Router {
         throw Exception('Invalid arguments for ${settings.name}');
         break;
       case Routes.editProfile:
-        return MaterialPageRoute(
-          builder: (_) => EditProfileScreen(),
-        );
+        if (args is ProfileInfoBloc) {
+          return _editProfileRoute(args);
+        }
+        throw Exception('Invalid arguments for ${settings.name}');
+        break;
       case Routes.chatDetail:
         return MaterialPageRoute(
           builder: (_) => ChatDetailScreen(),
@@ -63,6 +65,15 @@ class Router {
       builder: (context) => BlocProvider.value(
         value: bloc,
         child: CreatePostScreen(),
+      ),
+    );
+  }
+
+  static Route<dynamic> _editProfileRoute(ProfileInfoBloc bloc) {
+    return MaterialPageRoute(
+      builder: (context) => BlocProvider.value(
+        value: bloc,
+        child: EditProfileScreen(),
       ),
     );
   }

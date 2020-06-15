@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 import 'package:ut_social/core/entities/student.dart';
+import 'package:ut_social/core/repositories/post_upload_repository.dart';
 import 'package:ut_social/core/util/globals.dart';
 
 class UserRepository {
@@ -71,6 +74,13 @@ class UserRepository {
     }
   }
 
+  Future<void> updateUser(Student updatedUser) async {
+    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+    await Global.studentsRef
+        .document(currentUser.uid)
+        .setData(updatedUser.toMap(), merge: true);
+  }
+
   Future<bool> isSignedIn() async {
     final FirebaseUser currentUser = await _firebaseAuth.currentUser();
     return currentUser != null;
@@ -86,5 +96,20 @@ class UserRepository {
           <String, dynamic>{'id': userDoc.documentID},
         ),
     );
+  }
+
+  Future<String> uploadAvatar(File imageFile) async {
+    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+    final DocumentSnapshot userDoc =
+        await Global.studentsRef.document(currentUser.uid).get();
+
+    final imageUrl = StorageService.uploadUserProfileImage(
+        userDoc.data['avatarUrl'] as String, imageFile);
+
+    await Global.studentsRef
+        .document(currentUser.uid)
+        .setData({'avatarUrl': imageUrl}, merge: true);
+
+    return imageUrl;
   }
 }

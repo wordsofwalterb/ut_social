@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ut_social/core/util/router.dart';
 
 import 'package:ut_social/core/widgets/profile_avatar.dart';
+import 'package:ut_social/profile/profile_info_bloc/profile_info_bloc.dart';
 
 import 'cover_photo.dart';
 
@@ -83,7 +85,11 @@ class TopProfileSection extends StatelessWidget {
           const SizedBox(height: 8),
           if (isCurrentUser)
             GestureDetector(
-              onTap: () => Navigator.pushNamed(context, Routes.editProfile),
+              onTap: () => Navigator.pushNamed(
+                context,
+                Routes.editProfile,
+                arguments: BlocProvider.of<ProfileInfoBloc>(context),
+              ),
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(6),

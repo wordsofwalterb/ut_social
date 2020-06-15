@@ -6,7 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
+import 'package:ut_social/core/repositories/post_upload_repository.dart';
 import 'package:ut_social/core/widgets/profile_avatar.dart';
+import 'package:ut_social/profile/profile_info_bloc/profile_info_bloc.dart';
 
 import 'widgets/cover_photo.dart';
 
@@ -27,15 +29,69 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   UserAuthenticated userState;
   File coverPhotoFile;
   File avatarFile;
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _bioController.dispose();
-    avatarFile.delete();
-    coverPhotoFile.delete();
+    // avatarFile.delete();
+    // coverPhotoFile.delete();
     super.dispose();
+  }
+
+  Future<void> _editProfile() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    String firstName;
+    if (_firstNameController.text.isNotEmpty) {
+      firstName = _firstNameController.text;
+    }
+
+    String lastName;
+    if (_lastNameController.text.isNotEmpty) {
+      lastName = _lastNameController.text;
+    }
+
+    String bio;
+    if (_bioController.text.isNotEmpty) {
+      bio = _bioController.text;
+    }
+
+    String avatarUrl;
+    if (avatarFile != null) {
+      avatarUrl = await StorageService.uploadUserProfileImage(
+          userState.currentUser.avatarUrl ?? '', avatarFile);
+    }
+
+    String coverPhotorUrl;
+    if (coverPhotoFile != null) {
+      coverPhotorUrl = await StorageService.uploadUserCoverPhotoImage(
+          userState.currentUser.coverPhotoUrl ?? '', coverPhotoFile);
+    }
+
+    BlocProvider.of<UserBloc>(context).add(
+      UpdateUserProfile(
+        firstName: firstName,
+        lastName: lastName,
+        bio: bio,
+        avatarUrl: avatarUrl,
+        coverPhotoUrl: coverPhotorUrl,
+      ),
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+    BlocProvider.of<ProfileInfoBloc>(context).add(const LoadProfile());
+
+    Navigator.of(context).pop();
+    // Posts
+    // Comments
+    // Students
   }
 
   Future<void> _showSelectImageDialog(ImageToChange toChange) {
@@ -144,13 +200,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             Center(
               child: Padding(
                 padding: const EdgeInsets.only(right: 14),
-                child: Text(
-                  'Done',
-                  style: TextStyle(
-                    color: Color(0xffce7224),
-                    fontSize: 16,
-                    fontFamily: 'SFProText',
-                    fontWeight: FontWeight.w700,
+                child: GestureDetector(
+                  onTap: _editProfile,
+                  child: Text(
+                    'Done',
+                    style: TextStyle(
+                      color: Color(0xffce7224),
+                      fontSize: 16,
+                      fontFamily: 'SFProText',
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
@@ -159,6 +218,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         body: SingleChildScrollView(
           child: Column(children: [
+            if (_isLoading)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: LinearProgressIndicator(
+                  backgroundColor: Colors.blue[200],
+                  valueColor: const AlwaysStoppedAnimation(Colors.blue),
+                ),
+              )
+            else
+              const SizedBox.shrink(),
             _coverPhoto(),
             _profilePhoto(),
             _textFields(),
