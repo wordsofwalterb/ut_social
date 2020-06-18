@@ -56,7 +56,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         id: currentState.currentUser.id,
         fullName:
             _getFullName(firstName: event.firstName, lastName: event.lastName),
-        channels: event.channels ?? currentState.currentUser.channels,
+        // channels: event.channels ?? currentState.currentUser.channels,
         reportCount: event.reportCount ?? currentState.currentUser.reportCount,
         firstName: event.firstName ?? currentState.currentUser.firstName,
         avatarUrl: event.avatarUrl ?? currentState.currentUser.avatarUrl,

@@ -23,6 +23,12 @@ class Global {
   static final CollectionReference commentsRef =
       Firestore.instance.collection('comments');
 
+  static final CollectionReference channelsRef =
+      Firestore.instance.collection('channels');
+
+  static final CollectionReference messagesRef =
+      Firestore.instance.collection('messages');
+
   static final CollectionReference postsRef =
       Firestore.instance.collection('posts');
 

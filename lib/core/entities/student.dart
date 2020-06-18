@@ -15,7 +15,7 @@ class Student extends Equatable {
   final String fullName;
   final String avatarUrl;
   final String id;
-  final List<Map<String, dynamic>> channels;
+  final List<String> channels;
   final int reportCount;
 
   /// Creates an object representing public information about
@@ -49,7 +49,7 @@ class Student extends Equatable {
     String avatarUrl,
     String id,
     int reportCount,
-    List<Map<String, dynamic>> channels,
+    List<String> channels,
   }) {
     return Student(
       firstName: firstName ?? this.firstName,
@@ -91,9 +91,7 @@ class Student extends Equatable {
       email: map['email'] as String,
       fullName: map['fullName'] as String,
       avatarUrl: map['avatarUrl'] as String,
-      channels: (map['channels'] as List)
-          ?.map((x) => Map<String, dynamic>.from(x as Map))
-          ?.toList(),
+      channels: List<String>.from(map['channels'] as List),
       reportCount: map['reportCount'] as int,
       id: map['id'] as String,
       coverPhotoUrl: map['coverPhotoUrl'] as String,
