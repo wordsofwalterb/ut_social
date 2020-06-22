@@ -5,7 +5,7 @@ import 'package:ut_social/core/util/router.dart';
 
 import '../blocs/user_bloc/user_bloc.dart';
 import 'profile_avatar.dart';
-
+//test
 PreferredSizeWidget mainAppBar(BuildContext context) {
   final userBlocState = BlocProvider.of<UserBloc>(context).state;
   Student currentUser;
