@@ -14,6 +14,7 @@ PreferredSizeWidget mainAppBar(BuildContext context) {
   }
   return AppBar(
     elevation: 2,
+    centerTitle: true,
     leading: Padding(
       padding: const EdgeInsets.all(10.0),
       child: ProfileAvatar(
@@ -25,22 +26,19 @@ PreferredSizeWidget mainAppBar(BuildContext context) {
         avatarUrl: currentUser.avatarUrl,
       ),
     ),
-    title: Center(
-      child: Container(
-          width: 75,
-          child:
-              Image.asset('assets/images/appbar.png', fit: BoxFit.scaleDown)),
-    ),
+    title: Container(
+        width: 75,
+        child: Image.asset('assets/images/appbar.png', fit: BoxFit.scaleDown)),
     backgroundColor: Theme.of(context).backgroundColor,
     actions: <Widget>[
-      IconButton(
-        icon: const Icon(Icons.exit_to_app),
-        onPressed: () {
-          BlocProvider.of<UserBloc>(context).add(
-            LogOutUser(),
-          );
-        },
-      )
+      // IconButton(
+      //   icon: const Icon(Icons.exit_to_app),
+      //   onPressed: () {
+      //     BlocProvider.of<UserBloc>(context).add(
+      //       LogOutUser(),
+      //     );
+      //   },
+      // )
     ],
   );
 }

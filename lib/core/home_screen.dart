@@ -7,6 +7,7 @@ import 'package:ut_social/chats/chat_overview_screen.dart';
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
 
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
+import 'package:ut_social/profile/profile_screen.dart';
 
 import '../add_content/new_content_screen.dart';
 import '../feed/feed_screen.dart';
@@ -43,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
           FeedScreen(),
           SearchScreen(),
           // NewContentScreen(),
-          ChatOverviewScreen(),
+          // ChatOverviewScreen(),
           NotificationScreen(),
         ],
       ),
@@ -78,12 +79,12 @@ class _HomeScreenState extends State<HomeScreen> {
           //     size: 34.0,
           //   ),
           // ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              SFSymbols.bubble_left,
-              size: 28.0,
-            ),
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(
+          //     SFSymbols.bubble_left,
+          //     size: 28.0,
+          //   ),
+          // ),
           BottomNavigationBarItem(
             icon: Icon(
               SFSymbols.bell,

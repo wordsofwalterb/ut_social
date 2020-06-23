@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:ut_social/core/util/router.dart';
 import '../core/blocs/user_bloc/user_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
 
 class SettingsOverviewScreen extends StatefulWidget {
@@ -13,6 +14,26 @@ class SettingsOverviewScreen extends StatefulWidget {
 class _SettingsOverviewScreenState extends State<SettingsOverviewScreen> {
   bool _notificationsEnabled = false;
   UserBloc _userBloc;
+
+  Future<void> _launchPrivacyPolicy() async {
+    const url =
+        'https://www.notion.so/Privacy-Policy-1dc7732fb3f04de3810fe66c984bb431';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Future<void> _launchTermsOfService() async {
+    const url =
+        'https://www.notion.so/Terms-of-Services-b7c41ba68be74edcb8c065c1f9c5d4c0';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   void initState() {
@@ -64,17 +85,23 @@ class _SettingsOverviewScreenState extends State<SettingsOverviewScreen> {
             const SizedBox(height: 26),
             _buildSubheader('Other'),
             const SizedBox(height: 26),
-            _buildListTile('Terms of Service',
-                onTap: () =>
-                    Navigator.of(context).pushNamed(Routes.termsOfService)),
+            _buildListTile(
+              'Terms of Service',
+              onTap: _launchTermsOfService,
+            ),
             const SizedBox(height: 5),
-            _buildListTile('Privacy Policy',
-                onTap: () =>
-                    Navigator.of(context).pushNamed(Routes.privacyPolicy)),
+            _buildListTile(
+              'Privacy Policy',
+              onTap: _launchPrivacyPolicy,
+            ),
             const SizedBox(height: 35),
             _buildListTile(
               'Logout',
-              onTap: () => BlocProvider.of<UserBloc>(context).add(LogOutUser()),
+              onTap: () {
+                BlocProvider.of<UserBloc>(context).add(LogOutUser());
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
             ),
           ],
         ),

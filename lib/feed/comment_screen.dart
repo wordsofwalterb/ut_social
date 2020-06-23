@@ -235,16 +235,11 @@ class _CommentScreenState extends State<CommentScreen> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Theme.of(context).backgroundColor,
-        title:
-            Center(child: Image.asset('assets/images/appbar.png', height: 30)),
-        actions: const <Widget>[
-          Center(
-            child: Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('     '),
-            ),
-          )
-        ],
+        title: Container(
+            width: 75,
+            child:
+                Image.asset('assets/images/appbar.png', fit: BoxFit.scaleDown)),
+        actions: const <Widget>[],
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
