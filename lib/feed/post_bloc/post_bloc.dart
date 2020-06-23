@@ -2,94 +2,106 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
+import 'package:ut_social/core/entities/failure.dart';
 import 'package:ut_social/core/entities/post.dart';
+import 'package:collection/collection.dart';
 import 'package:ut_social/core/entities/student.dart';
 import 'package:ut_social/core/repositories/post_repository.dart';
+import 'package:ut_social/feed/post_bloc/post_bloc_old.dart';
 
 part 'post_event.dart';
 part 'post_state.dart';
 
-class PostBloc extends Bloc<PostEvent, PostState> {
+class PostsBloc extends Bloc<PostsEvent, PostsState> {
+  PostsBloc({
+    this.postRepository,
+  });
+
   final PostRepository postRepository;
-  final UserBloc authBloc;
-  Student currentUser;
-  StreamSubscription userBlocSubscription;
-
-  PostBloc({this.postRepository, this.authBloc}) {
-    userBlocSubscription = authBloc.listen((state) {
-      if (state is UserAuthenticated) {
-        currentUser = state.currentUser;
-      }
-      assert(currentUser != null);
-    });
-  }
 
   @override
-  Future<void> close() {
-    userBlocSubscription.cancel();
-    return super.close();
-  }
+  PostsState get initialState => PostsInitial();
 
   @override
-  PostInitial get initialState => PostInitial();
-
-  @override
-  Stream<Transition<PostEvent, PostState>> transformEvents(
-    Stream<PostEvent> events,
-    Stream<Transition<PostEvent, PostState>> Function(PostEvent) next,
-  ) {
-    final nonDebounceStream = events.where((event) {
-      return event is! PostsFetch && event is! PostLike;
-    });
-    final debounceStream = events.where((event) {
-      return event is PostsFetch || event is PostLike;
-    }).debounceTime(const Duration(milliseconds: 300));
-
-    return super
-        .transformEvents(nonDebounceStream.mergeWith([debounceStream]), next);
-  }
-
-  @override
-  Stream<PostState> mapEventToState(PostEvent event) async* {
+  Stream<PostsState> mapEventToState(
+    PostsEvent event,
+  ) async* {
     final currentState = state;
-    try {
-      if (event is PostSetup) {
+    if (currentState is PostsInitial) {
+      if (event is SetupPosts) {
         yield* _mapPostSetupToState();
       }
-      if (currentState is PostLoaded) {
-        if (event is PostAdded) {
-          yield* _mapPostAddedToState(event.body, currentState, event.imageUrl);
-        }
-        if (event is PostsFetch && !_hasReachedMax(currentState)) {
-          yield* _mapPostFetchToState(currentState);
-        }
-        if (event is PostRefresh) {
-          yield* _mapPostRefreshToState(currentState);
-        }
-        if (event is PostLike) {
-          yield* _mapPostLikeToState(currentState, event.postId);
-        }
-        if (event is PostUnlike) {
-          yield* _mapPostUnlikeToState(currentState, event.postId);
-        } else if (event is PostCommentRemoved) {
-          yield* _mapPostCommentRemovedToState(event.postId);
-        } else if (event is PostCommentAdded) {
-          yield* _mapPostCommentAddedToState(event.postId);
-        }
+    }
+    if (currentState is PostsError) {
+      if (event is RefreshPosts) {
+        yield* _mapPostsRefreshedToState();
       }
-    } catch (_) {
-      yield PostError();
+    }
+    if (currentState is PostsEmpty) {
+      if (event is RefreshPosts) {
+        yield* _mapPostsRefreshedToState();
+      } else if (event is AddPost) {
+        yield* _mapPostAddedToState(event);
+      }
+    }
+    if (currentState is PostsReachedMax) {
+      if (event is AddPost) {
+        yield* _mapPostAddedToState(event);
+      } else if (event is LikePost) {
+        yield* _mapPostLikedToState(event);
+      } else if (event is UnlikePost) {
+        yield* _mapPostUnlikedToState(event);
+      } else if (event is RefreshPosts) {
+        yield* _mapPostsRefreshedToState();
+      } else if (event is IncrementCommentCount) {
+        yield* _mapIncrementCommentCountToState(event);
+      } else if (event is DecrementCommentCount) {
+        yield* _mapDecrementCommentCountToState(event);
+      } else if (event is DeletePost) {
+        yield* _mapDeletePostToState(event);
+      }
+    }
+    if (currentState is PostsLoaded) {
+      if (event is AddPost) {
+        yield* _mapPostAddedToState(event);
+      } else if (event is LikePost) {
+        yield* _mapPostLikedToState(event);
+      } else if (event is UnlikePost) {
+        yield* _mapPostUnlikedToState(event);
+      } else if (event is RefreshPosts) {
+        yield* _mapPostsRefreshedToState();
+      } else if (event is FetchPosts) {
+        yield* _mapPostsFetchedToState();
+      } else if (event is IncrementCommentCount) {
+        yield* _mapIncrementCommentCountToState(event);
+      } else if (event is DecrementCommentCount) {
+        yield* _mapDecrementCommentCountToState(event);
+      } else if (event is DeletePost) {
+        yield* _mapDeletePostToState(event);
+      }
     }
   }
 
-  Stream<PostState> _mapPostCommentAddedToState(String postId) async* {
+  Stream<PostsState> _mapDeletePostToState(DeletePost event) async* {
     final currentState = state;
-    if (currentState is PostLoaded) {
-      await postRepository.updateCommentCount(postId, 1);
+    if (currentState is PostsLoaded || currentState is PostsReachedMax) {
+      final newPosts = currentState.posts.toList();
+      newPosts.remove(event.post);
+      yield currentState.copyWith(posts: newPosts);
+    }
+    await postRepository.deletePost(event.post.id);
+  }
+
+  Stream<PostsState> _mapIncrementCommentCountToState(
+      IncrementCommentCount event) async* {
+    final currentState = state;
+    if (currentState is PostsLoaded || currentState is PostsReachedMax) {
+      await postRepository.updateCommentCount(event.id, 1);
       final changedPostIndex =
-          currentState.posts.indexWhere((element) => element.id == postId);
+          currentState.posts.indexWhere((element) => element.id == event.id);
 
       final changedPosts = currentState.posts.toList()
         ..[changedPostIndex] = currentState.posts[changedPostIndex].copyWith(
@@ -100,12 +112,13 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }
   }
 
-  Stream<PostState> _mapPostCommentRemovedToState(String postId) async* {
+  Stream<PostsState> _mapDecrementCommentCountToState(
+      DecrementCommentCount event) async* {
     final currentState = state;
-    if (currentState is PostLoaded) {
-      await postRepository.updateCommentCount(postId, -1);
+    if (currentState is PostsLoaded || currentState is PostsReachedMax) {
+      await postRepository.updateCommentCount(event.id, -1);
       final changedPostIndex =
-          currentState.posts.indexWhere((element) => element.id == postId);
+          currentState.posts.indexWhere((element) => element.id == event.id);
 
       final changedPosts = currentState.posts.toList()
         ..[changedPostIndex] = currentState.posts[changedPostIndex].copyWith(
@@ -116,123 +129,197 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }
   }
 
-  Stream<PostState> _mapPostAddedToState(
-      String body, PostLoaded currentState, String imageUrl) async* {
-    assert(body != null);
+  Stream<PostsState> _mapPostsRefreshedToState() async* {
+    try {
+      final newPosts = await postRepository.setupPosts();
 
-    final post = await postRepository.addPost(
-        currentUser, body, imageUrl); // TODO: Add Try Catch
+      if (newPosts.isEmpty) {
+        yield PostsEmpty();
+        return;
+      }
 
-    final newState = currentState.copyWith(
-        firstPostTime: post.postTime,
-        posts: currentState.posts.toList()..insert(0, post));
+      PostsState newState;
+      if (newPosts.length < 20) {
+        //less than limit in repository
+        newState = PostsReachedMax(posts: newPosts);
+      } else {
+        newState = PostsLoaded(posts: newPosts);
+      }
 
-    assert(newState != currentState);
+      assert(
+          const ListEquality<Post>().equals(
+              newPosts.toList()
+                ..sort((Post a, Post b) => b.postTime.compareTo(a.postTime)),
+              newPosts),
+          'States Post List must be properly sorted');
+
+      yield newState;
+    } catch (error) {
+      yield PostsError(
+        failure: Failure(
+            'There was a problem refreshing the posts', error.toString()),
+      );
+    }
+  }
+
+  Stream<PostsState> _mapPostsFetchedToState() async* {
+    assert(
+        const ListEquality<Post>().equals(
+            state.posts.toList()
+              ..sort((Post a, Post b) => b.postTime.compareTo(a.postTime)),
+            state.posts),
+        'States Post List must be properly sorted');
+
+    try {
+      final posts = await postRepository.fetchNextPage(
+          startAfter: state.posts.last.postTime);
+
+      PostsState newState;
+      if (posts.length < 20) {
+        //less than limit in repository
+        newState = PostsReachedMax(posts: state.posts.toList()..addAll(posts));
+      } else {
+        newState = PostsLoaded(posts: state.posts.toList()..addAll(posts));
+      }
+
+      assert(
+          const ListEquality<Post>().equals(
+              posts.toList()
+                ..sort((Post a, Post b) => b.postTime.compareTo(a.postTime)),
+              posts),
+          'States Post List must be properly sorted');
+      assert(state != newState);
+
+      yield newState;
+    } catch (error) {
+      yield PostsError(
+          // posts: state.posts,
+          failure:
+              Failure('There was an error fetching posts', error.toString()));
+    }
+  }
+
+  Stream<PostsState> _mapPostSetupToState() async* {
+    try {
+      final posts = await postRepository.setupPosts();
+
+      if (posts.isEmpty) {
+        yield PostsEmpty();
+        return;
+      }
+
+      PostsState newState;
+      if (posts.length < 20) {
+        //less than limit in repository
+        newState = PostsReachedMax(posts: posts);
+      } else {
+        newState = PostsLoaded(posts: posts);
+      }
+
+      assert(
+          const ListEquality<Post>().equals(
+              posts.toList()
+                ..sort((Post a, Post b) => b.postTime.compareTo(a.postTime)),
+              posts),
+          'States Post List must be properly sorted');
+      assert(state != newState);
+
+      yield newState;
+    } catch (error) {
+      yield PostsError(
+          failure:
+              Failure('There was an error setting up posts', error.toString()));
+    }
+  }
+
+  /// Adds post to hold post Data
+  ///
+  /// Can be used when in PostsLoaded, PostsEmpty, or PostsReachedMax
+  Stream<PostsState> _mapPostAddedToState(AddPost event) async* {
+    // Propagate map to database
+    final post =
+        await postRepository.addPost(event.author, event.body, event.imageUrl);
+
+    final currentState = state;
+    PostsState newState;
+    if (currentState is PostsEmpty) {
+      newState = PostsReachedMax(posts: [post]);
+    } else {
+      newState = state.copyWith(posts: state.posts.toList()..insert(0, post));
+    }
+    // Create new state
+
+    //Ensure newState updated properly
+    assert(newState != state,
+        'States must be different for updates to properly occur');
+    yield newState;
+  }
+
+  /// Adds like to post in current state post list and
+  /// propagates the like to the database
+  ///
+  /// Can be used in PostsLoaded, PostsReachedMax state.
+  Stream<PostsState> _mapPostLikedToState(LikePost event) async* {
+    // Find liked post index in current state
+    final int postIndex = state.posts.indexWhere((Post e) => e.id == event.id);
+
+    // Create new modified post which will added to state
+    final Post changedPost = state.posts[postIndex].copyWith(
+        likedByUser: true, likeCount: state.posts[postIndex].likeCount + 1);
+
+    // Propagate to database
+    await postRepository.likePost(event.id);
+
+    // Create new list of posts with modified post added
+    final List<Post> newPosts = state.posts.toList()..[postIndex] = changedPost;
+
+    // Create state which will be yielded
+    final newState = state.copyWith(
+      posts: newPosts,
+    );
+
+    // Ensure outputed state is correct
+    assert(
+        const ListEquality<Post>().equals(
+          newState.posts.toList()
+            ..sort((Post a, Post b) => b.postTime.compareTo(a.postTime)),
+          newState.posts,
+        ),
+        'Post List must be properly sorted');
+    assert(newState != state, 'States must be different to update properly');
 
     yield newState;
   }
 
-  Stream<PostState> _mapPostRefreshToState(PostLoaded currentState) async* {
-    final posts = await postRepository.setupFeed();
+  Stream<PostsState> _mapPostUnlikedToState(UnlikePost event) async* {
+    // Find liked post index in current state
+    final int postIndex = state.posts.indexWhere((Post e) => e.id == event.id);
 
-    yield PostLoaded(
-        posts: posts,
-        hasReachedMax: false,
-        isRefreshed: true,
-        lastPostTime: posts?.last?.postTime,
-        firstPostTime: posts?.first?.postTime);
-  }
+    // Create new modified post which will added to state
+    final Post changedPost = state.posts[postIndex].copyWith(
+        likedByUser: false, likeCount: state.posts[postIndex].likeCount - 1);
 
-  Stream<PostState> _mapPostLikeToState(
-      PostLoaded currentState, String postId) async* {
-    final userState = authBloc.state;
-    if (userState is UserAuthenticated) {
-      // Find changed post and add like
-      final initialPost =
-          currentState.posts.firstWhere((val) => val.id == postId);
-      final newLikedBy = initialPost.likedBy.toList();
-      newLikedBy.addAll([userState.currentUser.id]);
-      final changedPost = initialPost.copyWith(
-          likeCount: initialPost.likeCount + 1, likedBy: newLikedBy);
+    // Propagate to database
+    await postRepository.unlikePost(event.id);
 
-      // Propagate to database
+    // Create new list of posts with modified post added
+    final List<Post> newPosts = state.posts.toList()..[postIndex] = changedPost;
 
-      await postRepository.likePost(postId, userState.currentUser.id);
-
-      final newPosts = currentState.posts.toList();
-
-      newPosts.removeWhere((val) => val.id == postId);
-      newPosts.add(changedPost);
-
-      final newState = currentState.copyWith(
-        posts: newPosts,
-        lastPostLiked: postId,
-      );
-
-      assert(newState != currentState);
-      // Yield new version of posts
-      yield newState;
-    }
-  }
-
-  Stream<PostState> _mapPostUnlikeToState(
-      PostLoaded currentState, String postId) async* {
-    final userState = authBloc.state;
-    if (userState is UserAuthenticated) {
-      // Find changed post and unlike
-      final initialPost =
-          currentState.posts.firstWhere((val) => val.id == postId);
-      final newLikedBy = initialPost.likedBy.toList();
-      newLikedBy.removeWhere((i) => i == userState.currentUser.id);
-      final changedPost = initialPost.copyWith(
-          likeCount: initialPost.likeCount - 1, likedBy: newLikedBy);
-
-      // Propagate to database
-
-      await postRepository.unlikePost(postId, userState.currentUser.id);
-
-      print(changedPost.likeCount);
-      final newState = currentState.copyWith(
-          lastPostLiked: postId,
-          posts: currentState.posts.toList()
-            ..removeWhere((val) => val.id == postId)
-            ..add(changedPost));
-
-      // Yield new version of posts
-      yield newState;
-    }
-  }
-
-  Stream<PostState> _mapPostFetchToState(PostLoaded currentState) async* {
-    final posts = await postRepository.fetchNextPage(
-        startAfter: currentState.lastPostTime, limit: 5);
-
-    yield posts.isEmpty
-        ? currentState.copyWith(hasReachedMax: true, loadingMore: true)
-        : PostLoaded(
-            posts: posts.toList()
-              ..addAll(currentState.posts)
-              ..sort((a, b) => b.postTime.compareTo(a.postTime)),
-            hasReachedMax: false,
-            lastPostLiked: currentState.lastPostLiked,
-            loadingMore: true,
-            lastPostTime: posts.last.postTime,
-            firstPostTime: posts.first.postTime,
-          );
-  }
-
-  Stream<PostState> _mapPostSetupToState() async* {
-    final posts = await postRepository.setupFeed();
-
-    yield PostLoaded(
-      posts: posts..sort((a, b) => b.postTime.compareTo(a.postTime)),
-      hasReachedMax: posts.length <= 20,
-      isRefreshed: true,
-      lastPostTime: (posts.isNotEmpty) ? posts.last.postTime : null,
-      firstPostTime: (posts.isNotEmpty) ? posts.first.postTime : null,
+    // Create state which will be yielded
+    final newState = state.copyWith(
+      posts: newPosts,
     );
-  }
 
-  bool _hasReachedMax(PostState state) =>
-      state is PostLoaded && state.hasReachedMax;
+    // Ensure outputed state is correct
+    assert(
+        const ListEquality<Post>().equals(
+          newState.posts.toList()
+            ..sort((Post a, Post b) => b.postTime.compareTo(a.postTime)),
+          newState.posts,
+        ),
+        'Post List must be properly sorted');
+    assert(newState != state, 'States must be different to update properly');
+
+    yield newState;
+  }
 }

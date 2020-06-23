@@ -1,7 +1,10 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
+import 'package:ut_social/core/repositories/post_repository.dart';
 import 'package:ut_social/core/widgets/bottom_loader.dart';
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 
@@ -28,19 +31,21 @@ class _CommentScreenState extends State<CommentScreen> {
   final _feedController = ScrollController();
   final _scrollThreshold = 200.0;
   bool _isCommenting = false;
+  PostsBloc _postBloc;
 
   @override
   void initState() {
     BlocProvider.of<CommentsBloc>(context).add(const SetupComments());
     _feedController.addListener(_onScroll);
+    _postBloc = BlocProvider.of(context);
     super.initState();
   }
 
   @override
   void dispose() {
+    super.dispose();
     _commentController.dispose();
     _feedController.dispose();
-    super.dispose();
   }
 
   void _onScroll() {
@@ -49,6 +54,80 @@ class _CommentScreenState extends State<CommentScreen> {
     if (maxScroll - currentScroll <= _scrollThreshold) {
       BlocProvider.of<CommentsBloc>(context).add(FetchComments());
     }
+  }
+
+  void _showPostDialog(bool byCurrentUser, Post post) {
+    return Platform.isIOS
+        ? _iosPostBottomSheet(byCurrentUser, post)
+        : _androidPostDialog(byCurrentUser, post);
+  }
+
+  void _iosPostBottomSheet(bool byCurrentUser, Post post) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoActionSheet(
+          title: const Text('Options'),
+          actions: <Widget>[
+            if (byCurrentUser) ...{
+              CupertinoActionSheetAction(
+                onPressed: () => _deletePost(context, post),
+                child: const Text('Delete Post'),
+              ),
+            } else ...{
+              CupertinoActionSheetAction(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Report Post'),
+              ),
+            }
+          ],
+          cancelButton: CupertinoActionSheetAction(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        );
+      },
+    );
+  }
+
+  void _androidPostDialog(bool byCurrentUser, Post post) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('Options'),
+          children: <Widget>[
+            if (byCurrentUser) ...{
+              SimpleDialogOption(
+                onPressed: () => _deletePost(context, post),
+                child: const Text('Delete Post'),
+              ),
+            } else ...{
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Report Post'),
+              ),
+            },
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.redAccent,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deletePost(BuildContext context, Post post) async {
+    Navigator.pop(context);
+    _postBloc.add(DeletePost(post));
+    await FirebasePostRepository().deletePost(post.id);
+    Navigator.pop(context);
   }
 
   void _addComment() {
@@ -65,7 +144,8 @@ class _CommentScreenState extends State<CommentScreen> {
           },
         ),
       );
-      BlocProvider.of<PostBloc>(context).add(PostCommentAdded(widget._post.id));
+      BlocProvider.of<PostsBloc>(context)
+          .add(IncrementCommentCount(widget._post.id));
       FocusScope.of(context).unfocus();
     }
   }
@@ -85,7 +165,7 @@ class _CommentScreenState extends State<CommentScreen> {
           Center(
             child: Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text('Report'),
+              child: Text('     '),
             ),
           )
         ],
@@ -113,14 +193,24 @@ class _CommentScreenState extends State<CommentScreen> {
     );
   }
 
+  // TODO: This does a search of every post on every update,
+  // this is very inneficient, improve later.
   Widget _postSliver() {
     return SliverList(
       delegate: SliverChildListDelegate([
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: PostCard(
-            post: widget._post,
-            disableComment: true,
+          child: BlocBuilder<PostsBloc, PostsState>(
+            bloc: _postBloc,
+            builder: (context, postState) {
+              return PostCard(
+                post: postState.posts.singleWhere(
+                    (post) => post.id == widget._post.id,
+                    orElse: () => widget._post),
+                disableComment: true,
+                onChevronTap: _showPostDialog,
+              );
+            },
           ),
         ),
       ]),
@@ -185,7 +275,7 @@ class _CommentScreenState extends State<CommentScreen> {
                     height: 50,
                     child: const Align(
                       alignment: Alignment.center,
-                      child: Text('No more posts :/'),
+                      child: Text('No more comments :/'),
                     ),
                   ),
                   const SizedBox(
@@ -240,7 +330,10 @@ class _CommentScreenState extends State<CommentScreen> {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 4.0),
               child: IconButton(
-                icon: const Icon(Icons.send),
+                icon: const Icon(
+                  Icons.send,
+                  color: Color(0xffce7224),
+                ),
                 onPressed: () {
                   if (_isCommenting) {
                     _addComment();

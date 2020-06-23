@@ -29,7 +29,6 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     CommentsEvent event,
   ) async* {
     final currentState = state;
-
     if (currentState is CommentsInitial) {
       if (event is SetupComments) {
         yield* _mapCommentSetupToState();

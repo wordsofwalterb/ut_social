@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 
 import '../core/repositories/post_upload_repository.dart';
@@ -116,8 +117,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       if (_image != null) {
         imageUrl = await StorageService.uploadPost(_image);
       }
-
-      BlocProvider.of<PostBloc>(context).add(PostAdded(_caption, imageUrl));
+      final userState = BlocProvider.of<UserBloc>(context).state;
+      if (userState is UserAuthenticated) {
+        BlocProvider.of<PostsBloc>(context).add(AddPost(
+          _caption,
+          imageUrl,
+          userState.currentUser,
+        ));
+      }
 
       // Reset data
       _captionController.clear();
@@ -127,7 +134,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         _image = null;
         _isLoading = false;
       });
-      BlocProvider.of<PostBloc>(context).add(PostSetup());
+      BlocProvider.of<PostsBloc>(context).add(RefreshPosts());
       Navigator.pop(context);
     }
   }

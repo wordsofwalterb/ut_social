@@ -69,11 +69,10 @@ class App extends StatelessWidget {
             return SplashScreen();
           }
           if (state is UserAuthenticated) {
-            return BlocProvider<PostBloc>(
-              create: (context) => PostBloc(
-                  postRepository: FirebasePostRepository(),
-                  authBloc: BlocProvider.of<UserBloc>(context))
-                ..add(PostSetup()),
+            return BlocProvider<PostsBloc>(
+              create: (context) => PostsBloc(
+                postRepository: FirebasePostRepository(),
+              )..add(const SetupPosts()),
               child: HomeScreen(),
             );
           }

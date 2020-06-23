@@ -6,6 +6,7 @@ import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:like_button/like_button.dart';
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
 import 'package:ut_social/core/repositories/comment_repository.dart';
+import 'package:ut_social/core/repositories/post_repository.dart';
 import 'package:ut_social/core/util/router.dart';
 import 'package:ut_social/feed/comment_bloc/comment_bloc.dart';
 
@@ -16,17 +17,21 @@ import '../entities/post.dart';
 import '../util/helper.dart';
 import 'profile_avatar.dart';
 
+typedef PostChevronCallback = void Function(bool byCurrentUser, Post post);
+
 class PostCard extends StatefulWidget {
   final Post _post;
   final bool disableComment;
   final bool isLiked;
   final int likeCount;
+  final PostChevronCallback onChevronTap;
 
   const PostCard(
       {Key key,
       @required Post post,
       this.disableComment = false,
       this.isLiked = false,
+      this.onChevronTap,
       this.likeCount = 0})
       : assert(post != null),
         _post = post,
@@ -39,9 +44,18 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   bool byCurrentUser = false;
 
+  Future<bool> _onLikeButtonTapped(bool isLiked, BuildContext context) async {
+    if (isLiked) {
+      BlocProvider.of<PostsBloc>(context).add(UnlikePost(widget._post.id));
+    } else {
+      BlocProvider.of<PostsBloc>(context).add(LikePost(widget._post.id));
+    }
+    return !isLiked;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final postBloc = BlocProvider.of<PostBloc>(context);
+    final postBloc = BlocProvider.of<PostsBloc>(context);
     final userBlocState = BlocProvider.of<UserBloc>(context).state;
 
     if (userBlocState is UserAuthenticated) {
@@ -90,7 +104,7 @@ class _PostCardState extends State<PostCard> {
             ]), // End User Info Block
             const Spacer(),
             IconButton(
-              onPressed: () => {},
+              onPressed: () => widget.onChevronTap(byCurrentUser, widget._post),
               icon: const Icon(
                 SFSymbols.chevron_down,
                 size: 20,
@@ -102,7 +116,7 @@ class _PostCardState extends State<PostCard> {
           if (widget._post.body != '')
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-              child: Text(
+              child: SelectableText(
                 widget._post.body,
                 style: Theme.of(context).textTheme.bodyText1,
               ),
@@ -117,55 +131,57 @@ class _PostCardState extends State<PostCard> {
             padding: const EdgeInsets.fromLTRB(12, 6, 12, 12),
             child:
                 Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-              if (!widget.disableComment)
-                GestureDetector(
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) {
-                      return BlocProvider<CommentsBloc>(
-                        create: (context) => CommentsBloc(
-                          widget._post.id,
-                          commentRepository: FirebaseCommentsRepository(),
+              GestureDetector(
+                onTap: (widget.disableComment)
+                    ? () => {}
+                    : () => Navigator.of(context).pushNamed(
+                          Routes.postComments,
+                          arguments: PostCommentsArgs(postBloc, widget._post),
                         ),
-                        child: BlocProvider.value(
-                            value: postBloc,
-                            child: CommentScreen(widget._post)),
-                      );
-                    }),
-                  ),
-                  child: const Icon(
-                    SFSymbols.bubble_left,
-                    size: 20,
-                  ),
-                )
-              else
-                Container(),
-              if (!widget.disableComment)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                  child: Text(widget._post.commentCount.toString(),
-                      style: Theme.of(context).textTheme.overline),
-                )
-              else
-                Container(),
-              if (!widget.disableComment)
-                const Spacer(
-                  flex: 1,
-                )
-              else
-                Container(),
-              LikeCounter(widget._post.id),
-              const Spacer(
-                flex: 9,
+                child: const Icon(
+                  SFSymbols.bubble_left,
+                  size: 20,
+                ),
               ),
-              // const Icon(
-              //   SFSymbols.square_arrow_up,
-              //   size: 20,
-              // ),
-              // Padding(
-              //   padding: const EdgeInsets.fromLTRB(6, 5, 6, 0),
-              //   child:
-              //       Text('Share', style: Theme.of(context).textTheme.caption),
-              // ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                child: Text(widget._post.commentCount.toString(),
+                    style: Theme.of(context).textTheme.overline),
+              ),
+              const Spacer(
+                flex: 1,
+              ),
+              BlocBuilder<PostsBloc, PostsState>(
+                builder: (context, state) {
+                  return LikeButton(
+                    size: 20,
+                    likeCount: widget._post.likeCount,
+                    animationDuration: const Duration(milliseconds: 500),
+                    isLiked: widget._post.likedByUser,
+                    onTap: (result) => _onLikeButtonTapped(result, context),
+                    likeCountAnimationDuration:
+                        const Duration(milliseconds: 200),
+                    countBuilder: (int count, bool isLiked, String text) {
+                      Widget result;
+                      if (count == 0) {
+                        result = const Text(
+                          '',
+                          style: TextStyle(color: Colors.grey),
+                        );
+                      } else {
+                        result = Text(
+                          text,
+                          style: const TextStyle(color: Colors.grey),
+                        );
+                      }
+                      return result;
+                    },
+                  );
+                },
+              ),
+              const Spacer(
+                flex: 12,
+              ),
             ]),
           ), // Bottom Section
         ]), // End Content
@@ -198,85 +214,80 @@ class ImageWidget extends StatelessWidget {
   }
 }
 
-class LikeCounter extends StatefulWidget {
-  final String id;
+// class LikeCounter extends StatefulWidget {
+//   final String id;
+//   final bool isLiked;
 
-  const LikeCounter(this.id);
+//   const LikeCounter(this.id, this.isLiked);
 
-  @override
-  _LikeCounterState createState() => _LikeCounterState();
-}
+//   @override
+//   _LikeCounterState createState() => _LikeCounterState();
+// }
 
-class _LikeCounterState extends State<LikeCounter> {
-  bool isLiked = false;
-  // AuthenticationState authBlocState;
-  String currentUserId;
+// class _LikeCounterState extends State<LikeCounter> {
+//   bool isLiked = false;
+//   // AuthenticationState authBlocState;
+//   String currentUserId;
 
-  @override
-  void initState() {
-    super.initState();
-    // isLiked = BlocProvider.of<PostBloc>(context).isLiked(widget.id);
-    //authBlocState = BlocProvider.of<AuthenticationBloc>(context).state;
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     // isLiked = BlocProvider.of<PostBloc>(context).isLiked(widget.id);
+//     //authBlocState = BlocProvider.of<AuthenticationBloc>(context).state;
+//   }
 
-  Future<bool> _onLikeButtonTapped(BuildContext context) async {
-    if (isLiked) {
-      BlocProvider.of<PostBloc>(context).add(PostUnlike(widget.id));
-      return false;
-    } else {
-      BlocProvider.of<PostBloc>(context).add(PostLike(widget.id));
-      return true;
-    }
-  }
+//   Future<bool> _onLikeButtonTapped(BuildContext context) async {
+//     if (isLiked) {
+//       BlocProvider.of<PostsBloc>(context).add(UnlikePost(widget.id));
+//       return false;
+//     } else {
+//       BlocProvider.of<PostsBloc>(context).add(LikePost(widget.id));
+//       return true;
+//     }
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    final userBlocState = BlocProvider.of<UserBloc>(context).state;
+//   @override
+//   Widget build(BuildContext context) {
+//     final userBlocState = BlocProvider.of<UserBloc>(context).state;
 
-    if (userBlocState is UserAuthenticated) {
-      currentUserId = userBlocState.currentUser.id;
-    }
+//     if (userBlocState is UserAuthenticated) {
+//       currentUserId = userBlocState.currentUser.id;
+//     }
 
-    return BlocBuilder<PostBloc, PostState>(condition: (previousState, state) {
-      if (state is PostLoaded && state.lastPostLiked == widget.id) return true;
-      if (state is PostLoaded && state.isRefreshed != null) return true;
-      return false;
-    }, builder: (context, state) {
-      if (state is PostLoaded) {
-        final results = state.posts.firstWhere((e) => e.id == widget.id);
-        isLiked = results.likedBy.contains(currentUserId);
-        return LikeButton(
-          size: 20,
-          likeCount: state.posts
-              .firstWhere((element) => element.id == widget.id)
-              .likeCount,
-          animationDuration: const Duration(milliseconds: 500),
-          isLiked: isLiked,
-          onTap: (result) {
-            return _onLikeButtonTapped(context);
-          },
-          likeCountAnimationDuration: const Duration(milliseconds: 200),
-          countBuilder: (int count, bool isLiked, String text) {
-            Widget result;
-            if (count == 0) {
-              result = const Text(
-                '',
-                style: TextStyle(color: Colors.grey),
-              );
-            } else {
-              result = Text(
-                text,
-                style: const TextStyle(color: Colors.grey),
-              );
-            }
-            return result;
-          },
-        );
-      } else {
-        return const Padding(
-          padding: EdgeInsets.all(0),
-        );
-      }
-    });
-  }
-}
+//     return BlocBuilder<PostsBloc, PostsState>(builder: (context, state) {
+//       if (state is PostsLoaded || state is PostsReachedMax) {
+//         // final results = state.posts.firstWhere((e) => e.id == widget.id);
+//         // isLiked = results.likedBy.contains(currentUserId);
+//         return LikeButton(
+//           size: 20,
+//           likeCount: state.posts
+//               .firstWhere((element) => element.id == widget.id)
+//               .likeCount,
+//           animationDuration: const Duration(milliseconds: 500),
+//           isLiked: widget._comment.isLikedByUser,
+//           onTap: (result) => _onLikeButtonTapped(result, context),
+//           likeCountAnimationDuration: const Duration(milliseconds: 200),
+//           countBuilder: (int count, bool isLiked, String text) {
+//             Widget result;
+//             if (count == 0) {
+//               result = const Text(
+//                 '',
+//                 style: TextStyle(color: Colors.grey),
+//               );
+//             } else {
+//               result = Text(
+//                 text,
+//                 style: const TextStyle(color: Colors.grey),
+//               );
+//             }
+//             return result;
+//           },
+//         );
+//       } else {
+//         return const Padding(
+//           padding: EdgeInsets.all(0),
+//         );
+//       }
+//     });
+//   }
+// }

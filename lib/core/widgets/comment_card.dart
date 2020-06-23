@@ -13,11 +13,17 @@ import '../entities/comment.dart';
 import '../util/helper.dart';
 import 'profile_avatar.dart';
 
+typedef CommentChevronCallback = void Function(bool byCurrentUser);
+
 class CommentCard extends StatefulWidget {
   final Comment _comment;
+  final CommentChevronCallback chevronCallback;
 
-  const CommentCard({Key key, @required Comment comment})
-      : assert(comment != null),
+  const CommentCard({
+    Key key,
+    @required Comment comment,
+    this.chevronCallback,
+  })  : assert(comment != null),
         _comment = comment,
         super(key: key);
 
@@ -89,7 +95,7 @@ class _CommentCardState extends State<CommentCard> {
             ]), // End User Info Block
             const Spacer(),
             IconButton(
-              onPressed: () => {},
+              onPressed: () => widget.chevronCallback(byCurrentUser),
               icon: const Icon(
                 SFSymbols.chevron_down,
                 size: 20,

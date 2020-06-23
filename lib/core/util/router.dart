@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ut_social/add_content/add_post.dart';
 import 'package:ut_social/chats/chat_detail_screen.dart';
+import 'package:ut_social/core/entities/post.dart';
+import 'package:ut_social/core/repositories/comment_repository.dart';
+import 'package:ut_social/feed/comment_bloc/comment_bloc.dart';
+import 'package:ut_social/feed/comment_screen.dart';
 import 'package:ut_social/feed/feed_screen.dart';
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
 import 'package:ut_social/profile/edit_profile_screen.dart';
@@ -19,6 +23,7 @@ class Routes {
   static const String editProfile = 'editProfile';
   static const String createPost = 'createPost';
   static const String chatDetail = 'chatDetail';
+  static const String postComments = 'postComments';
 }
 
 /// Correlates routes names to builders
@@ -31,6 +36,12 @@ class Router {
         return MaterialPageRoute(builder: (_) => HomeScreen());
       case Routes.feed:
         return MaterialPageRoute(builder: (_) => FeedScreen());
+      case Routes.postComments:
+        if (args is PostCommentsArgs) {
+          return _postCommentsRoute(args);
+        }
+        throw Exception('Invalid arguments for ${settings.name}');
+        break;
       case Routes.profile:
         if (args is ProfileArgs) {
           return _profileRoute(args);
@@ -38,7 +49,7 @@ class Router {
         throw Exception('Invalid arguments for ${settings.name}');
         break;
       case Routes.createPost:
-        if (args is PostBloc) {
+        if (args is PostsBloc) {
           return _createPostRoute(args);
         }
         throw Exception('Invalid arguments for ${settings.name}');
@@ -60,7 +71,22 @@ class Router {
 
 // Moved route generation to this section for brevity in previous section
 
-  static Route<dynamic> _createPostRoute(PostBloc bloc) {
+  static Route<dynamic> _postCommentsRoute(PostCommentsArgs args) {
+    return MaterialPageRoute(
+      builder: (context) => BlocProvider<CommentsBloc>(
+        create: (context) => CommentsBloc(
+          args.post.id,
+          commentRepository: FirebaseCommentsRepository(),
+        ),
+        child: BlocProvider.value(
+          value: args.postsBloc,
+          child: CommentScreen(args.post),
+        ),
+      ),
+    );
+  }
+
+  static Route<dynamic> _createPostRoute(PostsBloc bloc) {
     return MaterialPageRoute(
       builder: (context) => BlocProvider.value(
         value: bloc,
@@ -109,4 +135,11 @@ class ProfileArgs {
   const ProfileArgs(this.userId, {this.isCurrentUser = false})
       : assert(userId != null),
         assert(isCurrentUser != null);
+}
+
+class PostCommentsArgs {
+  final PostsBloc postsBloc;
+  final Post post;
+
+  const PostCommentsArgs(this.postsBloc, this.post);
 }
