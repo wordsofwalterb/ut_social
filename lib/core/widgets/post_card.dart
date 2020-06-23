@@ -157,15 +157,15 @@ class _PostCardState extends State<PostCard> {
               const Spacer(
                 flex: 9,
               ),
-              const Icon(
-                SFSymbols.square_arrow_up,
-                size: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(6, 5, 6, 0),
-                child:
-                    Text('Share', style: Theme.of(context).textTheme.caption),
-              ),
+              // const Icon(
+              //   SFSymbols.square_arrow_up,
+              //   size: 20,
+              // ),
+              // Padding(
+              //   padding: const EdgeInsets.fromLTRB(6, 5, 6, 0),
+              //   child:
+              //       Text('Share', style: Theme.of(context).textTheme.caption),
+              // ),
             ]),
           ), // Bottom Section
         ]), // End Content
