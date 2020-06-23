@@ -233,9 +233,10 @@ class _CommentScreenState extends State<CommentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Theme.of(context).backgroundColor,
         title:
-            Center(child: Image.asset('assets/images/appbar.png', height: 40)),
+            Center(child: Image.asset('assets/images/appbar.png', height: 30)),
         actions: const <Widget>[
           Center(
             child: Padding(
@@ -253,6 +254,7 @@ class _CommentScreenState extends State<CommentScreen> {
               onRefresh: _refreshFeed,
               color: Theme.of(context).primaryColor,
               child: CustomScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
                 controller: _feedController,
                 slivers: <Widget>[
                   _postSliver(),

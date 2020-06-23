@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:ut_social/core/entities/student.dart';
+import 'package:ut_social/core/util/router.dart';
 import 'package:ut_social/profile/student_repository.dart';
 
 import 'profile_info_bloc/profile_info_bloc.dart';
@@ -43,6 +44,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           title: const Text(
             'Your Profile',
           ),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(Routes.settingsOverview),
+            )
+          ],
         ),
         body: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),

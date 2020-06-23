@@ -12,6 +12,10 @@ import 'package:ut_social/profile/edit_profile_screen.dart';
 import 'package:ut_social/profile/profile_info_bloc/profile_info_bloc.dart';
 import 'package:ut_social/profile/profile_screen.dart';
 import 'package:ut_social/profile/student_repository.dart';
+import 'package:ut_social/settings/authentication_settings_screen.dart';
+import 'package:ut_social/settings/privacy_policy_screen.dart';
+import 'package:ut_social/settings/settings_overview_screen.dart';
+import 'package:ut_social/settings/terms_of_service_screen.dart';
 
 import '../home_screen.dart';
 
@@ -24,6 +28,10 @@ class Routes {
   static const String createPost = 'createPost';
   static const String chatDetail = 'chatDetail';
   static const String postComments = 'postComments';
+  static const String termsOfService = 'termsOfService';
+  static const String privacyPolicy = 'privacyPolicy';
+  static const String authenticationSettings = 'authenticationSettings';
+  static const String settingsOverview = 'settingsOverview';
 }
 
 /// Correlates routes names to builders
@@ -36,6 +44,15 @@ class Router {
         return MaterialPageRoute(builder: (_) => HomeScreen());
       case Routes.feed:
         return MaterialPageRoute(builder: (_) => FeedScreen());
+      case Routes.termsOfService:
+        return MaterialPageRoute(builder: (_) => TermsOfServiceScreen());
+      case Routes.privacyPolicy:
+        return MaterialPageRoute(builder: (_) => PrivacyPolicyScreen());
+      case Routes.authenticationSettings:
+        return MaterialPageRoute(
+            builder: (_) => AuthenticationSettingsScreen());
+      case Routes.settingsOverview:
+        return MaterialPageRoute(builder: (_) => SettingsOverviewScreen());
       case Routes.postComments:
         if (args is PostCommentsArgs) {
           return _postCommentsRoute(args);

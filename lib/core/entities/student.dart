@@ -14,6 +14,7 @@ class Student extends Equatable {
   final String email;
   final String fullName;
   final String avatarUrl;
+  final bool notificationsEnabled;
   final String id;
   final List<String> channels;
   final int reportCount;
@@ -29,6 +30,7 @@ class Student extends Equatable {
     @required this.id,
     @required this.fullName,
     this.channels,
+    this.notificationsEnabled,
     this.reportCount,
     this.firstName,
     this.lastName,
@@ -46,6 +48,7 @@ class Student extends Equatable {
     String coverPhotoUrl,
     String email,
     String fullName,
+    bool notificationsEnabled,
     String avatarUrl,
     String id,
     int reportCount,
@@ -57,6 +60,7 @@ class Student extends Equatable {
       reportCount: reportCount ?? this.reportCount,
       channels: channels ?? this.channels,
       bio: bio ?? this.bio,
+      notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       coverPhotoUrl: coverPhotoUrl ?? this.coverPhotoUrl,
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
@@ -74,6 +78,7 @@ class Student extends Equatable {
       'bio': bio,
       'coverPhotoUrl': coverPhotoUrl,
       'email': email,
+      'notificationsEnabled': notificationsEnabled,
       'fullName': fullName,
       'avatarUrl': avatarUrl,
       'id': id,
@@ -89,6 +94,7 @@ class Student extends Equatable {
       firstName: map['firstName'] as String,
       lastName: map['lastName'] as String,
       email: map['email'] as String,
+      notificationsEnabled: map['notificationsEnabled'] as bool ?? false,
       fullName: map['fullName'] as String,
       avatarUrl: map['avatarUrl'] as String,
       channels: List<String>.from(map['channels'] as List ?? []),
@@ -112,6 +118,7 @@ class Student extends Equatable {
       fullName,
       avatarUrl,
       id,
+      notificationsEnabled,
     ];
   }
 }

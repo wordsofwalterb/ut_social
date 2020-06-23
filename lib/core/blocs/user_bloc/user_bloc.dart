@@ -60,6 +60,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         reportCount: event.reportCount ?? currentState.currentUser.reportCount,
         firstName: event.firstName ?? currentState.currentUser.firstName,
         avatarUrl: event.avatarUrl ?? currentState.currentUser.avatarUrl,
+        notificationsEnabled: event.notificationsEnabled ??
+            currentState.currentUser.notificationsEnabled,
         coverPhotoUrl:
             event.coverPhotoUrl ?? currentState.currentUser.coverPhotoUrl,
         lastName: event.lastName ?? currentState.currentUser.lastName,
