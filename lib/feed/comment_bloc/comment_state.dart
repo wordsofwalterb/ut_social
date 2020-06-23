@@ -57,10 +57,8 @@ class CommentsEmpty extends CommentsState {
   @override
   final String postId;
   @override
-  final List<Comment>
-      comments = //ignore: avoid_field_initializers_in_const_classes
+  final List<Comment> comments = const [];
 
-      const [];
   const CommentsEmpty({
     @required this.postId,
   });

@@ -6,9 +6,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
+import 'package:ut_social/core/repositories/post_upload_repository.dart';
 import 'package:ut_social/core/widgets/profile_avatar.dart';
+import 'package:ut_social/profile/profile_info_bloc/profile_info_bloc.dart';
 
 import 'widgets/cover_photo.dart';
+
+enum ImageToChange {
+  profileImage,
+  coverImage,
+}
 
 class EditProfileScreen extends StatefulWidget {
   @override
@@ -22,32 +29,90 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   UserAuthenticated userState;
   File coverPhotoFile;
   File avatarFile;
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _bioController.dispose();
+    // avatarFile.delete();
+    // coverPhotoFile.delete();
     super.dispose();
   }
 
-  dynamic _showSelectImageDialog(File file) {
-    return Platform.isIOS ? _iosBottomSheet(file) : _androidDialog(file);
+  Future<void> _editProfile() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    String firstName;
+    if (_firstNameController.text.isNotEmpty) {
+      firstName = _firstNameController.text;
+    }
+
+    String lastName;
+    if (_lastNameController.text.isNotEmpty) {
+      lastName = _lastNameController.text;
+    }
+
+    String bio;
+    if (_bioController.text.isNotEmpty) {
+      bio = _bioController.text;
+    }
+
+    String avatarUrl;
+    if (avatarFile != null) {
+      avatarUrl = await StorageService.uploadUserProfileImage(
+          userState.currentUser.avatarUrl ?? '', avatarFile);
+    }
+
+    String coverPhotorUrl;
+    if (coverPhotoFile != null) {
+      coverPhotorUrl = await StorageService.uploadUserCoverPhotoImage(
+          userState.currentUser.coverPhotoUrl ?? '', coverPhotoFile);
+    }
+
+    BlocProvider.of<UserBloc>(context).add(
+      UpdateUserProfile(
+        firstName: firstName,
+        lastName: lastName,
+        bio: bio,
+        avatarUrl: avatarUrl,
+        coverPhotoUrl: coverPhotorUrl,
+      ),
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+    BlocProvider.of<ProfileInfoBloc>(context).add(const LoadProfile());
+
+    Navigator.of(context).pop();
+    // Posts
+    // Comments
+    // Students
   }
 
-  dynamic _iosBottomSheet(File file) {
-    showCupertinoModalPopup(
+  Future<void> _showSelectImageDialog(ImageToChange toChange) {
+    return Platform.isIOS
+        ? _iosBottomSheet(toChange)
+        : _androidDialog(toChange);
+  }
+
+  Future<void> _iosBottomSheet(ImageToChange toChange) async {
+    await showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
         return CupertinoActionSheet(
           title: const Text('Add Photo'),
           actions: <Widget>[
             CupertinoActionSheetAction(
-              onPressed: () => _handleImage(ImageSource.camera, file),
+              onPressed: () => _handleImage(ImageSource.camera, toChange),
               child: const Text('Take Photo'),
             ),
             CupertinoActionSheetAction(
-              onPressed: () => _handleImage(ImageSource.gallery, file),
+              onPressed: () => _handleImage(ImageSource.gallery, toChange),
               child: const Text('Choose From Gallery'),
             ),
           ],
@@ -60,19 +125,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  dynamic _androidDialog(File file) {
-    showDialog(
+  Future<void> _androidDialog(ImageToChange toChange) async {
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
           title: const Text('Add Photo'),
           children: <Widget>[
             SimpleDialogOption(
-              onPressed: () => _handleImage(ImageSource.camera, file),
+              onPressed: () => _handleImage(ImageSource.camera, toChange),
               child: const Text('Take Photo'),
             ),
             SimpleDialogOption(
-              onPressed: () => _handleImage(ImageSource.gallery, file),
+              onPressed: () => _handleImage(ImageSource.gallery, toChange),
               child: const Text('Choose From Gallery'),
             ),
             SimpleDialogOption(
@@ -90,14 +155,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Future<void> _handleImage(ImageSource source, File file) async {
+  Future<void> _handleImage(ImageSource source, ImageToChange toChange) async {
     Navigator.pop(context);
     FocusScope.of(context).unfocus();
     File imageFile = await ImagePicker.pickImage(source: source);
     if (imageFile != null) {
       imageFile = await _cropImage(imageFile);
       setState(() {
-        avatarFile = imageFile;
+        switch (toChange) {
+          case ImageToChange.profileImage:
+            {
+              avatarFile = imageFile;
+              break;
+            }
+          case ImageToChange.coverImage:
+            {
+              coverPhotoFile = imageFile;
+              break;
+            }
+        }
       });
     }
   }
@@ -124,13 +200,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             Center(
               child: Padding(
                 padding: const EdgeInsets.only(right: 14),
-                child: Text(
-                  'Done',
-                  style: TextStyle(
-                    color: Color(0xffce7224),
-                    fontSize: 16,
-                    fontFamily: 'SFProText',
-                    fontWeight: FontWeight.w700,
+                child: GestureDetector(
+                  onTap: _editProfile,
+                  child: Text(
+                    'Done',
+                    style: TextStyle(
+                      color: Color(0xffce7224),
+                      fontSize: 16,
+                      fontFamily: 'SFProText',
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
@@ -139,43 +218,43 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         body: SingleChildScrollView(
           child: Column(children: [
-            _changeImages(),
+            if (_isLoading)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: LinearProgressIndicator(
+                  backgroundColor: Colors.blue[200],
+                  valueColor: const AlwaysStoppedAnimation(Colors.blue),
+                ),
+              )
+            else
+              const SizedBox.shrink(),
+            _coverPhoto(),
+            _profilePhoto(),
             _textFields(),
           ]),
         ));
   }
 
-  Widget _changeImages() {
+  Widget _coverPhoto() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(19, 17, 19, 50),
-      child: Stack(
-        overflow: Overflow.visible,
-        children: [
-          Stack(
-            children: [
-              GestureDetector(
-                onTap: null,
-                child: CoverPhoto(
-                  height: 120,
-                  coverPhotoUrl: '',
-                ),
-              ),
-            ],
-          ),
-          Positioned(
-            bottom: -42,
-            left: 15,
-            child: GestureDetector(
-              onTap: () => _showSelectImageDialog(avatarFile),
-              child: ProfileAvatar(
-                avatarUrl: userState.currentUser.avatarUrl,
-                radius: 100,
-                size: 90,
-              ),
-            ),
-          ),
-        ],
+      padding: const EdgeInsets.fromLTRB(19, 17, 19, 10),
+      child: CoverPhoto(
+        onPressed: () => _showSelectImageDialog(ImageToChange.coverImage),
+        fileImage: (coverPhotoFile != null) ? FileImage(coverPhotoFile) : null,
+        height: 120,
+        width: double.infinity,
+        coverPhotoUrl: userState.currentUser.coverPhotoUrl,
       ),
+    );
+  }
+
+  Widget _profilePhoto() {
+    return ProfileAvatar(
+      onPressed: () => _showSelectImageDialog(ImageToChange.profileImage),
+      avatarUrl: userState.currentUser.avatarUrl,
+      fileImage: (avatarFile != null) ? FileImage(avatarFile) : null,
+      radius: 100,
+      size: 90,
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../core/blocs/user_bloc/user_bloc.dart';
 import 'register_bloc/register_bloc.dart';
@@ -28,6 +29,26 @@ class _RegisterFormState extends State<RegisterForm> {
       return state.error;
     } else {
       return 'Login Failure, please try again later';
+    }
+  }
+
+  Future<void> _launchPrivacyPolicy() async {
+    const url =
+        'https://www.notion.so/Privacy-Policy-1dc7732fb3f04de3810fe66c984bb431';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Future<void> _launchTermsOfService() async {
+    const url =
+        'https://www.notion.so/Terms-of-Services-b7c41ba68be74edcb8c065c1f9c5d4c0';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
     }
   }
 
@@ -216,6 +237,44 @@ class _RegisterFormState extends State<RegisterForm> {
                         ],
                       ),
                     ),
+                    Text(
+                      'By creating an account you agree to the following',
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      children: <Widget>[
+                        Spacer(
+                          flex: 1,
+                        ),
+                        GestureDetector(
+                          onTap: _launchTermsOfService,
+                          child: Text(
+                            'Terms of Service',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                        Spacer(
+                          flex: 1,
+                        ),
+                        GestureDetector(
+                          onTap: _launchPrivacyPolicy,
+                          child: Text(
+                            'Privacy Policy',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                        Spacer(
+                          flex: 1,
+                        ),
+                      ],
+                    )
                   ],
                 ),
               ),

@@ -13,11 +13,18 @@ import '../entities/comment.dart';
 import '../util/helper.dart';
 import 'profile_avatar.dart';
 
+typedef CommentChevronCallback = void Function(
+    bool byCurrentUser, Comment comment);
+
 class CommentCard extends StatefulWidget {
   final Comment _comment;
+  final CommentChevronCallback chevronCallback;
 
-  const CommentCard({Key key, @required Comment comment})
-      : assert(comment != null),
+  const CommentCard({
+    Key key,
+    @required Comment comment,
+    this.chevronCallback,
+  })  : assert(comment != null),
         _comment = comment,
         super(key: key);
 
@@ -89,7 +96,8 @@ class _CommentCardState extends State<CommentCard> {
             ]), // End User Info Block
             const Spacer(),
             IconButton(
-              onPressed: () => {},
+              onPressed: () =>
+                  widget.chevronCallback(byCurrentUser, widget._comment),
               icon: const Icon(
                 SFSymbols.chevron_down,
                 size: 20,
@@ -141,15 +149,15 @@ class _CommentCardState extends State<CommentCard> {
               const Spacer(
                 flex: 9,
               ),
-              const Icon(
-                SFSymbols.square_arrow_up,
-                size: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(6, 5, 6, 0),
-                child:
-                    Text('Share', style: Theme.of(context).textTheme.caption),
-              ),
+              // const Icon(
+              //   SFSymbols.square_arrow_up,
+              //   size: 20,
+              // ),
+              // Padding(
+              //   padding: const EdgeInsets.fromLTRB(6, 5, 6, 0),
+              //   child:
+              //       Text('Share', style: Theme.of(context).textTheme.caption),
+              // ),
             ]),
           ), // Bottom Section
         ]), // End Content

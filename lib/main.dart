@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,7 @@ import 'core/repositories/post_repository.dart';
 import 'core/repositories/user_repository.dart';
 import 'core/splash_screen.dart';
 import 'core/util/dark_theme.dart';
+import 'core/util/globals.dart';
 import 'core/util/router.dart';
 import 'feed/post_bloc/post_bloc.dart';
 import 'login/login_screen.dart';
@@ -58,17 +60,19 @@ class App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: darkTheme(),
       onGenerateRoute: Router.generateRoute,
+      navigatorObservers: [
+        FirebaseAnalyticsObserver(analytics: Global.analytics),
+      ],
       home: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
           if (state is UserInitial) {
             return SplashScreen();
           }
           if (state is UserAuthenticated) {
-            return BlocProvider<PostBloc>(
-              create: (context) => PostBloc(
-                  postRepository: FirebasePostRepository(),
-                  authBloc: BlocProvider.of<UserBloc>(context))
-                ..add(PostSetup()),
+            return BlocProvider<PostsBloc>(
+              create: (context) => PostsBloc(
+                postRepository: FirebasePostRepository(),
+              )..add(const SetupPosts()),
               child: HomeScreen(),
             );
           }

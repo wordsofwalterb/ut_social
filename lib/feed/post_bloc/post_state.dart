@@ -1,62 +1,99 @@
 part of 'post_bloc.dart';
 
-abstract class PostState extends Equatable {
-  const PostState();
+abstract class PostsState extends Equatable {
+  List<Post> get posts;
 
-  @override
-  List<Object> get props => [];
+  const PostsState();
+
+  PostsState copyWith({List<Post> posts});
 }
 
-class PostInitial extends PostState {
+class PostsInitial extends PostsState {
   @override
-  List<Object> get props => [];
+  final List<Post> posts = //ignore: avoid_field_initializers_in_const_classes
+      const [];
+
+  const PostsInitial();
+
+  @override
+  List<Object> get props => [posts];
+
+  @override
+  PostsInitial copyWith({List<Post> posts}) {
+    return PostsInitial();
+  }
 }
 
-class PostLoaded extends PostState {
+class PostsError extends PostsState {
+  @override
   final List<Post> posts;
-  final bool hasReachedMax;
-  final String lastPostLiked;
-  final bool loadingMore;
-  final bool isRefreshed;
-  final DateTime lastPostTime;
-  final DateTime firstPostTime;
+  final Failure failure;
 
-  const PostLoaded({
-    this.lastPostTime,
-    this.lastPostLiked,
-    this.firstPostTime,
-    this.posts,
-    this.isRefreshed,
-    this.hasReachedMax,
-    this.loadingMore,
+  const PostsError({@required this.failure, this.posts});
+
+  @override
+  PostsError copyWith({String postId, List<Post> posts, Failure failure}) {
+    return PostsError(
+        posts: posts ?? this.posts, failure: failure ?? this.failure);
+  }
+
+  @override
+  List<Object> get props => [failure, posts];
+}
+
+class PostsEmpty extends PostsState {
+  @override
+  final List<Post> posts = const [];
+
+  const PostsEmpty();
+
+  @override
+  PostsEmpty copyWith({List<Post> posts}) {
+    return PostsEmpty();
+  }
+
+  @override
+  List<Object> get props => [posts];
+}
+
+class PostsReachedMax extends PostsState {
+  @override
+  final List<Post> posts;
+
+  const PostsReachedMax({
+    @required this.posts,
   });
 
-  PostLoaded copyWith({
+  @override
+  PostsReachedMax copyWith({
     List<Post> posts,
-    bool hasReachedMax,
-    DateTime lastPostTime,
-    String lastPostLiked,
-    bool isRefreshed,
-    DateTime firstPostTime,
-    bool loadingMore,
   }) {
-    return PostLoaded(
-      firstPostTime: firstPostTime?? this.firstPostTime,
-      lastPostTime: lastPostTime ?? this.lastPostTime,
-      loadingMore: loadingMore ?? false,
-      isRefreshed: isRefreshed ?? false,
-      lastPostLiked: lastPostLiked ?? this.lastPostLiked,
+    return PostsReachedMax(
       posts: posts ?? this.posts,
-      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
     );
   }
 
   @override
-  List<Object> get props => [posts, hasReachedMax, lastPostLiked, loadingMore, isRefreshed,lastPostTime,firstPostTime];
-
-  @override
-  String toString() =>
-      'PostLoaded { posts: ${posts.length}, hasReachedMax: $hasReachedMax, lastPostLiked: $lastPostLiked, loadingMore $loadingMore, isRefreshed: $isRefreshed, lastPostTime: $lastPostTime, firstPostTime: $firstPostTime}';
+  List<Object> get props => [posts];
 }
 
-class PostError extends PostState {}
+class PostsLoaded extends PostsState {
+  @override
+  final List<Post> posts;
+
+  const PostsLoaded({
+    @required this.posts,
+  });
+
+  @override
+  PostsLoaded copyWith({
+    List<Post> posts,
+  }) {
+    return PostsLoaded(
+      posts: posts ?? this.posts,
+    );
+  }
+
+  @override
+  List<Object> get props => [posts];
+}

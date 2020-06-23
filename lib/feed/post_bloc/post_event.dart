@@ -1,60 +1,75 @@
 part of 'post_bloc.dart';
 
-abstract class PostEvent extends Equatable {
-  const PostEvent();
+abstract class PostsEvent extends Equatable {
+  const PostsEvent();
+
+  @override
+  List<Object> get props => const [];
+}
+
+class AddPost extends PostsEvent {
+  final String body;
+  final String imageUrl;
+  final Student author;
+
+  const AddPost(this.body, this.imageUrl, this.author);
+
+  @override
+  List<Object> get props => [body, imageUrl, author];
+}
+
+class IncrementCommentCount extends PostsEvent {
+  final String id;
+
+  const IncrementCommentCount(this.id);
+
+  @override
+  List<Object> get props => [id];
+}
+
+class DecrementCommentCount extends PostsEvent {
+  final String id;
+
+  const DecrementCommentCount(this.id);
+
+  @override
+  List<Object> get props => [id];
+}
+
+class RefreshPosts extends PostsEvent {}
+
+class DeletePost extends PostsEvent {
+  final Post post;
+
+  const DeletePost(this.post);
+
+  @override
+  List<Object> get props => [post];
+}
+
+class FetchPosts extends PostsEvent {}
+
+class LikePost extends PostsEvent {
+  final String id;
+
+  const LikePost(this.id);
+
+  @override
+  List<Object> get props => [id];
+}
+
+class UnlikePost extends PostsEvent {
+  final String id;
+
+  const UnlikePost(this.id);
+
+  @override
+  List<Object> get props => [id];
+}
+
+class SetupPosts extends PostsEvent {
+  const SetupPosts();
 
   @override
   List<Object> get props => [];
 }
-
-class PostsFetch extends PostEvent {}
-
-class PostAdded extends PostEvent {
-  final String body;
-  final String imageUrl;
-
-  const PostAdded(this.body, this.imageUrl);
-
-  @override
-  List<Object> get props => [body, imageUrl];
-}
-
-class PostRefresh extends PostEvent {}
-
-class PostCommentAdded extends PostEvent {
-  final String postId;
-
-  const PostCommentAdded(this.postId);
-
-  @override
-  List<Object> get props => [postId];
-}
-
-class PostCommentRemoved extends PostEvent {
-  final String postId;
-
-  const PostCommentRemoved(this.postId);
-
-  @override
-  List<Object> get props => [postId];
-}
-
-class PostLike extends PostEvent {
-  final String postId;
-
-  const PostLike(this.postId);
-
-  @override
-  List<Object> get props => [postId];
-}
-
-class PostUnlike extends PostEvent {
-  final String postId;
-
-  const PostUnlike(this.postId);
-
-  @override
-  List<Object> get props => [postId];
-}
-
-class PostSetup extends PostEvent {}

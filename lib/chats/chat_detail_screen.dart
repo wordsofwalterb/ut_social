@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
-import 'package:like_button/like_button.dart';
-import 'package:ut_social/chats/chat_input.dart';
-import 'package:ut_social/core/widgets/profile_avatar.dart';
 
-import 'chat__message.dart';
+import 'widgets/chat__message.dart';
+import 'widgets/chat_input.dart';
 
 class ChatDetailScreen extends StatelessWidget {
   @override
@@ -56,7 +54,7 @@ class ChatDetailScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           if (index == 0) {
             return SizedBox(
-              height: 24,
+              height: 12,
             );
           }
           return ChatMessage(

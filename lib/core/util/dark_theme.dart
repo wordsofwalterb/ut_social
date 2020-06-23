@@ -63,6 +63,8 @@ ThemeData darkTheme() {
     primaryColor: const Color(0xffce7224),
     backgroundColor: const Color(0xff2e3035),
     brightness: Brightness.dark,
+    textSelectionColor: const Color(0xffce7224),
+    textSelectionHandleColor: const Color(0xffce7224),
     fontFamily: 'SFProText',
     scaffoldBackgroundColor: const Color(0xff202225),
     inputDecorationTheme: const InputDecorationTheme(

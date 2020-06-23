@@ -1,6 +1,10 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ut_social/add_content/add_post.dart';
+import 'package:ut_social/core/entities/post.dart';
+import 'package:ut_social/core/repositories/post_repository.dart';
 import 'package:ut_social/core/util/router.dart';
 import 'package:ut_social/core/widgets/bottom_loader.dart';
 
@@ -18,7 +22,7 @@ class _FeedScreenState extends State<FeedScreen>
     with AutomaticKeepAliveClientMixin<FeedScreen> {
   final _feedController = ScrollController();
   final _scrollThreshold = 200.0;
-  PostBloc _postBloc;
+  PostsBloc _postBloc;
 
   @override
   bool get wantKeepAlive => true;
@@ -28,20 +32,94 @@ class _FeedScreenState extends State<FeedScreen>
     super.initState();
 
     _feedController.addListener(_onScroll);
-    _postBloc = BlocProvider.of<PostBloc>(context);
+    _postBloc = BlocProvider.of<PostsBloc>(context);
   }
 
   void _onScroll() {
     final maxScroll = _feedController.position.maxScrollExtent;
     final currentScroll = _feedController.position.pixels;
     if (maxScroll - currentScroll <= _scrollThreshold) {
-      _postBloc.add(PostsFetch());
+      _postBloc.add(FetchPosts());
     }
   }
 
   Future<void> _onRefresh() async {
-    _postBloc.add(PostRefresh());
+    _postBloc.add(RefreshPosts());
   }
+
+  void _showPostDialog(bool byCurrentUser, Post post) {
+    return Platform.isIOS
+        ? _iosBottomSheet(byCurrentUser, post)
+        : _androidDialog(byCurrentUser, post);
+  }
+
+  void _iosBottomSheet(bool byCurrentUser, Post post) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoActionSheet(
+          title: const Text('Options'),
+          actions: <Widget>[
+            if (byCurrentUser) ...{
+              CupertinoActionSheetAction(
+                onPressed: () => _deletePost(context, post),
+                child: const Text('Delete Post'),
+              ),
+            } else ...{
+              CupertinoActionSheetAction(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Report Post'),
+              ),
+            }
+          ],
+          cancelButton: CupertinoActionSheetAction(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        );
+      },
+    );
+  }
+
+  void _androidDialog(bool byCurrentUser, Post post) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('Options'),
+          children: <Widget>[
+            if (byCurrentUser) ...{
+              SimpleDialogOption(
+                onPressed: () => _deletePost(context, post),
+                child: const Text('Delete Post'),
+              ),
+            } else ...{
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Report Post'),
+              ),
+            },
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.redAccent,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deletePost(BuildContext context, Post post) async {
+    Navigator.pop(context);
+    _postBloc.add(DeletePost(post));
+  }
+
+  Future<void> _reportPost() async {}
 
   @override
   void dispose() {
@@ -53,7 +131,7 @@ class _FeedScreenState extends State<FeedScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    _postBloc = BlocProvider.of<PostBloc>(context);
+    _postBloc = BlocProvider.of<PostsBloc>(context);
     return Scaffold(
       appBar: mainAppBar(context),
       floatingActionButton: FloatingActionButton(
@@ -107,24 +185,8 @@ class _FeedScreenState extends State<FeedScreen>
   }
 
   Widget _postList() {
-    return BlocBuilder<PostBloc, PostState>(condition: (previousState, state) {
-      //Initial Setup
-      if (previousState is PostInitial) {
-        return true;
-      }
-      // When Fetching Posts
-      if (previousState is PostLoaded && state is PostLoaded) {
-        if (state.loadingMore == true) return true;
-      }
-      // When refreshing feed
-      if (previousState is PostLoaded && state is PostLoaded) {
-        if (state.isRefreshed == true) return true;
-        if (previousState.firstPostTime != state.firstPostTime) return true;
-      }
-      //Default
-      return false;
-    }, builder: (context, postState) {
-      if (postState is PostInitial) {
+    return BlocBuilder<PostsBloc, PostsState>(builder: (context, postState) {
+      if (postState is PostsInitial) {
         return SliverList(
           delegate: SliverChildListDelegate(
             [
@@ -135,7 +197,7 @@ class _FeedScreenState extends State<FeedScreen>
           ),
         );
       }
-      if (postState is PostError) {
+      if (postState is PostsError) {
         return SliverList(
             delegate: SliverChildListDelegate([
           const Center(
@@ -143,19 +205,20 @@ class _FeedScreenState extends State<FeedScreen>
           ),
         ]));
       }
-      if (postState is PostLoaded) {
-        if (postState.posts.isEmpty) {
-          return SliverList(
-              delegate: SliverChildListDelegate([
-            const Center(
-              child: Text('no posts'),
-            ),
-          ]));
-        }
+      if (postState is PostsEmpty) {
+        return SliverList(
+            delegate: SliverChildListDelegate([
+          const Center(
+            child: Text('no posts'),
+          ),
+        ]));
+      }
+      if (postState is PostsLoaded || postState is PostsReachedMax) {
         return SliverList(
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
-              if (index >= postState.posts.length && postState.hasReachedMax) {
+              if (index >= postState.posts.length &&
+                  postState is PostsReachedMax) {
                 return Container(
                   width: MediaQuery.of(context).size.width,
                   height: 50,
@@ -164,10 +227,12 @@ class _FeedScreenState extends State<FeedScreen>
                     child: Text('No more posts :/'),
                   ),
                 );
-              } else if (index >= postState.posts.length) {
+              } else if (index >= postState.posts.length &&
+                  postState is PostsLoaded) {
                 return BottomLoader();
               } else {
                 return PostCard(
+                  onChevronTap: _showPostDialog,
                   post: postState.posts[index],
                 );
               }

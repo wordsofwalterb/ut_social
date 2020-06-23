@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:ut_social/core/entities/student.dart';
+import 'package:ut_social/core/util/router.dart';
 import 'package:ut_social/profile/student_repository.dart';
 
 import 'profile_info_bloc/profile_info_bloc.dart';
@@ -28,24 +29,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _onRefresh() async {
-    BlocProvider.of<ProfileInfoBloc>(context).add(const LoadProfile());
+    //BlocProvider.of<ProfileInfoBloc>(context).add(const LoadProfile());
+    bloc.add(const LoadProfile());
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Theme.of(context).backgroundColor,
-        title: const Text(
-          'Your Profile',
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Theme.of(context).backgroundColor,
+          title: const Text(
+            'Your Profile',
+          ),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(Routes.settingsOverview),
+            )
+          ],
         ),
-      ),
-      body: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          _topSection(),
-        ],
+        body: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            _topSection(),
+          ],
+        ),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:ut_social/core/entities/student.dart';
 
 import '../../repositories/user_repository.dart';
+import '../../repositories/post_upload_repository.dart';
 
 part 'user_event.dart';
 part 'user_state.dart';
@@ -31,6 +33,57 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     } else if (event is LogOutUser) {
       yield* _mapLoggedOutToState();
     }
+    if (event is UpdateUserProfile) {
+      yield* _mapUpdateUserProfileToState(event);
+    }
+  }
+
+  Stream<UserState> _mapUpdateUserProfileToState(
+      UpdateUserProfile event) async* {
+    final currentState = state;
+    if (currentState is UserAuthenticated) {
+      // String avatarUrl;
+      // if (event.avatarFile != null) {
+      //   avatarUrl = await StorageService.uploadUserProfileImage(
+      //       currentState.currentUser.avatarUrl, event.avatarFile);
+      // }
+
+      // String coverPhotoUrl;
+      // if (event.avatarFile != null) {
+      //   avatarUrl = _userRepository.uploadCoverPhoto(event.coverPhotoFile);
+      // }
+      final updatedUser = Student(
+        id: currentState.currentUser.id,
+        fullName:
+            _getFullName(firstName: event.firstName, lastName: event.lastName),
+        // channels: event.channels ?? currentState.currentUser.channels,
+        reportCount: event.reportCount ?? currentState.currentUser.reportCount,
+        firstName: event.firstName ?? currentState.currentUser.firstName,
+        avatarUrl: event.avatarUrl ?? currentState.currentUser.avatarUrl,
+        notificationsEnabled: event.notificationsEnabled ??
+            currentState.currentUser.notificationsEnabled,
+        coverPhotoUrl:
+            event.coverPhotoUrl ?? currentState.currentUser.coverPhotoUrl,
+        lastName: event.lastName ?? currentState.currentUser.lastName,
+        bio: event.bio ?? currentState.currentUser.bio,
+        email: event.email ?? currentState.currentUser.email,
+      );
+
+      await _userRepository.updateUser(updatedUser);
+
+      yield UserAuthenticated(updatedUser);
+    }
+  }
+
+  String _getFullName({String firstName, String lastName}) {
+    final currentState = state;
+    if (currentState is UserAuthenticated) {
+      final fName = firstName ?? currentState.currentUser.firstName;
+      final lName = lastName ?? currentState.currentUser.lastName;
+      final fullName = '$fName $lName';
+      return fullName;
+    }
+    return null;
   }
 
   Stream<UserState> _mapAppStartedToState() async* {

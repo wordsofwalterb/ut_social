@@ -11,6 +11,7 @@ abstract class CommentRepository {
   Future<Comment> addComment(Map<String, dynamic> map);
   Future<void> unlikeComment(String commentId);
   Future<void> likeComment(String commentId);
+  Future<void> deleteComment(String commentId);
 }
 
 class FirebaseCommentsRepository extends CommentRepository {
@@ -43,6 +44,13 @@ class FirebaseCommentsRepository extends CommentRepository {
         .toList();
 
     return newComments;
+  }
+
+  @override
+  Future<void> deleteComment(String commentId) async {
+    assert(commentId != null);
+
+    await Global.commentsRef.document(commentId).delete();
   }
 
   @override

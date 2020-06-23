@@ -66,7 +66,7 @@ class Post extends Equatable {
         authorName: map['authorName'] as String,
         postTime: (map['postTime'] as Timestamp).toDate(),
         body: map['body'] as String,
-        likedByUser: map['likedByUser'] as bool,
+        likedByUser: map['isLikedByUser'] as bool,
         commentCount: map['commentCount'] as int,
         likeCount: map['likeCount'] as int);
   }

@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+import '../../core/entities/comment.dart';
 import 'package:ut_social/core/entities/comment.dart';
 import 'package:ut_social/core/entities/failure.dart';
 import 'package:ut_social/core/repositories/comment_repository.dart';
@@ -29,7 +30,6 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     CommentsEvent event,
   ) async* {
     final currentState = state;
-
     if (currentState is CommentsInitial) {
       if (event is SetupComments) {
         yield* _mapCommentSetupToState();
@@ -56,6 +56,8 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
         yield* _mapCommentUnlikedToState(event.id);
       } else if (event is RefreshComments) {
         yield* _mapCommentsRefreshedToState();
+      } else if (event is DeleteComment) {
+        yield* _mapDeleteCommentToState(event);
       }
     }
     if (currentState is CommentsLoaded) {
@@ -69,8 +71,20 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
         yield* _mapCommentsRefreshedToState();
       } else if (event is FetchComments) {
         yield* _mapCommentsFetchedToState();
+      } else if (event is DeleteComment) {
+        yield* _mapDeleteCommentToState(event);
       }
     }
+  }
+
+  Stream<CommentsState> _mapDeleteCommentToState(DeleteComment event) async* {
+    final currentState = state;
+    if (currentState is CommentsLoaded || currentState is CommentsReachedMax) {
+      final newComments = currentState.comments.toList();
+      newComments.remove(event.comment);
+      yield currentState.copyWith(comments: newComments);
+    }
+    await commentRepository.deleteComment(event.comment.id);
   }
 
   Stream<CommentsState> _mapCommentsRefreshedToState() async* {

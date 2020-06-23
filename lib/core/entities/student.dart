@@ -14,8 +14,9 @@ class Student extends Equatable {
   final String email;
   final String fullName;
   final String avatarUrl;
+  final bool notificationsEnabled;
   final String id;
-  final List<Map<String, dynamic>> channels;
+  final List<String> channels;
   final int reportCount;
 
   /// Creates an object representing public information about
@@ -29,6 +30,7 @@ class Student extends Equatable {
     @required this.id,
     @required this.fullName,
     this.channels,
+    this.notificationsEnabled,
     this.reportCount,
     this.firstName,
     this.lastName,
@@ -46,10 +48,11 @@ class Student extends Equatable {
     String coverPhotoUrl,
     String email,
     String fullName,
+    bool notificationsEnabled,
     String avatarUrl,
     String id,
     int reportCount,
-    List<Map<String, dynamic>> channels,
+    List<String> channels,
   }) {
     return Student(
       firstName: firstName ?? this.firstName,
@@ -57,6 +60,7 @@ class Student extends Equatable {
       reportCount: reportCount ?? this.reportCount,
       channels: channels ?? this.channels,
       bio: bio ?? this.bio,
+      notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       coverPhotoUrl: coverPhotoUrl ?? this.coverPhotoUrl,
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
@@ -74,6 +78,7 @@ class Student extends Equatable {
       'bio': bio,
       'coverPhotoUrl': coverPhotoUrl,
       'email': email,
+      'notificationsEnabled': notificationsEnabled,
       'fullName': fullName,
       'avatarUrl': avatarUrl,
       'id': id,
@@ -89,21 +94,16 @@ class Student extends Equatable {
       firstName: map['firstName'] as String,
       lastName: map['lastName'] as String,
       email: map['email'] as String,
+      notificationsEnabled: map['notificationsEnabled'] as bool ?? false,
       fullName: map['fullName'] as String,
       avatarUrl: map['avatarUrl'] as String,
-      channels: (map['channels'] as List)
-          ?.map((x) => Map<String, dynamic>.from(x as Map))
-          ?.toList(),
+      channels: List<String>.from(map['channels'] as List ?? []),
       reportCount: map['reportCount'] as int,
       id: map['id'] as String,
       coverPhotoUrl: map['coverPhotoUrl'] as String,
+      bio: map['bio'] as String,
     );
   }
-
-  String toJson() => json.encode(toMap());
-
-  factory Student.fromJson(String source) =>
-      Student.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   List<Object> get props {
@@ -118,6 +118,7 @@ class Student extends Equatable {
       fullName,
       avatarUrl,
       id,
+      notificationsEnabled,
     ];
   }
 }

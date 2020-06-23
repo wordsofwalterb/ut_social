@@ -24,10 +24,27 @@ class FirebaseStudentRepository extends StudentRepository {
   }) : _firestore = firestore ?? Firestore.instance;
 
   Future<List<Student>> findStudentsByName(String keyword) async {
+    keyword.trim();
+    // TODO: Use String buffer and move to seperate method
+    final fullName = keyword.split(' ');
+    List<String> sanitizedWords = [];
+    for (final word in fullName) {
+      sanitizedWords
+          .add(word[0].toUpperCase() + word.substring(1).toLowerCase());
+    }
+    StringBuffer sanitizedFullKeyword = StringBuffer();
+    for (final word in sanitizedWords) {
+      sanitizedFullKeyword.write('$word ');
+    }
+    print(sanitizedFullKeyword.toString());
+
     final query = await _firestore
         .collection('students')
-        .where('firstName', isGreaterThanOrEqualTo: keyword)
+        .where('fullName',
+            isGreaterThanOrEqualTo: sanitizedFullKeyword.toString().trim())
         .getDocuments();
+
+    sanitizedFullKeyword.clear();
 
     return query.documents
         .map((e) => Student.fromMap(

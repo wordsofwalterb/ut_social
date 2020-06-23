@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ut_social/core/util/router.dart';
 import 'package:ut_social/core/widgets/main_app_bar.dart';
 
-import 'chat_tile.dart';
-import 'group_card.dart';
+import 'widgets/chat_tile.dart';
+import 'widgets/group_card.dart';
 
 List<Map<String, dynamic>> groups = [
   {
