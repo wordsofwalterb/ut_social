@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:ut_social/core/entities/post.dart';
 import 'package:ut_social/core/entities/student.dart';
 import 'package:ut_social/core/repositories/post_repository.dart';
@@ -11,6 +12,8 @@ class Global {
     Student: (Map<String, dynamic> data) => Student.fromMap(data),
     Post: (Map<String, dynamic> data) => Post.fromMap(data),
   };
+
+  static final FirebaseAnalytics analytics = FirebaseAnalytics();
 
   static final Map repository = {
     Post: () => FirebasePostRepository(),

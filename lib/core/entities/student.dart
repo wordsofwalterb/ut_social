@@ -91,7 +91,7 @@ class Student extends Equatable {
       email: map['email'] as String,
       fullName: map['fullName'] as String,
       avatarUrl: map['avatarUrl'] as String,
-      channels: List<String>.from(map['channels'] as List),
+      channels: List<String>.from(map['channels'] as List ?? []),
       reportCount: map['reportCount'] as int,
       id: map['id'] as String,
       coverPhotoUrl: map['coverPhotoUrl'] as String,
