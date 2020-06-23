@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 enum AvatarOutline {
   none,
@@ -44,7 +45,7 @@ class ProfileAvatar extends StatelessWidget {
     this.onPressed,
     this.borderColor,
     this.borderWidth = 0,
-    this.defaultImageSrc = 'assets/images/default.jpg',
+    this.defaultImageSrc = 'assets/images/default4.png',
   });
 
   @override

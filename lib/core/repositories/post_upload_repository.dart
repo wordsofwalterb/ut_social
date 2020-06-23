@@ -12,12 +12,13 @@ class StorageService {
       String url, File imageFile) async {
     String photoId = Uuid().v4();
     final File image = await compressImage(photoId, imageFile);
+    // TODO: FIX AND MAKE SURE STORAGE DOESN't FILL UP UNNECESARILLY
 
-    if (url.isNotEmpty) {
-      // Updating user profile image
-      final RegExp exp = RegExp(r'userProfile_(.*).jpg');
-      photoId = exp.firstMatch(url)[1];
-    }
+    // if (url.isNotEmpty) {
+    //   // Updating user profile image
+    //   final RegExp exp = RegExp(r'userProfile_(.*).jpg');
+    //   photoId = exp.firstMatch(url)[1];
+    // }
 
     final StorageUploadTask uploadTask = FirebaseStorage.instance
         .ref()

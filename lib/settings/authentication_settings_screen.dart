@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 
-class AuthenticationSettingsScreen extends StatelessWidget {
+class AuthenticationSettingsScreen extends StatefulWidget {
+  @override
+  _AuthenticationSettingsScreenState createState() =>
+      _AuthenticationSettingsScreenState();
+}
+
+class _AuthenticationSettingsScreenState
+    extends State<AuthenticationSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

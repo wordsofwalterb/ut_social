@@ -66,12 +66,12 @@ class _SettingsOverviewScreenState extends State<SettingsOverviewScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const SizedBox(height: 26),
-            _buildSubheader('General'),
-            const SizedBox(height: 26),
-            _buildListTile('Authentication',
-                onTap: () => Navigator.of(context)
-                    .pushNamed(Routes.authenticationSettings)),
+            // const SizedBox(height: 26),
+            // _buildSubheader('General'),
+            // const SizedBox(height: 26),
+            // _buildListTile('Authentication',
+            //     onTap: () => Navigator.of(context)
+            //         .pushNamed(Routes.authenticationSettings)),
             const SizedBox(height: 26),
             _buildSubheader('Notifications'),
             const SizedBox(height: 26),

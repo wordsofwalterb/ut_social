@@ -25,7 +25,7 @@ class CoverPhoto extends StatelessWidget {
     this.height,
     this.width,
     this.radius = 8,
-    this.defaultImageSrc = 'assets/images/default.jpg',
+    this.defaultImageSrc = 'assets/images/utCover.jpg',
   });
 
   @override
