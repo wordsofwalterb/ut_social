@@ -13,7 +13,8 @@ import '../entities/comment.dart';
 import '../util/helper.dart';
 import 'profile_avatar.dart';
 
-typedef CommentChevronCallback = void Function(bool byCurrentUser);
+typedef CommentChevronCallback = void Function(
+    bool byCurrentUser, Comment comment);
 
 class CommentCard extends StatefulWidget {
   final Comment _comment;
@@ -95,7 +96,8 @@ class _CommentCardState extends State<CommentCard> {
             ]), // End User Info Block
             const Spacer(),
             IconButton(
-              onPressed: () => widget.chevronCallback(byCurrentUser),
+              onPressed: () =>
+                  widget.chevronCallback(byCurrentUser, widget._comment),
               icon: const Icon(
                 SFSymbols.chevron_down,
                 size: 20,

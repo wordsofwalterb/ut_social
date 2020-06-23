@@ -117,7 +117,6 @@ class _FeedScreenState extends State<FeedScreen>
   Future<void> _deletePost(BuildContext context, Post post) async {
     Navigator.pop(context);
     _postBloc.add(DeletePost(post));
-    await FirebasePostRepository().deletePost(post.id);
   }
 
   Future<void> _reportPost() async {}

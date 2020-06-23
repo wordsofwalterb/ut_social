@@ -20,6 +20,15 @@ class AddComment extends CommentsEvent {
   List<Object> get props => [map];
 }
 
+class DeleteComment extends CommentsEvent {
+  final Comment comment;
+
+  const DeleteComment(this.comment);
+
+  @override
+  List<Object> get props => [comment];
+}
+
 class LikeComment extends CommentsEvent {
   final String id;
 

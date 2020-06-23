@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
+import 'package:ut_social/core/entities/comment.dart';
 import 'package:ut_social/core/repositories/post_repository.dart';
 import 'package:ut_social/core/widgets/bottom_loader.dart';
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
@@ -32,10 +33,12 @@ class _CommentScreenState extends State<CommentScreen> {
   final _scrollThreshold = 200.0;
   bool _isCommenting = false;
   PostsBloc _postBloc;
+  CommentsBloc _commentsBloc;
 
   @override
   void initState() {
-    BlocProvider.of<CommentsBloc>(context).add(const SetupComments());
+    _commentsBloc = BlocProvider.of(context);
+    _commentsBloc.add(const SetupComments());
     _feedController.addListener(_onScroll);
     _postBloc = BlocProvider.of(context);
     super.initState();
@@ -46,13 +49,14 @@ class _CommentScreenState extends State<CommentScreen> {
     super.dispose();
     _commentController.dispose();
     _feedController.dispose();
+    _commentsBloc.close();
   }
 
   void _onScroll() {
     final maxScroll = _feedController.position.maxScrollExtent;
     final currentScroll = _feedController.position.pixels;
     if (maxScroll - currentScroll <= _scrollThreshold) {
-      BlocProvider.of<CommentsBloc>(context).add(FetchComments());
+      _commentsBloc.add(FetchComments());
     }
   }
 
@@ -123,17 +127,89 @@ class _CommentScreenState extends State<CommentScreen> {
     );
   }
 
+  void _showCommentDialog(bool byCurrentUser, Comment comment) {
+    return Platform.isIOS
+        ? _iosCommentBottomSheet(byCurrentUser, comment)
+        : _androidCommentDialog(byCurrentUser, comment);
+  }
+
+  void _iosCommentBottomSheet(bool byCurrentUser, Comment comment) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoActionSheet(
+          title: const Text('Options'),
+          actions: <Widget>[
+            if (byCurrentUser) ...{
+              CupertinoActionSheetAction(
+                onPressed: () => _deleteComment(context, comment),
+                child: const Text('Delete Comment'),
+              ),
+            } else ...{
+              CupertinoActionSheetAction(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Report Comment'),
+              ),
+            }
+          ],
+          cancelButton: CupertinoActionSheetAction(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        );
+      },
+    );
+  }
+
+  void _androidCommentDialog(bool byCurrentUser, Comment comment) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('Options'),
+          children: <Widget>[
+            if (byCurrentUser) ...{
+              SimpleDialogOption(
+                onPressed: () => _deleteComment(context, comment),
+                child: const Text('Delete Comment'),
+              ),
+            } else ...{
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Report Comment'),
+              ),
+            },
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.redAccent,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteComment(BuildContext context, Comment comment) async {
+    Navigator.pop(context);
+    _postBloc.add(DecrementCommentCount(widget._post.id));
+    _commentsBloc.add(DeleteComment(comment));
+  }
+
   Future<void> _deletePost(BuildContext context, Post post) async {
     Navigator.pop(context);
     _postBloc.add(DeletePost(post));
-    await FirebasePostRepository().deletePost(post.id);
     Navigator.pop(context);
   }
 
   void _addComment() {
     final userBlocState = BlocProvider.of<UserBloc>(context).state;
     if (userBlocState is UserAuthenticated) {
-      BlocProvider.of<CommentsBloc>(context).add(
+      _commentsBloc.add(
         AddComment(
           {
             'postId': widget._post.id,
@@ -144,14 +220,13 @@ class _CommentScreenState extends State<CommentScreen> {
           },
         ),
       );
-      BlocProvider.of<PostsBloc>(context)
-          .add(IncrementCommentCount(widget._post.id));
+      _postBloc.add(IncrementCommentCount(widget._post.id));
       FocusScope.of(context).unfocus();
     }
   }
 
   Future<void> _refreshFeed() async {
-    BlocProvider.of<CommentsBloc>(context).add(RefreshComments());
+    _commentsBloc.add(RefreshComments());
   }
 
   @override
@@ -289,6 +364,7 @@ class _CommentScreenState extends State<CommentScreen> {
             } else {
               return CommentCard(
                 comment: state.comments[index],
+                chevronCallback: _showCommentDialog,
               );
             }
           },
