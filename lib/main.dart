@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/blocs/simple_bloc_delegate.dart';
 import 'core/blocs/user_bloc/user_bloc.dart';
 import 'core/home_screen.dart';
+import 'core/notification_bridge.dart';
 import 'core/repositories/post_repository.dart';
 import 'core/repositories/user_repository.dart';
 import 'core/splash_screen.dart';
@@ -73,7 +74,9 @@ class App extends StatelessWidget {
               create: (context) => PostsBloc(
                 postRepository: FirebasePostRepository(),
               )..add(const SetupPosts()),
-              child: HomeScreen(),
+              child: NotificationBridge(
+                child: HomeScreen(),
+              ),
             );
           }
           if (state is UserUnauthenticated) {
