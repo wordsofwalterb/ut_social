@@ -416,7 +416,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
           autovalidate: false,
           autocorrect: false,
-          textCapitalization: TextCapitalization.words,
+          textCapitalization: TextCapitalization.sentences,
           // focusNode: _lastNameFocus,
           textInputAction: TextInputAction.done,
           // onFieldSubmitted: (term) {

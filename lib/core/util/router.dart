@@ -8,6 +8,7 @@ import 'package:ut_social/feed/comment_bloc/comment_bloc.dart';
 import 'package:ut_social/feed/comment_screen.dart';
 import 'package:ut_social/feed/feed_screen.dart';
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
+import 'package:ut_social/login/lost_password_screen.dart';
 import 'package:ut_social/profile/edit_profile_screen.dart';
 import 'package:ut_social/profile/profile_info_bloc/profile_info_bloc.dart';
 import 'package:ut_social/profile/profile_screen.dart';
@@ -32,6 +33,7 @@ class Routes {
   static const String privacyPolicy = 'privacyPolicy';
   static const String authenticationSettings = 'authenticationSettings';
   static const String settingsOverview = 'settingsOverview';
+  static const String lostPassword = 'lostPassword';
 }
 
 /// Correlates routes names to builders
@@ -46,6 +48,8 @@ class Router {
         return MaterialPageRoute(builder: (_) => FeedScreen());
       case Routes.termsOfService:
         return MaterialPageRoute(builder: (_) => TermsOfServiceScreen());
+      case Routes.lostPassword:
+        return MaterialPageRoute(builder: (_) => LostPasswordScreen());
       case Routes.privacyPolicy:
         return MaterialPageRoute(builder: (_) => PrivacyPolicyScreen());
       case Routes.authenticationSettings:

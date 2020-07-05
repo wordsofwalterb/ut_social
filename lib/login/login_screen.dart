@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ut_social/core/util/router.dart';
 
 import '../core/blocs/user_bloc/user_bloc.dart';
 import '../core/repositories/user_repository.dart';
@@ -172,13 +173,18 @@ class _LoginFormState extends State<LoginForm> {
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       width: double.infinity,
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          'Lost Password',
-                          style: Theme.of(context).textTheme.bodyText1.copyWith(
-                                color: const Color(0xffcbcbcb),
-                              ),
+                      child: GestureDetector(
+                        onTap: () => Navigator.of(context)
+                            .pushNamed(Routes.lostPassword),
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            'Lost Password',
+                            style:
+                                Theme.of(context).textTheme.bodyText1.copyWith(
+                                      color: const Color(0xffcbcbcb),
+                                    ),
+                          ),
                         ),
                       ),
                     ),

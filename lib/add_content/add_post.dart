@@ -206,6 +206,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     autofocus: true,
                     keyboardType: TextInputType.multiline,
                     maxLines: 3,
+                    textCapitalization: TextCapitalization.sentences,
                     decoration: const InputDecoration(
                       filled: false,
                       floatingLabelBehavior: FloatingLabelBehavior.never,
