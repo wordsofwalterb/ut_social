@@ -37,28 +37,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: _onRefresh,
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Theme.of(context).backgroundColor,
-          title: const Text(
-            'Your Profile',
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () =>
-                  Navigator.of(context).pushNamed(Routes.settingsOverview),
-            )
-          ],
-        ),
-        body: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            _topSection(),
-          ],
-        ),
-      ),
+      child: BlocBuilder<ProfileInfoBloc, ProfileInfoState>(
+          builder: (BuildContext context, ProfileInfoState state) {
+        if (state is ProfileInfoInitial || state is ProfileInfoLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (state is ProfileInfoFailure) {
+          return Center(
+            child: Text('Failed to fetch profile'),
+          );
+        }
+        if (state is ProfileInfoLoaded) {
+          return Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              backgroundColor: Theme.of(context).backgroundColor,
+              title: Text(
+                (widget.isCurrentUser)
+                    ? 'Your Profile'
+                    : state.student.fullName,
+              ),
+              actions: <Widget>[
+                (widget.isCurrentUser)
+                    ? IconButton(
+                        icon: const Icon(Icons.settings),
+                        onPressed: () => Navigator.of(context)
+                            .pushNamed(Routes.settingsOverview),
+                      )
+                    : Container(),
+              ],
+            ),
+            body: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                _topSection(),
+              ],
+            ),
+          );
+        }
+        return Scaffold();
+      }),
     );
   }
 
