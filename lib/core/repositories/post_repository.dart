@@ -32,7 +32,7 @@ class FirebasePostRepository extends PostRepository {
         .getDocuments();
 
     final currentUser = await _firebaseAuth.currentUser();
-    final newPosts = newDocumentList.documents
+    List<Post> newPosts = newDocumentList.documents
         .map((v) => Post.fromMap(
               v.data
                 ..addAll({
@@ -43,7 +43,22 @@ class FirebasePostRepository extends PostRepository {
             ))
         .toList();
 
-    return newPosts;
+    List<Post> updatedPosts = [];
+
+    for (final post in newPosts) {
+      updatedPosts.add(await _getAuthorInfoWithPost(post));
+    }
+
+    return updatedPosts;
+  }
+
+  Future<Post> _getAuthorInfoWithPost(Post post) async {
+    final doc =
+        await _firestore.collection('students').document(post.authorId).get();
+
+    return post.copyWith(
+        authorName: doc.data['fullName'] as String,
+        avatarUrl: doc.data['avatarUrl'] as String);
   }
 
   @override
@@ -79,7 +94,13 @@ class FirebasePostRepository extends PostRepository {
             ))
         .toList();
 
-    return newPosts;
+    List<Post> updatedPosts = [];
+
+    for (final post in newPosts) {
+      updatedPosts.add(await _getAuthorInfoWithPost(post));
+    }
+
+    return updatedPosts;
   }
 
   @override

@@ -43,7 +43,13 @@ class FirebaseCommentsRepository extends CommentRepository {
             ))
         .toList();
 
-    return newComments;
+    List<Comment> updatedComments = [];
+
+    for (final comment in newComments) {
+      updatedComments.add(await _getAuthorInfoWithComment(comment));
+    }
+
+    return updatedComments;
   }
 
   @override
@@ -79,7 +85,24 @@ class FirebaseCommentsRepository extends CommentRepository {
             ))
         .toList();
 
-    return newComments;
+    List<Comment> updatedComments = [];
+
+    for (final comment in newComments) {
+      updatedComments.add(await _getAuthorInfoWithComment(comment));
+    }
+
+    return updatedComments;
+  }
+
+  Future<Comment> _getAuthorInfoWithComment(Comment comment) async {
+    final doc = await _firestore
+        .collection('students')
+        .document(comment.authorId)
+        .get();
+
+    return comment.copyWith(
+        authorName: doc.data['fullName'] as String,
+        authorAvatar: doc.data['avatarUrl'] as String);
   }
 
   /// Creates new comment in Database and returns a new Comment Object
