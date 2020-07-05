@@ -3,6 +3,7 @@ import 'package:ut_social/core/widgets/profile_avatar.dart';
 
 class NotificationTile extends StatelessWidget {
   final String title;
+  final String body;
   final Icon icon;
   final String imageUrl;
   final VoidCallback onTap;
@@ -11,6 +12,7 @@ class NotificationTile extends StatelessWidget {
 
   const NotificationTile({
     this.title,
+    this.body,
     this.icon,
     this.imageUrl,
     this.onTap,
@@ -37,6 +39,14 @@ class NotificationTile extends StatelessWidget {
                 ),
           title: Text(
             title,
+            style: const TextStyle(
+              color: Color(0xffffffff),
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          subtitle: Text(
+            body,
             style: const TextStyle(
               color: Color(0xffffffff),
               fontSize: 16,

@@ -5,7 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../core/entities/notification.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ut_social/core/blocs/notifications_bloc/notifications_bloc.dart';
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
 
 class NotificationBridge extends StatefulWidget {
@@ -65,28 +67,61 @@ class _NotificationBridgeState extends State<NotificationBridge> {
     _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
-        showCupertinoDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            content: ListTile(
-              title: Text(message['aps']['alert']['title'].toString()),
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Ok'),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          ),
-        );
+        FFNotification notification;
+
+        if (Platform.isIOS) {
+          notification = FFNotification.fromiOS(message, DateTime.now());
+        } else if (Platform.isAndroid) {
+          notification = FFNotification.fromAndroid(message, DateTime.now());
+        }
+
+        BlocProvider.of<NotificationsBloc>(context)
+            .add(AddNotification(notification: notification));
+
+        await showCupertinoDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  content: ListTile(
+                    title: Text(notification.title),
+                  ),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('Ok'),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ));
       },
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
+
+        FFNotification notification;
+
+        if (Platform.isIOS) {
+          notification = FFNotification.fromiOS(message, DateTime.now());
+        } else if (Platform.isAndroid) {
+          notification = FFNotification.fromAndroid(message, DateTime.now());
+        }
+
+        BlocProvider.of<NotificationsBloc>(context)
+            .add(AddNotification(notification: notification));
+
         // TODO optional
       },
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
         // TODO optional
+
+        FFNotification notification;
+
+        if (Platform.isIOS) {
+          notification = FFNotification.fromiOS(message, DateTime.now());
+        } else if (Platform.isAndroid) {
+          notification = FFNotification.fromAndroid(message, DateTime.now());
+        }
+
+        BlocProvider.of<NotificationsBloc>(context)
+            .add(AddNotification(notification: notification));
       },
     );
   }

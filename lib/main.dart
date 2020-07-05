@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ut_social/core/blocs/notifications_bloc/notifications_bloc.dart';
+import 'package:ut_social/core/repositories/notification_repository.dart';
 
 import 'core/blocs/simple_bloc_delegate.dart';
 import 'core/blocs/user_bloc/user_bloc.dart';
@@ -70,10 +72,19 @@ class App extends StatelessWidget {
             return SplashScreen();
           }
           if (state is UserAuthenticated) {
-            return BlocProvider<PostsBloc>(
-              create: (context) => PostsBloc(
-                postRepository: FirebasePostRepository(),
-              )..add(const SetupPosts()),
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider<PostsBloc>(
+                  create: (context) => PostsBloc(
+                    postRepository: FirebasePostRepository(),
+                  )..add(const SetupPosts()),
+                ),
+                BlocProvider<NotificationsBloc>(
+                  create: (context) => NotificationsBloc(
+                    FirebaseNotificationRepository(),
+                  )..add(BootstrapNotifications()),
+                )
+              ],
               child: NotificationBridge(
                 child: HomeScreen(),
               ),

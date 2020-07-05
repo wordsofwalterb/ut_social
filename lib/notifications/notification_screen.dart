@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
+import 'package:ut_social/core/blocs/notifications_bloc/notifications_bloc.dart';
 import 'package:ut_social/core/widgets/main_app_bar.dart';
 
 import 'notification_tile.dart';
@@ -43,17 +45,34 @@ class NotificationScreen extends StatelessWidget {
   }
 
   Widget _notificationList() {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-        return NotificationTile(
-          title: notifications[index]['body'] as String,
-          margin: const EdgeInsets.only(bottom: 6),
-          imageUrl: notifications[index]['url'] as String,
-          icon: notifications[index]['icon'] as Icon,
-          onTap: null,
+    return BlocBuilder<NotificationsBloc, NotificationsState>(
+        builder: (BuildContext context, state) {
+      final currentState = state;
+
+      if (currentState is NotificationsReachedMax) {
+        return SliverList(
+          delegate:
+              SliverChildBuilderDelegate((BuildContext context, int index) {
+            return NotificationTile(
+              title: currentState.notifications[index].title,
+              body: currentState.notifications[index].body ?? '',
+              margin: const EdgeInsets.only(bottom: 6),
+              imageUrl: null,
+              icon: Icon(SFSymbols.airplane),
+              onTap: null,
+            );
+          }, childCount: currentState.notifications.length),
         );
-      }, childCount: notifications.length),
-    );
+      }
+
+      return SliverList(
+        delegate: SliverChildListDelegate.fixed(
+          [
+            Container(),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _sectionHeader({String leading = ''}) {
