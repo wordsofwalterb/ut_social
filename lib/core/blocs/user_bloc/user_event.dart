@@ -23,12 +23,14 @@ class UpdateUserProfile extends UserEvent {
   final String email;
   final int reportCount;
   final bool notificationsEnabled;
+  final bool isTester;
 
   const UpdateUserProfile({
     this.firstName,
     this.channels,
     this.lastName,
     this.bio,
+    this.isTester,
     this.notificationsEnabled,
     this.avatarUrl,
     this.coverPhotoUrl,
@@ -41,6 +43,7 @@ class UpdateUserProfile extends UserEvent {
         firstName,
         channels,
         lastName,
+        isTester,
         bio,
         notificationsEnabled,
         avatarUrl,

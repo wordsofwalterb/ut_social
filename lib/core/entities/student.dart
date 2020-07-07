@@ -18,6 +18,7 @@ class Student extends Equatable {
   final String id;
   final List<String> channels;
   final int reportCount;
+  final bool isTester;
 
   /// Creates an object representing public information about
   /// a student user.
@@ -37,6 +38,7 @@ class Student extends Equatable {
     this.bio,
     this.coverPhotoUrl,
     this.email,
+    this.isTester,
     this.avatarUrl,
   })  : assert(fullName != null),
         assert(id != null);
@@ -52,6 +54,7 @@ class Student extends Equatable {
     String avatarUrl,
     String id,
     int reportCount,
+    bool isTester,
     List<String> channels,
   }) {
     return Student(
@@ -64,6 +67,7 @@ class Student extends Equatable {
       coverPhotoUrl: coverPhotoUrl ?? this.coverPhotoUrl,
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
+      isTester: isTester ?? this.isTester,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       id: id ?? this.id,
     );
@@ -81,6 +85,7 @@ class Student extends Equatable {
       'notificationsEnabled': notificationsEnabled,
       'fullName': fullName,
       'avatarUrl': avatarUrl,
+      'isTester': isTester,
       'id': id,
     };
   }
@@ -100,6 +105,7 @@ class Student extends Equatable {
       channels: List<String>.from(map['channels'] as List ?? []),
       reportCount: map['reportCount'] as int,
       id: map['id'] as String,
+      isTester: (map['isTester'] as bool) ?? false,
       coverPhotoUrl: map['coverPhotoUrl'] as String,
       bio: map['bio'] as String,
     );
@@ -117,6 +123,7 @@ class Student extends Equatable {
       email,
       fullName,
       avatarUrl,
+      isTester,
       id,
       notificationsEnabled,
     ];

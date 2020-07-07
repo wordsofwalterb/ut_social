@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ut_social/core/entities/student.dart';
+import 'package:ut_social/core/util/globals.dart';
 
 import '../../repositories/user_repository.dart';
 import '../../repositories/post_upload_repository.dart';
@@ -67,6 +68,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         lastName: event.lastName ?? currentState.currentUser.lastName,
         bio: event.bio ?? currentState.currentUser.bio,
         email: event.email ?? currentState.currentUser.email,
+        isTester: event.isTester ?? currentState.currentUser.isTester,
       );
 
       await _userRepository.updateUser(updatedUser);
@@ -90,6 +92,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     final bool isSignedIn = await _userRepository.isSignedIn();
     if (isSignedIn) {
       final Student currentUser = await _userRepository.getUser();
+      // Toggle analytics off if tester
+      if (currentUser.isTester) {
+        await Global.analytics.setAnalyticsCollectionEnabled(false);
+      }
       yield UserAuthenticated(currentUser);
     } else {
       yield UserUnauthenticated();

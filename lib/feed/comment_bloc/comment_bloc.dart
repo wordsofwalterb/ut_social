@@ -112,7 +112,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
           const ListEquality<Comment>().equals(
               newComments.toList()
                 ..sort((Comment a, Comment b) =>
-                    b.timestamp.compareTo(a.timestamp)),
+                    a.timestamp.compareTo(b.timestamp)),
               newComments),
           'States Comment List must be properly sorted');
 
@@ -131,7 +131,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
         const ListEquality<Comment>().equals(
             state.comments.toList()
               ..sort(
-                  (Comment a, Comment b) => b.timestamp.compareTo(a.timestamp)),
+                  (Comment a, Comment b) => a.timestamp.compareTo(b.timestamp)),
             state.comments),
         'States Comment List must be properly sorted');
 
@@ -155,7 +155,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
           const ListEquality<Comment>().equals(
               comments.toList()
                 ..sort((Comment a, Comment b) =>
-                    b.timestamp.compareTo(a.timestamp)),
+                    a.timestamp.compareTo(b.timestamp)),
               comments),
           'States Comment List must be properly sorted');
       assert(state != newState);
@@ -193,7 +193,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
           const ListEquality<Comment>().equals(
               comments.toList()
                 ..sort((Comment a, Comment b) =>
-                    b.timestamp.compareTo(a.timestamp)),
+                    a.timestamp.compareTo(b.timestamp)),
               comments),
           'States Comment List must be properly sorted');
       assert(state != newState);
@@ -223,7 +223,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       newState = CommentsReachedMax(postId: state.postId, comments: [comment]);
     } else {
       newState =
-          state.copyWith(comments: state.comments.toList()..insert(0, comment));
+          state.copyWith(comments: state.comments.toList()..add(comment));
     }
     // Create new state
 
@@ -266,7 +266,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
         const ListEquality<Comment>().equals(
           newState.comments.toList()
             ..sort(
-                (Comment a, Comment b) => b.timestamp.compareTo(a.timestamp)),
+                (Comment a, Comment b) => a.timestamp.compareTo(b.timestamp)),
           newState.comments,
         ),
         'Comment List must be properly sorted');
@@ -304,7 +304,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
         const ListEquality<Comment>().equals(
           newState.comments.toList()
             ..sort(
-                (Comment a, Comment b) => b.timestamp.compareTo(a.timestamp)),
+                (Comment a, Comment b) => a.timestamp.compareTo(b.timestamp)),
           newState.comments,
         ),
         'Comment List must be properly sorted');

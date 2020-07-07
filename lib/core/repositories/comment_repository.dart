@@ -27,7 +27,7 @@ class FirebaseCommentsRepository extends CommentRepository {
     final newDocumentList = await _firestore
         .collection('comments')
         .where('postId', isEqualTo: postId)
-        .orderBy('timestamp', descending: true)
+        .orderBy('timestamp', descending: false)
         .limit(20)
         .getDocuments();
 
@@ -69,7 +69,7 @@ class FirebaseCommentsRepository extends CommentRepository {
     final newDocumentList = await _firestore
         .collection('comments')
         .where('postId', isEqualTo: postId)
-        .orderBy('timestamp', descending: true)
+        .orderBy('timestamp', descending: false)
         .startAfter([startAfter])
         .limit(limit)
         .getDocuments();
