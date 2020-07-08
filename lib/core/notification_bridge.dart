@@ -36,17 +36,11 @@ class _NotificationBridgeState extends State<NotificationBridge> {
 
       // Save it to Firestore
       if (fcmToken != null) {
-        final tokens = _db
-            .collection('students')
-            .document(uid)
-            .collection('tokens')
-            .document(fcmToken);
+        final userRef = _db.collection('students').document(uid);
 
-        await tokens.setData({
-          'token': fcmToken,
-          'createdAt': FieldValue.serverTimestamp(), // optional
-          'platform': Platform.operatingSystem // optional
-        });
+        await userRef.setData({
+          'notificationToken': fcmToken,
+        }, merge: true);
       }
     }
   }
@@ -59,6 +53,7 @@ class _NotificationBridgeState extends State<NotificationBridge> {
     if (Platform.isIOS) {
       iosSubscription = _fcm.onIosSettingsRegistered.listen((data) {
         // save the token  OR subscribe to a topic here
+        // _saveDeviceToken();
       });
 
       _fcm.requestNotificationPermissions(IosNotificationSettings());
@@ -71,7 +66,7 @@ class _NotificationBridgeState extends State<NotificationBridge> {
       FFNotification notification;
 
       if (Platform.isIOS) {
-        notification = FFNotification.fromiOS(message, DateTime.now());
+        notification = FFNotification.fromAndroid(message, DateTime.now());
       } else if (Platform.isAndroid) {
         notification = FFNotification.fromAndroid(message, DateTime.now());
       }
@@ -83,7 +78,7 @@ class _NotificationBridgeState extends State<NotificationBridge> {
           context: context,
           builder: (context) => AlertDialog(
                 content: ListTile(
-                  title: Text(notification.title),
+                  title: Text(notification.body),
                 ),
                 actions: <Widget>[
                   FlatButton(

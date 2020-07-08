@@ -11,7 +11,7 @@ description: UT Social Hub
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.1.2+1020
+version: 0.1.4+1040
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -42,6 +42,7 @@ dependencies:
   firebase_analytics: ^5.0.15
   url_launcher: ^5.4.11
   firebase_messaging: ^6.0.16
+  overlay_support: ^1.0.4
 
 
   # The following adds the Cupertino Icons font to your application.

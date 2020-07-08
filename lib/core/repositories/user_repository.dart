@@ -73,7 +73,7 @@ class UserRepository {
 
     try {
       final currentUser = await _firebaseAuth.currentUser();
-
+      print('setting up profile $firstName');
       await Global.studentsRef.document(currentUser.uid).setData({
         'firstName': firstName,
         'lastName': lastName,
@@ -81,8 +81,10 @@ class UserRepository {
         'fullName': '$firstName $lastName',
         'avatarUrl': accessToken[defaultAvatarIndex],
       });
+      print('done setting up profile $firstName');
     } catch (error) {
       print('Unable to setup user: $error');
+      throw ('There was an unexpected error connecting to the database');
     }
   }
 

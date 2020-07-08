@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:ut_social/core/blocs/notifications_bloc/notifications_bloc.dart';
+import 'package:ut_social/core/util/helper.dart';
 import 'package:ut_social/core/widgets/main_app_bar.dart';
 
 import 'notification_tile.dart';
@@ -27,18 +28,45 @@ class NotificationScreen extends StatelessWidget {
       final currentState = state;
 
       if (currentState is NotificationsReachedMax) {
+        print(currentState.notifications);
         return SliverList(
           delegate:
               SliverChildBuilderDelegate((BuildContext context, int index) {
             return NotificationTile(
-              title: currentState.notifications[index].title,
-              body: currentState.notifications[index].body ?? '',
+              title: currentState.notifications[index].body,
+              body: Helper.convertTime(
+                  currentState.notifications[index].timestamp),
               margin: const EdgeInsets.only(bottom: 6),
               imageUrl: currentState.notifications[index].imageUrl,
-              icon: Icon(SFSymbols.airplane),
+              icon: Icon(SFSymbols.chat_bubble),
               onTap: null,
             );
           }, childCount: currentState.notifications.length),
+        );
+      }
+
+      if (currentState is NotificationsLoaded) {
+        return SliverList(
+          delegate:
+              SliverChildBuilderDelegate((BuildContext context, int index) {
+            return NotificationTile(
+              title: currentState.notifications[index].body,
+              body: Helper.convertTime(
+                  currentState.notifications[index].timestamp),
+              margin: const EdgeInsets.only(bottom: 6),
+              imageUrl: currentState.notifications[index].imageUrl,
+              icon: Icon(SFSymbols.chat_bubble),
+              onTap: null,
+            );
+          }, childCount: currentState.notifications.length),
+        );
+      }
+
+      if (currentState is NotificationsError) {
+        return SliverList(
+          delegate: SliverChildListDelegate.fixed([
+            const Text('There was a problem returning notificaitons'),
+          ]),
         );
       }
 

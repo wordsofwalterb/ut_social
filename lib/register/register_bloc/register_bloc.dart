@@ -142,6 +142,11 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       }
       yield RegisterState.failure(
           isPasswordObscured: state.isPasswordObscured, error: errorMessage);
+    } catch (error) {
+      print(error);
+      errorMessage = 'An unexpected error occured.';
+      yield RegisterState.failure(
+          isPasswordObscured: state.isPasswordObscured, error: errorMessage);
     }
   }
 }

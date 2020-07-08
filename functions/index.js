@@ -30,23 +30,25 @@ exports.onCreateNotificationItem = functions.firestore
         }
 
         function sendNotification(notificationToken, notificationFeedItem) {
+            const title = notificationFeedItem.title;
             const body = notificationFeedItem.body;
             const imageUrl = notificationFeedItem.imageUrl;
             const originId = notificationFeedItem.originId;
 
             const message = {
-                notification: {
-                    body: body,
-                    token: notificationToken,
-                    data: {
-                        recipient: userId,
-                        imageUrl: imageUrl,
-                        origin: originId,
-                    }
-                }
+                'token': notificationToken,
+                'notification': {
+                    'body': body,
+                },
+                'data': {
+                    'imageUrl': imageUrl,
+                    'origin': originId,
+                    'click_action': "FLUTTER_NOTIFICATION_CLICK",
+                },
+
             }
 
-            admin.messaging.send(message)
+            admin.messaging().send(message)
                 .then(response => {
                     return console.log('Sent message', response);
                 })

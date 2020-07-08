@@ -48,8 +48,8 @@ class NotificationTile extends StatelessWidget {
           subtitle: Text(
             body,
             style: const TextStyle(
-              color: Color(0xffffffff),
-              fontSize: 16,
+              color: Colors.grey,
+              fontSize: 14,
               fontWeight: FontWeight.w400,
             ),
           ),
