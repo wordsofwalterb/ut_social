@@ -15,6 +15,7 @@ class Comment extends Equatable {
   final String imageUrl;
   final bool isLikedByUser;
   final List<String> likedBy;
+  final List<String> unlikedBy;
 
   const Comment(
       {this.authorId,
@@ -25,6 +26,7 @@ class Comment extends Equatable {
       this.authorName,
       this.authorAvatar,
       this.isLikedByUser,
+      this.unlikedBy,
       this.timestamp,
       this.imageUrl,
       this.likedBy});
@@ -40,6 +42,7 @@ class Comment extends Equatable {
     DateTime timestamp,
     String imageUrl,
     bool isLikedByUser,
+    List<String> unlikedBy,
     List<String> likedBy,
   }) {
     return Comment(
@@ -53,6 +56,7 @@ class Comment extends Equatable {
         authorAvatar: authorAvatar ?? this.authorAvatar,
         timestamp: timestamp ?? this.timestamp,
         imageUrl: imageUrl ?? this.imageUrl,
+        unlikedBy: unlikedBy ?? this.unlikedBy,
         likedBy: likedBy ?? this.likedBy);
   }
 
@@ -68,6 +72,7 @@ class Comment extends Equatable {
       'authorAvatar': authorAvatar,
       'timestamp': timestamp,
       'imageUrl': imageUrl,
+      'unlikedBy': unlikedBy,
       'likedBy': likedBy,
     };
   }
@@ -86,6 +91,7 @@ class Comment extends Equatable {
       authorAvatar: map['authorAvatar'] as String,
       timestamp: (map['timestamp'] as Timestamp).toDate(),
       imageUrl: map['imageUrl'] as String,
+      unlikedBy: List<String>.from((map['unlikedBy'] as List) ?? []),
       likedBy: List<String>.from(map['likedBy'] as List),
     );
   }
@@ -108,6 +114,7 @@ class Comment extends Equatable {
       likeCount,
       authorName,
       authorAvatar,
+      unlikedBy,
       timestamp,
       imageUrl,
     ];

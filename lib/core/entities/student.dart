@@ -85,7 +85,7 @@ class Student extends Equatable {
       'notificationsEnabled': notificationsEnabled,
       'fullName': fullName,
       'avatarUrl': avatarUrl,
-      'isTester': isTester,
+      'test': isTester,
       'id': id,
     };
   }
@@ -105,7 +105,7 @@ class Student extends Equatable {
       channels: List<String>.from(map['channels'] as List ?? []),
       reportCount: map['reportCount'] as int,
       id: map['id'] as String,
-      isTester: (map['isTester'] as bool) ?? false,
+      isTester: (map['test'] as bool) ?? false,
       coverPhotoUrl: map['coverPhotoUrl'] as String,
       bio: map['bio'] as String,
     );

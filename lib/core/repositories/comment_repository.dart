@@ -150,6 +150,9 @@ class FirebaseCommentsRepository extends CommentRepository {
       'likeCount': FieldValue.increment(-1),
       'likedBy': FieldValue.arrayRemove([currentUser.uid])
     });
+    await Global.commentsRef.document(commentId).updateData({
+      'unlikedBy': FieldValue.arrayUnion([currentUser.uid])
+    });
   }
 
   @override

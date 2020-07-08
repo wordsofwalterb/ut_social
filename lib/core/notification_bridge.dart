@@ -64,66 +64,64 @@ class _NotificationBridgeState extends State<NotificationBridge> {
       _fcm.requestNotificationPermissions(IosNotificationSettings());
     }
 
-    _fcm.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
-        FFNotification notification;
+    _saveDeviceToken();
 
-        if (Platform.isIOS) {
-          notification = FFNotification.fromiOS(message, DateTime.now());
-        } else if (Platform.isAndroid) {
-          notification = FFNotification.fromAndroid(message, DateTime.now());
-        }
+    _fcm.configure(onMessage: (Map<String, dynamic> message) async {
+      print('onMessage: $message');
+      FFNotification notification;
 
-        BlocProvider.of<NotificationsBloc>(context)
-            .add(AddNotification(notification: notification));
+      if (Platform.isIOS) {
+        notification = FFNotification.fromiOS(message, DateTime.now());
+      } else if (Platform.isAndroid) {
+        notification = FFNotification.fromAndroid(message, DateTime.now());
+      }
 
-        await showCupertinoDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  content: ListTile(
-                    title: Text(notification.title),
+      BlocProvider.of<NotificationsBloc>(context)
+          .add(AddNotification(notification: notification));
+
+      await showCupertinoDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                content: ListTile(
+                  title: Text(notification.title),
+                ),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('Ok'),
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text('Ok'),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ],
-                ));
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
+                ],
+              ));
+    }, onLaunch: (Map<String, dynamic> message) async {
+      print("onLaunch: $message");
 
-        FFNotification notification;
+      FFNotification notification;
 
-        if (Platform.isIOS) {
-          notification = FFNotification.fromiOS(message, DateTime.now());
-        } else if (Platform.isAndroid) {
-          notification = FFNotification.fromAndroid(message, DateTime.now());
-        }
+      if (Platform.isIOS) {
+        notification = FFNotification.fromiOS(message, DateTime.now());
+      } else if (Platform.isAndroid) {
+        notification = FFNotification.fromAndroid(message, DateTime.now());
+      }
 
-        BlocProvider.of<NotificationsBloc>(context)
-            .add(AddNotification(notification: notification));
+      BlocProvider.of<NotificationsBloc>(context)
+          .add(AddNotification(notification: notification));
 
-        // TODO optional
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
-        // TODO optional
+      // TODO optional
+    }, onResume: (Map<String, dynamic> message) async {
+      print("onResume: $message");
+      // TODO optional
 
-        FFNotification notification;
+      FFNotification notification;
 
-        if (Platform.isIOS) {
-          notification = FFNotification.fromiOS(message, DateTime.now());
-        } else if (Platform.isAndroid) {
-          notification = FFNotification.fromAndroid(message, DateTime.now());
-        }
+      if (Platform.isIOS) {
+        notification = FFNotification.fromiOS(message, DateTime.now());
+      } else if (Platform.isAndroid) {
+        notification = FFNotification.fromAndroid(message, DateTime.now());
+      }
 
-        BlocProvider.of<NotificationsBloc>(context)
-            .add(AddNotification(notification: notification));
-      },
-    );
+      BlocProvider.of<NotificationsBloc>(context)
+          .add(AddNotification(notification: notification));
+    });
   }
 
   @override

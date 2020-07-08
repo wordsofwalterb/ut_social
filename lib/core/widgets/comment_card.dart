@@ -9,6 +9,7 @@ import 'package:ut_social/core/util/router.dart';
 
 import 'package:ut_social/feed/comment_bloc/comment_bloc.dart';
 
+import '../util/globals.dart';
 import '../entities/comment.dart';
 import '../util/helper.dart';
 import 'profile_avatar.dart';
@@ -42,6 +43,23 @@ class _CommentCardState extends State<CommentCard> {
     } else {
       BlocProvider.of<CommentsBloc>(context)
           .add(LikeComment(widget._comment.id));
+
+      final userBlocState = BlocProvider.of<UserBloc>(context).state;
+      if (userBlocState is UserAuthenticated) {
+        if (!byCurrentUser &&
+            !widget._comment.unlikedBy.contains(userBlocState.currentUser.id)) {
+          Global.studentsRef
+              .document(widget._comment.authorId)
+              .collection('notifications')
+              .add({
+            'body': '${userBlocState.currentUser.fullName} liked your comment.',
+            'imageUrl': userBlocState.currentUser.avatarUrl,
+            'timestamp': DateTime.now(),
+            'originId': userBlocState.currentUser.id,
+            'title': 'New Like',
+          });
+        }
+      }
     }
     return !isLiked;
   }

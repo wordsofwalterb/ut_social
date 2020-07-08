@@ -9,6 +9,7 @@ class Post extends Equatable {
   final DateTime postTime;
   final int commentCount, likeCount;
   final bool likedByUser;
+  final List<String> unlikedBy;
   // List of student ids that liked this post
   final List<String> likedBy;
 
@@ -19,6 +20,7 @@ class Post extends Equatable {
       @required this.postTime,
       this.likedByUser,
       this.imageUrl,
+      this.unlikedBy,
       this.avatarUrl,
       this.likedBy,
       this.body,
@@ -36,6 +38,7 @@ class Post extends Equatable {
       String imageUrl,
       DateTime postTime,
       String body,
+      List<String> unlikedBy,
       List<String> likedBy,
       String avatarUrl,
       bool likedByUser,
@@ -47,6 +50,7 @@ class Post extends Equatable {
       imageUrl: imageUrl ?? this.imageUrl,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       authorId: authorId ?? this.authorId,
+      unlikedBy: unlikedBy ?? this.unlikedBy,
       authorName: authorName ?? this.authorName,
       postTime: postTime ?? this.postTime,
       body: body ?? this.body,
@@ -66,6 +70,7 @@ class Post extends Equatable {
         authorName: map['authorName'] as String,
         postTime: (map['postTime'] as Timestamp).toDate(),
         body: map['body'] as String,
+        unlikedBy: List<String>.from((map['unlikedBy'] as List) ?? []),
         likedByUser: map['isLikedByUser'] as bool,
         commentCount: map['commentCount'] as int,
         likeCount: map['likeCount'] as int);
@@ -80,6 +85,7 @@ class Post extends Equatable {
         authorId,
         authorName,
         postTime,
+        unlikedBy,
         body,
         commentCount,
         likeCount,

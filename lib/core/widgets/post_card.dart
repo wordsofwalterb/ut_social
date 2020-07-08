@@ -7,6 +7,7 @@ import 'package:like_button/like_button.dart';
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
 import 'package:ut_social/core/repositories/comment_repository.dart';
 import 'package:ut_social/core/repositories/post_repository.dart';
+import 'package:ut_social/core/util/globals.dart';
 import 'package:ut_social/core/util/router.dart';
 import 'package:ut_social/feed/comment_bloc/comment_bloc.dart';
 
@@ -49,6 +50,22 @@ class _PostCardState extends State<PostCard> {
       BlocProvider.of<PostsBloc>(context).add(UnlikePost(widget._post.id));
     } else {
       BlocProvider.of<PostsBloc>(context).add(LikePost(widget._post.id));
+      final userBlocState = BlocProvider.of<UserBloc>(context).state;
+      if (userBlocState is UserAuthenticated) {
+        if (!byCurrentUser &&
+            !widget._post.unlikedBy.contains(userBlocState.currentUser.id)) {
+          Global.studentsRef
+              .document(widget._post.authorId)
+              .collection('notifications')
+              .add({
+            'body': '${userBlocState.currentUser.fullName} liked your post.',
+            'imageUrl': userBlocState.currentUser.avatarUrl,
+            'timestamp': DateTime.now(),
+            'originId': userBlocState.currentUser.id,
+            'title': 'New Like',
+          });
+        }
+      }
     }
     return !isLiked;
   }

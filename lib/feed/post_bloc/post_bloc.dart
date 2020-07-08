@@ -155,6 +155,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
 
       yield newState;
     } catch (error) {
+      print(error.toString());
       yield PostsError(
         failure: Failure(
             'There was a problem refreshing the posts', error.toString()),
@@ -192,8 +193,10 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
 
       yield newState;
     } catch (error) {
+      print(error.toString());
       yield PostsError(
           // posts: state.posts,
+
           failure:
               Failure('There was an error fetching posts', error.toString()));
     }
@@ -226,6 +229,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
 
       yield newState;
     } catch (error) {
+      print(error.toString());
       yield PostsError(
           failure:
               Failure('There was an error setting up posts', error.toString()));

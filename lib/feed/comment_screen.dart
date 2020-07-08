@@ -8,6 +8,7 @@ import 'package:ut_social/core/entities/comment.dart';
 import 'package:ut_social/core/repositories/post_repository.dart';
 import 'package:ut_social/core/widgets/bottom_loader.dart';
 import 'package:ut_social/feed/post_bloc/post_bloc.dart';
+import '../core/util/globals.dart';
 
 import '../core/entities/post.dart';
 import '../core/widgets/comment_card.dart';
@@ -221,6 +222,22 @@ class _CommentScreenState extends State<CommentScreen> {
         ),
       );
       _postBloc.add(IncrementCommentCount(widget._post.id));
+      // Add notification
+      if (userBlocState.currentUser.id != widget._post.authorId) {
+        Global.studentsRef
+            .document(widget._post.authorId)
+            .collection('notifications')
+            .add({
+          'body':
+              '${userBlocState.currentUser.fullName} commented on your post.',
+          'imageUrl':
+              widget._post.imageUrl ?? userBlocState.currentUser.avatarUrl,
+          'timestamp': DateTime.now(),
+          'originId': userBlocState.currentUser.id,
+          'title': 'New Comment',
+        });
+      }
+
       FocusScope.of(context).unfocus();
     }
   }
