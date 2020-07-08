@@ -205,7 +205,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     style: const TextStyle(fontSize: 18.0),
                     autofocus: true,
                     keyboardType: TextInputType.multiline,
-                    maxLines: 3,
+                    maxLines: 10,
                     textCapitalization: TextCapitalization.sentences,
                     decoration: const InputDecoration(
                       filled: false,
