@@ -50,6 +50,7 @@ class _PostCardState extends State<PostCard> {
       BlocProvider.of<PostsBloc>(context).add(UnlikePost(widget._post.id));
     } else {
       BlocProvider.of<PostsBloc>(context).add(LikePost(widget._post.id));
+      
       final userBlocState = BlocProvider.of<UserBloc>(context).state;
       if (userBlocState is UserAuthenticated) {
         if (!byCurrentUser &&

@@ -7,8 +7,7 @@ part 'channels_event.dart';
 part 'channels_state.dart';
 
 class ChannelsBloc extends Bloc<ChannelsEvent, ChannelsState> {
-  @override
-  ChannelsState get initialState => ChannelsInitial();
+    ChannelsBloc(): super(ChannelsInitial());
 
   @override
   Stream<ChannelsState> mapEventToState(

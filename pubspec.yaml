@@ -20,10 +20,10 @@ dependencies:
   flutter:
     sdk: flutter
   provider: ^4.0.5
-  equatable: ^1.1.1
+  equatable: ^1.2.0
   cached_network_image: ^2.1.0+1
   timeago: ^2.0.26
-  flutter_bloc: ^4.0.0
+  flutter_bloc: ^5.0.0
   meta: ^1.1.8
   firebase_auth: ^0.16.0
   flutter_sfsymbols: ^1.0.0

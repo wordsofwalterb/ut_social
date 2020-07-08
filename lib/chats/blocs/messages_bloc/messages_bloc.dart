@@ -7,8 +7,7 @@ part 'messages_event.dart';
 part 'messages_state.dart';
 
 class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
-  @override
-  MessagesState get initialState => MessagesInitial();
+  MessagesBloc(): super(MessagesInitial());
 
   @override
   Stream<MessagesState> mapEventToState(

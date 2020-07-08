@@ -19,10 +19,7 @@ class ProfileInfoBloc extends Bloc<ProfileInfoEvent, ProfileInfoState> {
       : assert(userId != null),
         assert(repository != null),
         _userId = userId,
-        _repository = repository;
-
-  @override
-  ProfileInfoState get initialState => const ProfileInfoInitial();
+        _repository = repository, super(ProfileInfoInitial());
 
   @override
   Stream<ProfileInfoState> mapEventToState(

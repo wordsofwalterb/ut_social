@@ -20,10 +20,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
 
   NotificationsBloc(FirebaseNotificationRepository repository,
       {this.pageSize = 20})
-      : _repository = repository;
-
-  @override
-  NotificationsState get initialState => NotificationsInitial();
+      : _repository = repository, super(NotificationsInitial());
 
   @override
   Stream<NotificationsState> mapEventToState(

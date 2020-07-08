@@ -21,12 +21,9 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
 
   PostsBloc({
     this.postRepository,
-  });
+  }): super(PostsInitial());
 
   final PostRepository postRepository;
-
-  @override
-  PostsState get initialState => PostsInitial();
 
   @override
   Stream<PostsState> mapEventToState(

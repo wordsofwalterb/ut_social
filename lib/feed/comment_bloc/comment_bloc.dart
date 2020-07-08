@@ -20,12 +20,10 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
   CommentsBloc(
     this._postId, {
     this.commentRepository,
-  });
+  }): super(CommentsInitial(postId: _postId));
 
   final CommentRepository commentRepository;
 
-  @override
-  CommentsState get initialState => CommentsInitial(postId: _postId);
 
   @override
   Stream<CommentsState> mapEventToState(

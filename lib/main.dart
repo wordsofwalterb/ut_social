@@ -23,7 +23,8 @@ import 'login/login_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  BlocSupervisor.delegate = SimpleBlocDelegate();
+  Bloc.observer = SimpleBlocObserver();
+  
 
   final prefs = await SharedPreferences.getInstance();
 

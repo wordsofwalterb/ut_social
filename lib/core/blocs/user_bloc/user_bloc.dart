@@ -16,12 +16,11 @@ part 'user_state.dart';
 class UserBloc extends Bloc<UserEvent, UserState> {
   final UserRepository _userRepository;
 
-  @override
-  UserState get initialState => UserInitial();
+
 
   UserBloc({@required UserRepository userRepository})
       : assert(userRepository != null),
-        _userRepository = userRepository;
+        _userRepository = userRepository, super(UserInitial());
 
   @override
   Stream<UserState> mapEventToState(
