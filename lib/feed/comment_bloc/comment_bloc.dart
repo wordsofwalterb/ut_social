@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 import '../../core/entities/comment.dart';
 import 'package:ut_social/core/entities/comment.dart';
@@ -14,6 +15,7 @@ part 'comment_state.dart';
 
 class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
   final String _postId;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   CommentsBloc(
     this._postId, {
@@ -277,6 +279,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
 
   Stream<CommentsState> _mapCommentUnlikedToState(String id) async* {
     assert(id != null);
+    final currentUser = await _firebaseAuth.currentUser();
 
     // Find liked comment index in current state
     final int commentIndex =
@@ -285,6 +288,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     // Create new modified comment which will added to state
     final Comment changedComment = state.comments[commentIndex].copyWith(
         isLikedByUser: false,
+        unlikedBy: state.comments[commentIndex].unlikedBy..add(currentUser.uid),
         likeCount: state.comments[commentIndex].likeCount - 1);
 
     // Propagate to database

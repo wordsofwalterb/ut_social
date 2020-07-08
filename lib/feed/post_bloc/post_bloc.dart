@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:ut_social/core/blocs/user_bloc/user_bloc.dart';
@@ -16,6 +17,8 @@ part 'post_event.dart';
 part 'post_state.dart';
 
 class PostsBloc extends Bloc<PostsEvent, PostsState> {
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
   PostsBloc({
     this.postRepository,
   });
@@ -296,12 +299,17 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
   }
 
   Stream<PostsState> _mapPostUnlikedToState(UnlikePost event) async* {
+    final currentUser = await _firebaseAuth.currentUser();
+
     // Find liked post index in current state
     final int postIndex = state.posts.indexWhere((Post e) => e.id == event.id);
 
     // Create new modified post which will added to state
     final Post changedPost = state.posts[postIndex].copyWith(
-        likedByUser: false, likeCount: state.posts[postIndex].likeCount - 1);
+      likedByUser: false,
+      unlikedBy: state.posts[postIndex].unlikedBy..add(currentUser.uid),
+      likeCount: state.posts[postIndex].likeCount - 1,
+    );
 
     // Propagate to database
     await postRepository.unlikePost(event.id);

@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
 import '../core/entities/notification.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ut_social/core/blocs/notifications_bloc/notifications_bloc.dart';
@@ -71,22 +72,19 @@ class _NotificationBridgeState extends State<NotificationBridge> {
         notification = FFNotification.fromAndroid(message, DateTime.now());
       }
 
-      BlocProvider.of<NotificationsBloc>(context)
-          .add(AddNotification(notification: notification));
+      BlocProvider.of<NotificationsBloc>(context).add(
+        AddNotification(notification: notification),
+      );
 
-      await showCupertinoDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                content: ListTile(
-                  title: Text(notification.body),
-                ),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text('Ok'),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ));
+      showSimpleNotification(
+        Text(
+          notification.body,
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        background: Theme.of(context).backgroundColor,
+      );
     }, onLaunch: (Map<String, dynamic> message) async {
       print("onLaunch: $message");
 

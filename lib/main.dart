@@ -43,7 +43,7 @@ Future<void> main() async {
     BlocProvider(
       create: (context) =>
           UserBloc(userRepository: userRepository)..add(InitializeUser()),
-      child: App(userRepository: userRepository),
+      child: OverlaySupport(child: App(userRepository: userRepository)),
     ),
   );
 }
