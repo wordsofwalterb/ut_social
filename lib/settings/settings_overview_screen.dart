@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
@@ -14,6 +15,7 @@ class SettingsOverviewScreen extends StatefulWidget {
 class _SettingsOverviewScreenState extends State<SettingsOverviewScreen> {
   bool _notificationsEnabled = false;
   UserBloc _userBloc;
+  final FirebaseMessaging _fcm = FirebaseMessaging();
 
   Future<void> _launchPrivacyPolicy() async {
     const url =
@@ -47,6 +49,7 @@ class _SettingsOverviewScreenState extends State<SettingsOverviewScreen> {
 
   void _toggleNotificationSwitch(bool value) {
     _userBloc.add(UpdateUserProfile(notificationsEnabled: value));
+    _fcm.requestNotificationPermissions(IosNotificationSettings());
     setState(() {
       _notificationsEnabled = value;
     });

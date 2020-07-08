@@ -94,10 +94,6 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
       updatedNotifications.addAll(currentState.notifications);
     }
 
-    await _repository.addNotificationToDb(
-      notification: event.notification,
-    );
-
     updatedNotifications.insert(0, event.notification);
 
     if (updatedNotifications.length < pageSize) {

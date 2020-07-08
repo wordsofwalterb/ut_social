@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:ut_social/core/util/globals.dart';
 import '../core/entities/notification.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ut_social/core/blocs/notifications_bloc/notifications_bloc.dart';
@@ -41,6 +43,7 @@ class _NotificationBridgeState extends State<NotificationBridge> {
 
         await userRef.setData({
           'notificationToken': fcmToken,
+          'notificationsEnabled': true,
         }, merge: true);
       }
     }
@@ -50,17 +53,28 @@ class _NotificationBridgeState extends State<NotificationBridge> {
   void initState() {
     super.initState();
     userBloc = BlocProvider.of<UserBloc>(context);
+    final currentState = userBloc.state;
 
-    if (Platform.isIOS) {
-      iosSubscription = _fcm.onIosSettingsRegistered.listen((data) {
-        // save the token  OR subscribe to a topic here
-        // _saveDeviceToken();
-      });
+    if (currentState is UserAuthenticated) {
+      if (Platform.isIOS) {
+        iosSubscription = _fcm.onIosSettingsRegistered.listen((data) {
+          // save the token  OR subscribe to a topic here
+          if (data.alert) {
+            _saveDeviceToken();
+          } else {
+            Global.studentsRef.document(currentState.currentUser.id).setData(
+              {'notificationsEnabled': false},
+              merge: true,
+            );
+          }
+        });
 
-      _fcm.requestNotificationPermissions(IosNotificationSettings());
+        _fcm.requestNotificationPermissions(IosNotificationSettings());
+      } else {
+        if (currentState.currentUser.notificationsEnabled ?? true)
+          _saveDeviceToken();
+      }
     }
-
-    _saveDeviceToken();
 
     _fcm.configure(onMessage: (Map<String, dynamic> message) async {
       print('onMessage: $message');
