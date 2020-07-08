@@ -7,17 +7,29 @@ import 'package:ut_social/core/widgets/main_app_bar.dart';
 
 import 'notification_tile.dart';
 
-class NotificationScreen extends StatelessWidget {
+class NotificationScreen extends StatefulWidget {
+  @override
+  _NotificationScreenState createState() => _NotificationScreenState();
+}
+
+class _NotificationScreenState extends State<NotificationScreen> {
+  NotificationsBloc _notificationBloc;
+
+
   @override
   Widget build(BuildContext context) {
+    _notificationBloc = BlocProvider.of<NotificationsBloc>(context);
     return Scaffold(
       appBar: mainAppBar(context),
-      body: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          _sectionHeader(leading: 'Notifications'),
-          _notificationList(),
-        ],
+      body: RefreshIndicator(
+        onRefresh: () async => _notificationBloc.add(BootstrapNotifications()),
+              child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            _sectionHeader(leading: 'Notifications'),
+            _notificationList(),
+          ],
+        ),
       ),
     );
   }

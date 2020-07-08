@@ -55,7 +55,7 @@ class FFNotification extends Equatable {
     return FFNotification(
       title: map['aps']['alert']['title'] as String,
       body: map['aps']['alert']['body'] as String,
-      imageUrl: map['aps']['alert']['imageUrl'] as String,
+      imageUrl: map['imageUrl'] as String,
       timestamp: timestamp,
     );
   }

@@ -81,7 +81,7 @@ class _NotificationBridgeState extends State<NotificationBridge> {
       FFNotification notification;
 
       if (Platform.isIOS) {
-        notification = FFNotification.fromAndroid(message, DateTime.now());
+        notification = FFNotification.fromiOS(message, DateTime.now());
       } else if (Platform.isAndroid) {
         notification = FFNotification.fromAndroid(message, DateTime.now());
       }
