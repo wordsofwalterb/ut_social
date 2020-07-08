@@ -49,7 +49,11 @@ class _SettingsOverviewScreenState extends State<SettingsOverviewScreen> {
 
   void _toggleNotificationSwitch(bool value) {
     _userBloc.add(UpdateUserProfile(notificationsEnabled: value));
-    _fcm.requestNotificationPermissions(IosNotificationSettings());
+
+    if (value) {
+      _fcm.requestNotificationPermissions(IosNotificationSettings());
+    }
+
     setState(() {
       _notificationsEnabled = value;
     });
