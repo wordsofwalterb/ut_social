@@ -14,12 +14,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentTab = 0;
   PageController _pageController;
+  final ScrollController _feedController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
   }
+
+  void onFeedIconTap() {}
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         },
         children: <Widget>[
-          FeedScreen(),
+          FeedScreen(
+            feedController: _feedController,
+          ),
           SearchScreen(),
           // NewContentScreen(),
           // ChatOverviewScreen(),
@@ -44,14 +49,20 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Theme.of(context).backgroundColor,
         currentIndex: _currentTab,
         onTap: (int index) {
-          setState(() {
-            _currentTab = index;
-          });
-          _pageController.jumpToPage(
-            index,
-          );
+          if (_pageController.page == 0 && index == 0)
+            _feedController.animateTo(0,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.linear);
+          else {
+            setState(() {
+              _currentTab = index;
+            });
+            _pageController.jumpToPage(
+              index,
+            );
+          }
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(
               SFSymbols.rectangle_grid_1x2_fill,

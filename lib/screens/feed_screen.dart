@@ -13,13 +13,17 @@ import '../widgets/main_app_bar.dart';
 import '../widgets/post_card.dart';
 
 class FeedScreen extends StatefulWidget {
+  final ScrollController feedController;
+
+  const FeedScreen({this.feedController});
+
   @override
   _FeedScreenState createState() => _FeedScreenState();
 }
 
 class _FeedScreenState extends State<FeedScreen>
     with AutomaticKeepAliveClientMixin<FeedScreen> {
-  final _feedController = ScrollController();
+  ScrollController _feedController;
   final _scrollThreshold = 200.0;
   PostsBloc _postBloc;
 
@@ -29,7 +33,7 @@ class _FeedScreenState extends State<FeedScreen>
   @override
   void initState() {
     super.initState();
-
+    _feedController = widget.feedController;
     _feedController.addListener(_onScroll);
     _postBloc = BlocProvider.of<PostsBloc>(context);
   }
