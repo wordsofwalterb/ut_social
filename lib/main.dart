@@ -5,26 +5,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ut_social/core/blocs/notifications_bloc/notifications_bloc.dart';
-import 'package:ut_social/core/repositories/notification_repository.dart';
 
-import 'core/blocs/simple_bloc_delegate.dart';
-import 'core/blocs/user_bloc/user_bloc.dart';
-import 'core/home_screen.dart';
-import 'core/notification_bridge.dart';
-import 'core/repositories/post_repository.dart';
-import 'core/repositories/user_repository.dart';
-import 'core/splash_screen.dart';
-import 'core/util/dark_theme.dart';
-import 'core/util/globals.dart';
-import 'core/util/router.dart';
-import 'feed/post_bloc/post_bloc.dart';
-import 'login/login_screen.dart';
+import 'package:ut_social/services/notification_repository.dart';
+
+import 'blocs/notifications_bloc/notifications_bloc.dart';
+import 'blocs/post_bloc/post_bloc.dart';
+import 'blocs/simple_bloc_observer.dart';
+import 'blocs/user_bloc/user_bloc.dart';
+import 'home_screen.dart';
+import 'screens/login_screen.dart';
+import 'services/post_repository.dart';
+import 'services/user_repository.dart';
+import 'splash_screen.dart';
+import 'util/dark_theme.dart';
+import 'util/globals.dart';
+import 'util/router.dart';
+import 'widgets/notification_bridge.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = SimpleBlocObserver();
-  
 
   final prefs = await SharedPreferences.getInstance();
 
