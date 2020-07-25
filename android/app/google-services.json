@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:516176728583:android:1002611fc907c817fd10a2",
+        "mobilesdk_app_id": "1:516176728583:android:19873387b34462b6fd10a2",
         "android_client_info": {
-          "package_name": "org.brandonwalter.fyrefly"
+          "package_name": "org.brandonwalter.utsocial"
         }
       },
       "oauth_client": [
