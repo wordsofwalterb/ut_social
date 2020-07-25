@@ -61,7 +61,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Fyrefly',
+      title: 'UT Social',
       debugShowCheckedModeBanner: false,
       theme: darkTheme(),
       onGenerateRoute: Router.generateRoute,
@@ -70,9 +70,9 @@ class App extends StatelessWidget {
       ],
       home: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
-          if (state is UserInitial) {
-            return SplashScreen();
-          }
+          // if (state is UserInitial) {
+
+          // }
           if (state is UserAuthenticated) {
             return MultiBlocProvider(
               providers: [
@@ -97,9 +97,10 @@ class App extends StatelessWidget {
               userRepository: _userRepository,
             );
           }
-          return LoginScreen(
-            userRepository: _userRepository,
-          );
+          return SplashScreen();
+          // return LoginScreen(
+          //   userRepository: _userRepository,
+          // );
         },
       ),
     );

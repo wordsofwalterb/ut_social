@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 
+import 'screens/chat_overview_screen.dart';
 import 'screens/feed_screen.dart';
 import 'screens/notification_screen.dart';
 import 'screens/search_screen.dart';
@@ -14,33 +15,54 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentTab = 0;
   PageController _pageController;
-  final ScrollController _feedController = ScrollController();
+  ScrollController _feedController;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+    _feedController = ScrollController();
   }
 
-  void onFeedIconTap() {}
+  @override
+  void dispose() {
+    super.dispose();
+    _pageController.dispose();
+    _feedController.dispose();
+  }
+
+  void _onNavItemTapped(int indexTapped) {
+    if (_pageController.page == 0 && indexTapped == 0) {
+      _feedController.animateTo(0,
+          duration: const Duration(milliseconds: 300), curve: Curves.linear);
+    } else {
+      setState(() {
+        _currentTab = indexTapped;
+      });
+      _pageController.jumpToPage(
+        indexTapped,
+      );
+    }
+  }
+
+  void _onPageChanged(int newIndex) {
+    setState(() {
+      _currentTab = newIndex;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
         controller: _pageController,
-        onPageChanged: (int index) {
-          setState(() {
-            _currentTab = index;
-          });
-        },
+        onPageChanged: _onPageChanged,
         children: <Widget>[
           FeedScreen(
             feedController: _feedController,
           ),
           SearchScreen(),
-          // NewContentScreen(),
-          // ChatOverviewScreen(),
+          ChatOverviewScreen(),
           NotificationScreen(),
         ],
       ),
@@ -48,20 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
         activeColor: Theme.of(context).primaryColor,
         backgroundColor: Theme.of(context).backgroundColor,
         currentIndex: _currentTab,
-        onTap: (int index) {
-          if (_pageController.page == 0 && index == 0)
-            _feedController.animateTo(0,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.linear);
-          else {
-            setState(() {
-              _currentTab = index;
-            });
-            _pageController.jumpToPage(
-              index,
-            );
-          }
-        },
+        onTap: _onNavItemTapped,
         items: [
           BottomNavigationBarItem(
             icon: Icon(
@@ -75,18 +84,12 @@ class _HomeScreenState extends State<HomeScreen> {
               size: 28.0,
             ),
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(
-          //     SFSymbols.plus_square,
-          //     size: 34.0,
-          //   ),
-          // ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(
-          //     SFSymbols.bubble_left,
-          //     size: 28.0,
-          //   ),
-          // ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              SFSymbols.bubble_left,
+              size: 28.0,
+            ),
+          ),
           BottomNavigationBarItem(
             icon: Icon(
               SFSymbols.bell,
@@ -95,7 +98,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      // ),
     );
   }
 }
