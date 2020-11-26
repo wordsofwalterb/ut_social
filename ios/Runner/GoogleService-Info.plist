@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>516176728583-hs2dhp1hd5a8uc1bib7svvk1hkk2dq2q.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.516176728583-hs2dhp1hd5a8uc1bib7svvk1hkk2dq2q</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAgLQ337-gWJnTTrEAK3syOkQEUqe_pZYU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>516176728583</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.brandonwalter.fyrefly</string>
+	<key>PROJECT_ID</key>
+	<string>fyrefly-dev</string>
+	<key>STORAGE_BUCKET</key>
+	<string>fyrefly-dev.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:516176728583:ios:9dfa9eb3a5252e76fd10a2</string>
+	<key>DATABASE_URL</key>
+	<string>https://fyrefly-dev.firebaseio.com</string>
+</dict>
+</plist>
