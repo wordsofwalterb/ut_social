@@ -30,7 +30,7 @@ Future<void> main() async {
   final prefs = await SharedPreferences.getInstance();
   await Firebase.initializeApp();
 
-  if (prefs.getBool('first_run')) {
+  if (prefs.getBool('first_run') ?? false) {
     print('Clearing cache');
     const FlutterSecureStorage storage = FlutterSecureStorage();
     await FirebaseAuth.instance.signOut();

@@ -1,38 +1,38 @@
 {
   "project_info": {
-    "project_number": "360746586745",
-    "firebase_url": "https://fyrefly-92a36.firebaseio.com",
-    "project_id": "fyrefly-92a36",
-    "storage_bucket": "fyrefly-92a36.appspot.com"
+    "project_number": "516176728583",
+    "firebase_url": "https://fyrefly-dev.firebaseio.com",
+    "project_id": "fyrefly-dev",
+    "storage_bucket": "fyrefly-dev.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:360746586745:android:c14860b0825efe78d23aa8",
+        "mobilesdk_app_id": "1:516176728583:android:19873387b34462b6fd10a2",
         "android_client_info": {
           "package_name": "org.brandonwalter.utSocial"
         }
       },
       "oauth_client": [
         {
-          "client_id": "360746586745-vmtrre7uip1r80nvqmvhls964qp6ljps.apps.googleusercontent.com",
+          "client_id": "516176728583-8k90364gujjbtan0ccg18scp3kmv1j0a.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCHoqqfGMhYezR_KpwTbHH5vexTcpaeysI"
+          "current_key": "AIzaSyA1Hz3Ztp-RAHfCmWI-SLm3KHT9t47CpY4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "360746586745-vmtrre7uip1r80nvqmvhls964qp6ljps.apps.googleusercontent.com",
+              "client_id": "516176728583-8k90364gujjbtan0ccg18scp3kmv1j0a.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "360746586745-b57ma5b1f7q60r6p7a8aso91po19381v.apps.googleusercontent.com",
+              "client_id": "516176728583-hs2dhp1hd5a8uc1bib7svvk1hkk2dq2q.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "org.brandonwalter.fyrefly"
