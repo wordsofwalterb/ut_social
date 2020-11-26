@@ -5,21 +5,21 @@ import 'package:ut_social/models/notification.dart';
 import 'package:ut_social/util/globals.dart';
 
 class FirebaseNotificationRepository {
-  final Firestore _firestore;
+  final FirebaseFirestore _firestore;
   final FirebaseAuth _firebaseAuth;
 
   FirebaseNotificationRepository(
-      {Firestore firestore, FirebaseAuth firebaseAuth})
-      : _firestore = firestore ?? Firestore.instance,
+      {FirebaseFirestore firestore, FirebaseAuth firebaseAuth})
+      : _firestore = firestore ?? FirebaseFirestore.instance,
         _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   Future<void> addNotificationToDb({
     FFNotification notification,
   }) async {
-    final currentUser = await _firebaseAuth.currentUser();
+    final currentUser = _firebaseAuth.currentUser;
 
     await Global.studentsRef
-        .document(currentUser.uid)
+        .doc(currentUser.uid)
         .collection('notifications')
         .add(notification.toMap());
   }
@@ -38,20 +38,20 @@ class FirebaseNotificationRepository {
   Future<List<FFNotification>> initialNotifications({
     @required int pageSize,
   }) async {
-    final currentUser = await _firebaseAuth.currentUser();
+    final currentUser = _firebaseAuth.currentUser;
 
     final querySnapshot = await Global.studentsRef
-        .document(currentUser.uid)
+        .doc(currentUser.uid)
         .collection('notifications')
         .orderBy('timestamp', descending: true)
         .limit(pageSize)
-        .getDocuments();
+        .get();
 
     List<FFNotification> notifications = [];
-    if (querySnapshot.documents.isNotEmpty) {
-      notifications = querySnapshot.documents
+    if (querySnapshot.docs.isNotEmpty) {
+      notifications = querySnapshot.docs
           .map((e) => FFNotification.fromMap(
-              e.data, (e.data['timestamp'] as Timestamp).toDate()))
+              e.data(), (e.data()['timestamp'] as Timestamp).toDate()))
           .toList();
     }
 
@@ -64,19 +64,19 @@ class FirebaseNotificationRepository {
   }) async {
     assert(startAfter != null);
 
-    final currentUser = await _firebaseAuth.currentUser();
+    final currentUser = _firebaseAuth.currentUser;
 
     final querySnapshot = await Global.studentsRef
-        .document(currentUser.uid)
+        .doc(currentUser.uid)
         .collection('notifications')
         .orderBy('timestamp', descending: true)
         .startAfter([startAfter])
         .limit(pageSize)
-        .getDocuments();
+        .get();
 
     final notifications = querySnapshot.documents
         .map((e) =>
-            FFNotification.fromMap(e.data, e.data['timestamp'] as DateTime))
+            FFNotification.fromMap(e.data(), e.data()['timestamp'] as DateTime))
         .toList();
 
     return notifications;

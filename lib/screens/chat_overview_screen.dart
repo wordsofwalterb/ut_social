@@ -28,7 +28,7 @@ List<Map<String, dynamic>> groups = [
   {
     'body': 'Epic Memes',
     'url':
-        'https://mk0geekspincou9juj7n.kinstacdn.com/wp-content/uploads/2020/02/Star-Wars-meme-featured-image.jpg',
+        'https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80',
     'count': 256,
   },
 ];
@@ -59,7 +59,7 @@ List<Map<String, dynamic>> chats = [
   {
     'body': 'Epic Memes',
     'url':
-        'https://mk0geekspincou9juj7n.kinstacdn.com/wp-content/uploads/2020/02/Star-Wars-meme-featured-image.jpg',
+        'https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80',
     'message': 'Amy Santos: posted a picture',
     'count': 0,
   },

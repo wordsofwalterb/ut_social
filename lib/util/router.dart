@@ -33,7 +33,7 @@ class Routes {
 }
 
 /// Correlates routes names to builders
-class Router {
+class FFRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
 

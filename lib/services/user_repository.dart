@@ -10,27 +10,27 @@ import 'package:ut_social/util/globals.dart';
 
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
-  final Firestore _firestore;
+  final FirebaseFirestore _firestore;
 
-  UserRepository({FirebaseAuth firebaseAuth, Firestore firestore})
+  UserRepository({FirebaseAuth firebaseAuth, FirebaseFirestore firestore})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _firestore = firestore ?? Firestore.instance;
+        _firestore = firestore ?? FirebaseFirestore.instance;
 
-  Future<AuthResult> signInWithCredentials(String email, String password) {
+  Future<UserCredential> signInWithCredentials(String email, String password) {
     return _firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
   }
 
-  Future<AuthResult> signUp({
+  Future<UserCredential> signUp({
     String email,
     String password,
     String firstName,
     String lastName,
   }) async {
     try {
-      final AuthResult result =
+      final UserCredential result =
           await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -72,9 +72,9 @@ class UserRepository {
     ];
 
     try {
-      final currentUser = await _firebaseAuth.currentUser();
+      final currentUser = _firebaseAuth.currentUser;
       print('setting up profile $firstName');
-      await Global.studentsRef.document(currentUser.uid).setData({
+      await Global.studentsRef.doc(currentUser.uid).set({
         'firstName': firstName,
         'lastName': lastName,
         'email': email,
@@ -89,40 +89,41 @@ class UserRepository {
   }
 
   Future<void> updateUser(Student updatedUser) async {
-    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+    final User currentUser = _firebaseAuth.currentUser;
     await Global.studentsRef
-        .document(currentUser.uid)
-        .setData(updatedUser.toMap(), merge: true);
+        .doc(currentUser.uid)
+        .set(updatedUser.toMap(), SetOptions(merge: true));
   }
 
   Future<bool> isSignedIn() async {
-    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+    final User currentUser = _firebaseAuth.currentUser;
     return currentUser != null;
   }
 
   Future<Student> getUser() async {
-    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+    final User currentUser = _firebaseAuth.currentUser;
     final DocumentSnapshot userDoc =
-        await Global.studentsRef.document(currentUser.uid).get();
+        await Global.studentsRef.doc(currentUser.uid).get();
+
     return Student.fromMap(
-      userDoc.data
+      userDoc.data()
         ..addAll(
-          <String, dynamic>{'id': userDoc.documentID},
+          <String, dynamic>{'id': userDoc.id},
         ),
     );
   }
 
   Future<String> uploadAvatar(File imageFile) async {
-    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+    final User currentUser = _firebaseAuth.currentUser;
     final DocumentSnapshot userDoc =
         await Global.studentsRef.document(currentUser.uid).get();
 
     final imageUrl = StorageService.uploadUserProfileImage(
-        userDoc.data['avatarUrl'] as String, imageFile);
+        userDoc.data()['avatarUrl'] as String, imageFile);
 
     await Global.studentsRef
-        .document(currentUser.uid)
-        .setData({'avatarUrl': imageUrl}, merge: true);
+        .doc(currentUser.uid)
+        .set({'avatarUrl': imageUrl}, SetOptions(merge: true));
 
     return imageUrl;
   }

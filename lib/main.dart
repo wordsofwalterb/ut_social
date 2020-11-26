@@ -1,5 +1,6 @@
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -27,8 +28,9 @@ Future<void> main() async {
   Bloc.observer = SimpleBlocObserver();
 
   final prefs = await SharedPreferences.getInstance();
+  await Firebase.initializeApp();
 
-  if (prefs.getBool('first_run') ?? true) {
+  if (prefs.getBool('first_run')) {
     print('Clearing cache');
     const FlutterSecureStorage storage = FlutterSecureStorage();
     await FirebaseAuth.instance.signOut();
@@ -53,8 +55,7 @@ class App extends StatelessWidget {
   final UserRepository _userRepository;
 
   const App({Key key, @required UserRepository userRepository})
-      : assert(userRepository != null),
-        _userRepository = userRepository,
+      : _userRepository = userRepository,
         super(key: key);
 
   // This widget is the root of your application.
@@ -64,7 +65,7 @@ class App extends StatelessWidget {
       title: 'UT Social',
       debugShowCheckedModeBanner: false,
       theme: darkTheme(),
-      onGenerateRoute: Router.generateRoute,
+      onGenerateRoute: FFRouter.generateRoute,
       navigatorObservers: [
         FirebaseAnalyticsObserver(analytics: Global.analytics),
       ],

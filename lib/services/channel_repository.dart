@@ -7,11 +7,12 @@ import 'package:ut_social/util/globals.dart';
 
 class FirebaseChannelRepository {
   final FirebaseAuth _firebaseAuth;
-  final Firestore _firestore;
+  final FirebaseFirestore _firestore;
 
-  FirebaseChannelRepository({FirebaseAuth firebaseAuth, Firestore firestore})
+  FirebaseChannelRepository(
+      {FirebaseAuth firebaseAuth, FirebaseFirestore firestore})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _firestore = firestore ?? Firestore.instance;
+        _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Retrieve documents based on list of Ids passed and
   /// add them a list of channels which is returned.
@@ -20,9 +21,9 @@ class FirebaseChannelRepository {
     final List<Channel> channels = [];
 
     for (final id in channelIds) {
-      final channelDocument = await Global.channelsRef.document(id).get();
-      if (channelDocument.data.isNotEmpty) {
-        final channel = Channel.fromMap(channelDocument.data, '123');
+      final channelDocument = await Global.channelsRef.doc(id).get();
+      if (channelDocument.data().isNotEmpty) {
+        final channel = Channel.fromMap(channelDocument.data(), '123');
         channels.add(channel);
       } else {
         throw Failure(

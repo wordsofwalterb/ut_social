@@ -293,7 +293,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
   }
 
   Stream<PostsState> _mapPostUnlikedToState(UnlikePost event) async* {
-    final currentUser = await _firebaseAuth.currentUser();
+    final currentUser = _firebaseAuth.currentUser;
 
     // Find liked post index in current state
     final int postIndex = state.posts.indexWhere((Post e) => e.id == event.id);

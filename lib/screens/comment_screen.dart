@@ -289,7 +289,7 @@ class _CommentScreenState extends State<CommentScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: BlocBuilder<PostsBloc, PostsState>(
-            bloc: _postBloc,
+            cubit: _postBloc,
             builder: (context, postState) {
               return PostCard(
                 post: postState.posts.singleWhere(

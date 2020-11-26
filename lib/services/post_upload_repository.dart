@@ -5,7 +5,6 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
-// TODO: Refactor to Repository
 // TODO: Refactor into fewer methods
 class StorageService {
   static Future<String> uploadUserProfileImage(
@@ -20,12 +19,13 @@ class StorageService {
     //   photoId = exp.firstMatch(url)[1];
     // }
 
-    final StorageUploadTask uploadTask = FirebaseStorage.instance
+    final UploadTask uploadTask = FirebaseStorage.instance
         .ref()
         .child('images/users/userProfile_$photoId.jpg')
         .putFile(image);
-    final StorageTaskSnapshot storageSnap = await uploadTask.onComplete;
-    final String downloadUrl = await storageSnap.ref.getDownloadURL() as String;
+    // Storage tasks function as a Delegating Future so we can await them.
+    final TaskSnapshot storageSnap = await uploadTask;
+    final String downloadUrl = await storageSnap.ref.getDownloadURL();
     return downloadUrl;
   }
 
@@ -40,12 +40,12 @@ class StorageService {
       photoId = exp.firstMatch(url)[1];
     }
 
-    final StorageUploadTask uploadTask = FirebaseStorage.instance
+    final UploadTask uploadTask = FirebaseStorage.instance
         .ref()
         .child('images/users/userCoverPhoto_$photoId.jpg')
         .putFile(image);
-    final StorageTaskSnapshot storageSnap = await uploadTask.onComplete;
-    final String downloadUrl = await storageSnap.ref.getDownloadURL() as String;
+    final TaskSnapshot storageSnap = await uploadTask;
+    final String downloadUrl = await storageSnap.ref.getDownloadURL();
     return downloadUrl;
   }
 
@@ -64,12 +64,12 @@ class StorageService {
   static Future<String> uploadPost(File imageFile) async {
     final String photoId = Uuid().v4();
     final File image = await compressImage(photoId, imageFile);
-    final StorageUploadTask uploadTask = FirebaseStorage.instance
+    final UploadTask uploadTask = FirebaseStorage.instance
         .ref()
         .child('images/posts/post_$photoId.jpg')
         .putFile(image);
-    final StorageTaskSnapshot storageSnap = await uploadTask.onComplete;
-    final String downloadUrl = await storageSnap.ref.getDownloadURL() as String;
+    final TaskSnapshot storageSnap = await uploadTask;
+    final String downloadUrl = await storageSnap.ref.getDownloadURL();
     return downloadUrl;
   }
 }

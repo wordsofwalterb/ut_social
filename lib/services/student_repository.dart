@@ -17,11 +17,11 @@ class StudentResult {
 }
 
 class FirebaseStudentRepository extends StudentRepository {
-  final Firestore _firestore;
+  final FirebaseFirestore _firestore;
 
   FirebaseStudentRepository({
-    Firestore firestore,
-  }) : _firestore = firestore ?? Firestore.instance;
+    FirebaseFirestore firestore,
+  }) : _firestore = firestore ?? FirebaseFirestore.instance;
 
   @override
   Future<List<Student>> findStudentsByName(String keyword) async {
@@ -43,25 +43,24 @@ class FirebaseStudentRepository extends StudentRepository {
         .collection('students')
         .where('fullName',
             isGreaterThanOrEqualTo: sanitizedFullKeyword.toString().trim())
-        .getDocuments();
+        .get();
 
     sanitizedFullKeyword.clear();
 
-    return query.documents
-        .map((e) => Student.fromMap(
-            e.data..addAll(<String, dynamic>{'id': e.documentID})))
+    return query.docs
+        .map((e) =>
+            Student.fromMap(e.data()..addAll(<String, dynamic>{'id': e.id})))
         .toList();
   }
 
   @override
   Future<StudentResult> getStudentById(String id) async {
     try {
-      final document =
-          await _firestore.collection('students').document(id).get();
-      if (document.data.isNotEmpty) {
+      final document = await _firestore.collection('students').doc(id).get();
+      if (document.data().isNotEmpty) {
         return StudentResult(
             student: Student.fromMap(
-              document.data..addAll(<String, dynamic>{'id': id}),
+              document.data()..addAll(<String, dynamic>{'id': id}),
             ),
             hasError: false);
       } else {

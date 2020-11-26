@@ -23,7 +23,7 @@ class NotificationBridge extends StatefulWidget {
 }
 
 class _NotificationBridgeState extends State<NotificationBridge> {
-  final Firestore _db = Firestore.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
   UserBloc userBloc;
   final FirebaseMessaging _fcm = FirebaseMessaging();
   StreamSubscription iosSubscription;
@@ -40,12 +40,12 @@ class _NotificationBridgeState extends State<NotificationBridge> {
 
       // Save it to Firestore
       if (fcmToken != null) {
-        final userRef = _db.collection('students').document(uid);
+        final userRef = _db.collection('students').doc(uid);
 
-        await userRef.setData({
+        await userRef.set({
           'notificationToken': fcmToken,
           'notificationsEnabled': true,
-        }, merge: true);
+        }, SetOptions(merge: true));
       }
     }
   }
@@ -63,9 +63,9 @@ class _NotificationBridgeState extends State<NotificationBridge> {
           if (data.alert) {
             _saveDeviceToken();
           } else {
-            Global.studentsRef.document(currentState.currentUser.id).setData(
+            Global.studentsRef.document(currentState.currentUser.id).set(
               {'notificationsEnabled': false},
-              merge: true,
+              SetOptions(merge: true),
             );
           }
         });

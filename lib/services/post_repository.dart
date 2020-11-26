@@ -16,11 +16,12 @@ abstract class PostRepository {
 }
 
 class FirebasePostRepository extends PostRepository {
-  final Firestore _firestore;
+  final FirebaseFirestore _firestore;
   final FirebaseAuth _firebaseAuth;
 
-  FirebasePostRepository({Firestore firestore, FirebaseAuth firebaseAuth})
-      : _firestore = firestore ?? Firestore.instance,
+  FirebasePostRepository(
+      {FirebaseFirestore firestore, FirebaseAuth firebaseAuth})
+      : _firestore = firestore ?? FirebaseFirestore.instance,
         _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   @override
@@ -31,14 +32,14 @@ class FirebasePostRepository extends PostRepository {
         .limit(20)
         .getDocuments();
 
-    final currentUser = await _firebaseAuth.currentUser();
-    final List<Post> newPosts = newDocumentList.documents
+    final currentUser = _firebaseAuth.currentUser;
+    final List<Post> newPosts = newDocumentList.docs
         .map((v) => Post.fromMap(
-              v.data
+              v.data()
                 ..addAll({
                   'id': v.documentID,
                   'isLikedByUser':
-                      (v.data['likedBy'] as List).contains(currentUser.uid),
+                      (v.data()['likedBy'] as List).contains(currentUser.uid),
                 }),
             ))
         .toList();
@@ -54,18 +55,18 @@ class FirebasePostRepository extends PostRepository {
 
   Future<Post> _getAuthorInfoWithPost(Post post) async {
     final doc =
-        await _firestore.collection('students').document(post.authorId).get();
+        await _firestore.collection('students').doc(post.authorId).get();
 
     return post.copyWith(
-        authorName: doc.data['fullName'] as String,
-        avatarUrl: doc.data['avatarUrl'] as String);
+        authorName: doc.data()['fullName'] as String,
+        avatarUrl: doc.data()['avatarUrl'] as String);
   }
 
   @override
   Future<void> deletePost(String postId) async {
     assert(postId != null);
 
-    await Global.postsRef.document(postId).delete();
+    await Global.postsRef.doc(postId).delete();
   }
 
   @override
@@ -82,14 +83,14 @@ class FirebasePostRepository extends PostRepository {
         .limit(limit)
         .getDocuments();
 
-    final currentUser = await _firebaseAuth.currentUser();
+    final currentUser = _firebaseAuth.currentUser;
     final newPosts = newDocumentList.documents
         .map((DocumentSnapshot v) => Post.fromMap(
-              v.data
+              v.data()
                 ..addAll({
-                  'id': v.documentID,
+                  'id': v.id,
                   'isLikedByUser':
-                      (v.data['likedBy'] as List).contains(currentUser.uid)
+                      (v.data()['likedBy'] as List).contains(currentUser.uid)
                 }),
             ))
         .toList();
@@ -139,21 +140,21 @@ class FirebasePostRepository extends PostRepository {
 // Deleted by another user and will be unable to update properly
   @override
   Future<void> unlikePost(String postId) async {
-    final currentUser = await _firebaseAuth.currentUser();
-    await Global.postsRef.document(postId).updateData({
+    final currentUser = _firebaseAuth.currentUser;
+    await Global.postsRef.doc(postId).update({
       'likeCount': FieldValue.increment(-1),
       'likedBy': FieldValue.arrayRemove([currentUser.uid])
     });
 
-    await Global.postsRef.document(postId).updateData({
+    await Global.postsRef.doc(postId).update({
       'unlikedBy': FieldValue.arrayUnion([currentUser.uid])
     });
   }
 
   @override
   Future<void> likePost(String postId) async {
-    final currentUser = await _firebaseAuth.currentUser();
-    await Global.postsRef.document(postId).updateData({
+    final currentUser = _firebaseAuth.currentUser;
+    await Global.postsRef.doc(postId).update({
       'likeCount': FieldValue.increment(1),
       'likedBy': FieldValue.arrayUnion([currentUser.uid])
     });
@@ -161,7 +162,7 @@ class FirebasePostRepository extends PostRepository {
 
   @override
   Future<void> updateCommentCount(String postId, int byValue) async {
-    await Global.postsRef.document(postId).updateData({
+    await Global.postsRef.doc(postId).update({
       'commentCount': FieldValue.increment(byValue),
     });
   }

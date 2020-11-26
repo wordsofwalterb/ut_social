@@ -49,10 +49,52 @@ class ProfileAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Builder(builder: (context) {
-        if (fileImage != null) {
+    return Container(
+      width: size,
+      height: size,
+      child: GestureDetector(
+        onTap: onPressed,
+        child: Builder(builder: (context) {
+          if (fileImage != null) {
+            return Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                border: (borderColor != null)
+                    ? Border.all(
+                        color: borderColor,
+                        width: borderWidth,
+                      )
+                    : null,
+                borderRadius: BorderRadius.circular(radius),
+                image: DecorationImage(
+                  image: fileImage,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            );
+          } else if (avatarUrl != null && avatarUrl != '') {
+            return CachedNetworkImage(
+              imageUrl: avatarUrl,
+              imageBuilder: (context, imageProvider) => Container(
+                width: size,
+                height: size,
+                decoration: BoxDecoration(
+                  border: (borderColor != null)
+                      ? Border.all(
+                          color: borderColor,
+                          width: borderWidth,
+                        )
+                      : null,
+                  borderRadius: BorderRadius.circular(radius),
+                  image:
+                      DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                ),
+              ),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
+            );
+          }
+          // If everything else is false display placeholder
           return Container(
             width: size,
             height: size,
@@ -65,52 +107,15 @@ class ProfileAvatar extends StatelessWidget {
                   : null,
               borderRadius: BorderRadius.circular(radius),
               image: DecorationImage(
-                image: fileImage,
+                image: AssetImage(
+                  defaultImageSrc,
+                ),
                 fit: BoxFit.cover,
               ),
             ),
           );
-        } else if (avatarUrl != null && avatarUrl != '') {
-          return CachedNetworkImage(
-            imageUrl: avatarUrl,
-            imageBuilder: (context, imageProvider) => Container(
-              width: size,
-              height: size,
-              decoration: BoxDecoration(
-                border: (borderColor != null)
-                    ? Border.all(
-                        color: borderColor,
-                        width: borderWidth,
-                      )
-                    : null,
-                borderRadius: BorderRadius.circular(radius),
-                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-              ),
-            ),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-          );
-        }
-        // If everything else is false display placeholder
-        return Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            border: (borderColor != null)
-                ? Border.all(
-                    color: borderColor,
-                    width: borderWidth,
-                  )
-                : null,
-            borderRadius: BorderRadius.circular(radius),
-            image: DecorationImage(
-              image: AssetImage(
-                defaultImageSrc,
-              ),
-              fit: BoxFit.cover,
-            ),
-          ),
-        );
-      }),
+        }),
+      ),
     );
   }
 }

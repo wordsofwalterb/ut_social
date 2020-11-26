@@ -278,7 +278,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
 
   Stream<CommentsState> _mapCommentUnlikedToState(String id) async* {
     assert(id != null);
-    final currentUser = await _firebaseAuth.currentUser();
+    final currentUser = _firebaseAuth.currentUser;
 
     // Find liked comment index in current state
     final int commentIndex =
