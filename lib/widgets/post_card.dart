@@ -53,7 +53,7 @@ class _PostCardState extends State<PostCard> {
         if (!byCurrentUser &&
             !widget._post.unlikedBy.contains(userBlocState.currentUser.id)) {
           Global.studentsRef
-              .document(widget._post.authorId)
+              .doc(widget._post.authorId)
               .collection('notifications')
               .add({
             'body': '${userBlocState.currentUser.fullName} liked your post.',
@@ -172,7 +172,7 @@ class _PostCardState extends State<PostCard> {
                     size: 20,
                     likeCount: widget._post.likeCount,
                     animationDuration: const Duration(milliseconds: 500),
-                    isLiked: widget._post.likedByUser,
+                    isLiked: widget._post.likedByUser ?? false,
                     onTap: (result) => _onLikeButtonTapped(result, context),
                     likeCountAnimationDuration:
                         const Duration(milliseconds: 200),

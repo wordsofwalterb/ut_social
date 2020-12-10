@@ -30,17 +30,19 @@ class FirebasePostRepository extends PostRepository {
         .collection('posts')
         .orderBy('postTime', descending: true)
         .limit(20)
-        .getDocuments();
+        .get();
 
     final currentUser = _firebaseAuth.currentUser;
     final List<Post> newPosts = newDocumentList.docs
-        .map((v) => Post.fromMap(
+        .map((v) => Post.fromJson(
               v.data()
                 ..addAll({
-                  'id': v.documentID,
-                  'isLikedByUser':
+                  'id': v.id,
+                  'likedByUser':
                       (v.data()['likedBy'] as List).contains(currentUser.uid),
-                }),
+                })
+                ..update('postTime',
+                    (value) => (value as Timestamp).toDate().toString()),
             ))
         .toList();
 
@@ -81,17 +83,19 @@ class FirebasePostRepository extends PostRepository {
         .orderBy('postTime', descending: true)
         .startAfter([startAfter])
         .limit(limit)
-        .getDocuments();
+        .get();
 
     final currentUser = _firebaseAuth.currentUser;
-    final newPosts = newDocumentList.documents
-        .map((DocumentSnapshot v) => Post.fromMap(
+    final newPosts = newDocumentList.docs
+        .map((DocumentSnapshot v) => Post.fromJson(
               v.data()
                 ..addAll({
                   'id': v.id,
-                  'isLikedByUser':
+                  'likedByUser':
                       (v.data()['likedBy'] as List).contains(currentUser.uid)
-                }),
+                })
+                ..update('postTime',
+                    (value) => (value as Timestamp).toDate().toString()),
             ))
         .toList();
 
@@ -122,10 +126,10 @@ class FirebasePostRepository extends PostRepository {
       'likedBy': const <String>[],
       'commentCount': 0,
     });
-    assert(docRef.documentID != null);
+    assert(docRef.id != null);
 
     return Post(
-        id: docRef.documentID,
+        id: docRef.id,
         authorId: author.id,
         avatarUrl: author.avatarUrl,
         authorName: author.fullName,
@@ -143,9 +147,10 @@ class FirebasePostRepository extends PostRepository {
     final currentUser = _firebaseAuth.currentUser;
     await Global.postsRef.doc(postId).update({
       'likeCount': FieldValue.increment(-1),
-      'likedBy': FieldValue.arrayRemove([currentUser.uid])
+      'likedBy': FieldValue.arrayRemove([currentUser.uid]),
     });
 
+    // Needed so double notifications are not sent
     await Global.postsRef.doc(postId).update({
       'unlikedBy': FieldValue.arrayUnion([currentUser.uid])
     });
@@ -156,7 +161,7 @@ class FirebasePostRepository extends PostRepository {
     final currentUser = _firebaseAuth.currentUser;
     await Global.postsRef.doc(postId).update({
       'likeCount': FieldValue.increment(1),
-      'likedBy': FieldValue.arrayUnion([currentUser.uid])
+      'likedBy': FieldValue.arrayUnion([currentUser.uid]),
     });
   }
 

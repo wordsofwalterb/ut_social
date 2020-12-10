@@ -1,94 +1,55 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:flutter/foundation.dart';
 
-class Post extends Equatable {
-  final String id;
-  final String authorId, authorName, body, avatarUrl, imageUrl;
-  final DateTime postTime;
-  final int commentCount, likeCount;
-  final bool likedByUser;
-  final List<String> unlikedBy;
-  // List of student ids that liked this post
-  final List<String> likedBy;
+part 'post.freezed.dart';
+part 'post.g.dart';
 
-  const Post(
-      {@required this.id,
-      @required this.authorId,
-      @required this.authorName,
-      @required this.postTime,
-      this.likedByUser,
-      this.imageUrl,
-      this.unlikedBy,
-      this.avatarUrl,
-      this.likedBy,
-      this.body,
-      this.commentCount,
-      this.likeCount})
-      : assert(id != null),
-        assert(authorId != null),
-        assert(authorName != null),
-        assert(postTime != null);
+@freezed
+abstract class Post with _$Post {
+  /// Used to store all relevant data needed to construct a [PostCard] widget
+  const factory Post(
+      {
 
-  Post copyWith(
-      {String id,
-      String authorId,
-      String authorName,
-      String imageUrl,
-      DateTime postTime,
-      String body,
-      List<String> unlikedBy,
-      List<String> likedBy,
-      String avatarUrl,
+      /// ID is generated from Firebase UID
+      @required String id,
+
+      /// The Id of whoever made the post
+      @required String authorId,
+
+      /// The full name of whoever made the post
+      @required String authorName,
+
+      /// The time that the post was made
+      @required DateTime postTime,
+
+      /// Determined during runtime and not stored in database.
+      /// Used so like button is properly set up.
       bool likedByUser,
+
+      /// Url to an image, if the post has an image.
+      /// TODO: Should be converted to List<String> to support multiple images?
+      String imageUrl,
+
+      /// ID's of those who have liked the post then disliked. Once added an ID isn't removed.
+      /// It is here so double likes don't send two notications.
+      @Default([]) List<String> unlikedBy,
+
+      /// Url to the authors profile image
+      String avatarUrl,
+
+      /// Id's of those who liked post, used during runtime to determined [likedByUser]
+      @Default([]) List<String> likedBy,
+
+      /// The main text of the post, if it is included.
+      String body,
+
+      /// Used to track number of comments made
       int commentCount,
-      int likeCount}) {
-    return Post(
-      id: id ?? this.id,
-      likedBy: likedBy ?? this.likedBy,
-      imageUrl: imageUrl ?? this.imageUrl,
-      avatarUrl: avatarUrl ?? this.avatarUrl,
-      authorId: authorId ?? this.authorId,
-      unlikedBy: unlikedBy ?? this.unlikedBy,
-      authorName: authorName ?? this.authorName,
-      postTime: postTime ?? this.postTime,
-      body: body ?? this.body,
-      commentCount: commentCount ?? this.commentCount,
-      likedByUser: likedByUser ?? this.likedByUser,
-      likeCount: likeCount ?? this.likeCount,
-    );
-  }
 
-  factory Post.fromMap(Map<String, dynamic> map) {
-    return Post(
-        imageUrl: map['imageUrl'] as String,
-        id: map['id'] as String,
-        likedBy: List<String>.from(map['likedBy'] as List),
-        avatarUrl: map['avatarUrl'] as String,
-        authorId: map['authorId'] as String,
-        authorName: map['authorName'] as String,
-        postTime: (map['postTime'] as Timestamp).toDate(),
-        body: map['body'] as String,
-        unlikedBy: List<String>.from((map['unlikedBy'] as List) ?? []),
-        likedByUser: map['isLikedByUser'] as bool,
-        commentCount: map['commentCount'] as int,
-        likeCount: map['likeCount'] as int);
-  }
+      /// Used to track number of likes
+      int likeCount}) = _Post;
 
-  @override
-  List<Object> get props => <Object>[
-        imageUrl,
-        id,
-        likedBy,
-        avatarUrl,
-        authorId,
-        authorName,
-        postTime,
-        unlikedBy,
-        body,
-        commentCount,
-        likeCount,
-        likedByUser,
-      ];
+  /// Converts a map of items with same variable name (key) and type for value
+  factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
 }

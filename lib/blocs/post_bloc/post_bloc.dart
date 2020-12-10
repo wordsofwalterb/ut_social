@@ -261,12 +261,17 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
   ///
   /// Can be used in PostsLoaded, PostsReachedMax state.
   Stream<PostsState> _mapPostLikedToState(LikePost event) async* {
+    final currentUser = _firebaseAuth.currentUser;
+
     // Find liked post index in current state
     final int postIndex = state.posts.indexWhere((Post e) => e.id == event.id);
 
     // Create new modified post which will added to state
     final Post changedPost = state.posts[postIndex].copyWith(
-        likedByUser: true, likeCount: state.posts[postIndex].likeCount + 1);
+      likedByUser: true,
+      likeCount: state.posts[postIndex].likeCount + 1,
+      likedBy: state.posts[postIndex].likedBy..add(currentUser.uid),
+    );
 
     // Propagate to database
     await postRepository.likePost(event.id);
@@ -301,7 +306,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     // Create new modified post which will added to state
     final Post changedPost = state.posts[postIndex].copyWith(
       likedByUser: false,
-      unlikedBy: state.posts[postIndex].unlikedBy..add(currentUser.uid),
+      likedBy: state.posts[postIndex].likedBy..remove(currentUser.uid),
       likeCount: state.posts[postIndex].likeCount - 1,
     );
 
