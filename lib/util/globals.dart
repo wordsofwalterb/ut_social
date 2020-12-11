@@ -9,7 +9,7 @@ class Global {
   //static final FirebaseAnalytics analytics = FirebaseAnalytics();
 
   static final Map models = {
-    Student: (Map<String, dynamic> data) => Student.fromMap(data),
+    Student: (Map<String, dynamic> data) => Student.fromJson(data),
     Post: (Map<String, dynamic> data) => Post.fromJson(data),
   };
 

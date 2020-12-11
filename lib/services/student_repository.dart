@@ -49,7 +49,7 @@ class FirebaseStudentRepository extends StudentRepository {
 
     return query.docs
         .map((e) =>
-            Student.fromMap(e.data()..addAll(<String, dynamic>{'id': e.id})))
+            Student.fromJson(e.data()..addAll(<String, dynamic>{'id': e.id})))
         .toList();
   }
 
@@ -59,7 +59,7 @@ class FirebaseStudentRepository extends StudentRepository {
       final document = await _firestore.collection('students').doc(id).get();
       if (document.data().isNotEmpty) {
         return StudentResult(
-            student: Student.fromMap(
+            student: Student.fromJson(
               document.data()..addAll(<String, dynamic>{'id': id}),
             ),
             hasError: false);

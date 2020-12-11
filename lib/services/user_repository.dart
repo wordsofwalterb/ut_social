@@ -92,7 +92,7 @@ class UserRepository {
     final User currentUser = _firebaseAuth.currentUser;
     await Global.studentsRef
         .doc(currentUser.uid)
-        .set(updatedUser.toMap(), SetOptions(merge: true));
+        .set(updatedUser.toJson(), SetOptions(merge: true));
   }
 
   Future<bool> isSignedIn() async {
@@ -105,7 +105,7 @@ class UserRepository {
     final DocumentSnapshot userDoc =
         await Global.studentsRef.doc(currentUser.uid).get();
 
-    return Student.fromMap(
+    return Student.fromJson(
       userDoc.data()
         ..addAll(
           <String, dynamic>{'id': userDoc.id},

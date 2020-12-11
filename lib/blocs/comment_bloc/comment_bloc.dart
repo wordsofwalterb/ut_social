@@ -247,7 +247,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
 
     // Create new modified comment which will added to state
     final Comment changedComment = state.comments[commentIndex].copyWith(
-        isLikedByUser: true,
+        likedByUser: true,
         likeCount: state.comments[commentIndex].likeCount + 1);
 
     // Propagate to database
@@ -286,8 +286,9 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
 
     // Create new modified comment which will added to state
     final Comment changedComment = state.comments[commentIndex].copyWith(
-        isLikedByUser: false,
-        unlikedBy: state.comments[commentIndex].unlikedBy..add(currentUser.uid),
+        likedByUser: false,
+        unlikedBy: state.comments[commentIndex].unlikedBy.toList()
+          ..add(currentUser.uid),
         likeCount: state.comments[commentIndex].likeCount - 1);
 
     // Propagate to database

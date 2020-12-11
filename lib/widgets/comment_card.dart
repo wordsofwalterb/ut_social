@@ -143,7 +143,7 @@ class _CommentCardState extends State<CommentCard> {
                   size: 20,
                   likeCount: widget._comment.likeCount,
                   animationDuration: const Duration(milliseconds: 500),
-                  isLiked: widget._comment.isLikedByUser,
+                  isLiked: widget._comment.likedByUser,
                   onTap: (result) => _onLikeButtonTapped(result, context),
                   likeCountAnimationDuration: const Duration(milliseconds: 200),
                   countBuilder: (int count, bool isLiked, String text) {

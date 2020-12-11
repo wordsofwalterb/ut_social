@@ -30,17 +30,19 @@ class FirebaseCommentsRepository extends CommentRepository {
         .where('postId', isEqualTo: postId)
         .orderBy('timestamp', descending: false)
         .limit(20)
-        .getDocuments();
+        .get();
 
     final currentUser = _firebaseAuth.currentUser;
     final newComments = newDocumentList.docs
-        .map((v) => Comment.fromMap(
+        .map((v) => Comment.fromJson(
               v.data()
                 ..addAll({
                   'id': v.id,
-                  'isLikedByUser':
+                  'likedByUser':
                       (v.data()['likedBy'] as List).contains(currentUser.uid),
-                }),
+                })
+                ..update('timestamp',
+                    (value) => (value as Timestamp).toDate().toString()),
             ))
         .toList();
 
@@ -70,17 +72,17 @@ class FirebaseCommentsRepository extends CommentRepository {
     final newDocumentList = await _firestore
         .collection('comments')
         .where('postId', isEqualTo: postId)
-        .orderBy('timestamp', descending: false)
+        .orderBy('timestamp')
         .startAfter([startAfter])
         .limit(limit)
         .get();
-    final currentUser = await _firebaseAuth.currentUser;
+    final currentUser = _firebaseAuth.currentUser;
     final newComments = newDocumentList.docs
-        .map((v) => Comment.fromMap(
+        .map((v) => Comment.fromJson(
               v.data()
                 ..addAll({
                   'id': v.id,
-                  'isLikedByUser':
+                  'likedByUser':
                       (v.data()['likedBy'] as List).contains(currentUser.uid)
                 }),
             ))
@@ -96,10 +98,8 @@ class FirebaseCommentsRepository extends CommentRepository {
   }
 
   Future<Comment> _getAuthorInfoWithComment(Comment comment) async {
-    final doc = await _firestore
-        .collection('students')
-        .document(comment.authorId)
-        .get();
+    final doc =
+        await _firestore.collection('students').doc(comment.authorId).get();
 
     return comment.copyWith(
         authorName: doc.data()['fullName'] as String,
@@ -139,8 +139,10 @@ class FirebaseCommentsRepository extends CommentRepository {
         authorName: map['authorName'] as String,
         body: map['body'] as String,
         likedBy: const <String>[],
-        isLikedByUser: false,
+        unlikedBy: const <String>[],
+        likedByUser: false,
         timestamp: timestamp,
+        isBanned: false,
         likeCount: 0);
   }
 
