@@ -39,3 +39,7 @@ lib/generated_plugin_registrant.dart
 #Keys
 android/key.properties
 android/app/key.jks
+android/fyrefly-92a36-d2dadbc2a382.json
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
