@@ -24,7 +24,7 @@ exports.onCreateNotificationItem = functions.firestore
         const notificationsEnabled = doc.data().notificationsEnabled;
         const createdNotificationFeedItem = snapshot.data();
 
-        if (notificationToken && notificationsEnabled) {
+        if (notificationToken && notificationsEnabled && (userId != createdNotificationFeedItem.originId)) {
             sendNotification(notificationToken, createdNotificationFeedItem);
         } else {
             console.log('No token or permissions for user, cannot send notification');
