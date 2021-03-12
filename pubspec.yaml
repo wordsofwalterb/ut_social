@@ -40,7 +40,7 @@ dependencies:
   json_serializable: ^3.5.1
   like_button: ^1.0.4
   meta: ^1.2.4
-  overlay_support: ^1.0.5
+  overlay_support: 1.0.5-hotfix1
   provider: ^4.3.2+2
   shared_preferences: ^0.5.12+4
   timeago: ^2.0.26
